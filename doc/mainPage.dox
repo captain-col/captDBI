@@ -1,0 +1,943 @@
+// The following documentation will appear on the main page.  This
+// file is essentially the global readme for this library. This is a
+// collection of \mainpage and \page directives
+
+
+
+/*! 
+\mainpage The oaOfflineDatabase Library
+  
+\anchor oaOfflineDatabase
+
+\section oaOffDBIIntroduction High-Level Conceptual Overview
+
+  This package provides a \ref oaOffDBIDataRetrieval "C++ Data Retrieval API" for answering requests of the form:
+
+  \anchor FunctionalRequest 'For a given event E, get the <b>Calibration Constant</b> X=f(D,S) for channel C'
+  
+  by querying pairs of tables in the offline calibration database.  
+  
+  Where X is a function of:
+  
+  <ul>
+  <li>a point in Time in the detector's existence, D
+  -and-
+  <li>a point in Time in the evolution of the ND280 Software, S
+  </ul>
+  
+  D is a property of the event (stored in its "Context").
+  
+  S is usually set to the current time (i.e. processing jobs usually need the 
+  <i>"best"</i> version of the constants).
+  
+  The work of the API is essentially to calculate X based on the inputs D & S.
+  
+  This produces a result set with constants for the entire detector (at a particular D & S).
+  
+  \anchor AdvancedRequirements 
+  
+  <hr />
+  
+  The interface supports advanced requirements:
+  
+  <ul>
+  <li>Some constants are more volatile than others: therefore, they are produced in subsets with different validity periods.
+  <li>Subsets of constants are updated as the ND280 Software evolves.  
+  <ul>
+  <li>But processing jobs must yield reproducible results; so, the ability to set S to a previous 
+  date (to "redo" processing with an old set of constants) must be preserved. 
+  </ul>
+  </ul>
+  
+  These requirements are accommodated through careful design at two levels:
+  
+  <ul>
+  <li>The underlying <b>Data Structure</b>: a normalized\ref glossNorm "*" \ref oaOffDBIDataStructurePhys "database schema" with a level of indirection between the concepts of <b>Calibration Constants</b> and their <b>Validity intervals</b>
+  <li>The <b>Data Retrieval</b> strategy: a \ref algorithm_description "method" 
+  for solving the aforementioned systems at runtime, combining rows from
+  the database into a set of <b>Calibration Constants</b> satisfying
+  values D and S selected by the user.
+  </ul>
+  
+  <hr />
+  
+  The core \ref oaOffDBIDataStructure "Data Structure" and \ref oaOffDBIDataRetrieval "Data Retrieval" concepts are those of the
+  repackaged MINOS DBI code, instrumented by a small set of ND280-specific 
+  classes (TResultSetHandle, TTableRow, etc.) \ref data_insertion is implemented
+  by a separate script (database_updater.py). \ref data_distribution is achieved 
+  through a global database replication scheme.
+  
+  <hr />
+  
+  
+   
+\section Contents 
+
+  <ul>
+  <li>\ref oaOffDBIIntroduction
+
+  <li>\ref oaOffDBIDataStructure
+  <li>\ref oaOffDBIDataRetrieval
+  <li>\ref data_insertion
+  <li>\ref data_distribution
+  
+  <li>\ref oaOffDBIAppEnvironment
+  <li>\ref oaOffDBIAppTmpTbls
+  <li>\ref oaOffDBIAppAttributes
+  <li>\ref oaOffDBIAppNewTables
+  
+  <li>\ref glossary
+
+  <li>\ref oaOffDBIFurtherReading  
+  </ul>
+
+
+  \section oaOffDBIDataStructure Data Structure
+  \subsection oaOffDBIDataStructurePhys Physical Design
+  
+  \image html time_structure.png
+  
+  The data is physically structured in pairs of relations: 
+  
+  <ol>
+  <li>A Validity Table (i.e. DEMO_DB_TABLEVLD) - where each row represents a <b>Validity Interval</b> - with a <i>Primary Key Attribute</i> 'SEQNO'
+  <li>A Constants Table (i.e. DEMO_DB_TABLE) - where each row represents an actual <b>Calibration Constant</b> - with a <i>Foreign Key\ref glossFK "*" Attribute</i> 'SEQNO'
+  </ol>
+  
+  Internally, a disjoint set of rows in the Constants Table is associated with a single
+  row in the Validity Table by the value of the SEQNO <i>Foreign Key</i>\ref glossFK "*".  Through this
+  physical relationship, each Validity Table row defines a <b>Validity Interval</b> for
+  a disjoint set of Constants Table rows.
+    
+  In the simple case, a <b>Validity Interval</b> is simply a time interval specified by the
+  attributes TIMESTART and TIMEEND.
+  
+  Since overlaps (and complete overlays) are expected in their time spans, 
+  <b>Validity Intervals</b> may have additional attributes (CREATIONDATE, EPOCH) set
+  for <i>'disambiguation'</i> (deciding which Constants Table row to return when > 1 
+  exists for the same time point).
+  
+  In the more complicated case, <b>Validity Intervals</b> may have other additional 
+  attributes (REALITY, DETECTORMASK, SIMMASK, TASK, AGGREGATENO) set to place them (and 
+  their associated <b>Calibration Constants</b>) in a separate dimension or subcategory. These
+  extra attributes can be used as a <i>discriminant</i> when data is later retrieved.
+  
+  For specifications, please see \ref oaOffDBIAppAttributes.
+  
+  \subsection oaOffDBIDataStructureFunc Functional Perspective (Design Rationale)
+  
+  oaOfflineDatabase has a clear functional goal: to \ref FunctionalRequest "answer requests in a standard form."
+  
+  Doing this efficiently (minimizing data duplication and maximizing lookup efficiency), requires:
+  
+  <ol>
+  <li> normalizing\ref glossNorm "*" the data
+  <li> selecting good <i>Keys</i>
+  <li> implementing a runtime lookup algorithm that accomplishes the goal while minimizing disk I/O (by exploiting indices on the <i>Keys</i>)
+  </ol> 
+  
+  Here, we will examine the design choices made for (1) and (2), and consider how
+  these enable (3).
+  
+  The starting point for a normalization effort is the information in its most 
+  basic de-normalized form (with everything combined in a single relation): that 
+  would mean tagging each event with the value of all the constants in effect.
+  This would make it very easy to answer requests for constants, since one could read 
+  them directly from the event.  But since the elapsed time between events and the 
+  <b>Validity Intervals</b> for sets of <b>Calibration Constants</b> are completely 
+  different, this would imply extreme data duplication (de-normalization).  It
+  also wouldn't make any provisions for updating constants.
+  
+  A better approach is to identify and separate the 3 types of information
+  (Event, <b>Validity Interval</b> and <b>Calibration Constant</b>), and
+  recombine them at runtime to answer \ref FunctionalRequest "requests".
+  
+  This approach requires more sophisticated data decomposition and lookup
+  techniques, but uses much less disk space (by minimizing data duplication) and 
+  makes it possible to accomodate more \ref AdvancedRequirements "advanced requirements".
+  
+  The oaOfflineDatabase package then provides a simplified <b>Interface</b> to the
+  data, shielding users from the normalized tables and the lookup algorithm.
+  \anchor algorithm_description The <b>Interface</b> enables a macro-level lookup abstraction, where the date/time 
+  of an Event is the <i>Key</i> through which one obtains the set of <b>Calibration 
+  Constants</b> (the current <i>"best"</i> set, or a <i>"previous"</i> set) for the state 
+  of the detector at the time of the Event.
+
+  -Example-
+  
+  User provides:
+
+  <ul>
+  <li>Event E --> Point in time in Detector's existence D 
+  <li>S
+  </ul>
+  
+  oaOfflineDatabase solves the \ref FunctionalRequest "system":
+  
+  <ul>
+  <li>(Lookup Validity Table entries matching D & S) --> Set of <b>Validity Intervals</b>
+  <li>(Foreign <i>Key</i> lookup in Constants Table by SEQNO of each <b>Validity Interval</b>) --> Sets of <b>Calibration Constants</b>
+  <li>Combine sets (apply <i>disambiguation</i> rules), return resulting set.
+  </ul>
+
+  The resulting set is similar to what one would have obtained by reading constants 
+  directly off an event in the basic de-normalized form.
+
+
+
+\section oaOffDBIDataRetrieval Data Retrieval API
+
+The <b>Interface</b> for retrieving data consists of a few C++ classes that wrap MINOS DBI.
+These return the <a href="http://www-numi.fnal.gov/offline_software/srt_public_context/WebDocs/Companion/overview/DatabaseInterface_3.gif"><b>Calibration Constants</b> best satisfying a given <b>"Event Context"</b></a>
+
+Much of the complexity of the database and the software supports deciding which 
+<b>Validity Intervals</b> to combine to satisfy a given <b>Context</b> (while supporting 
+overlapping of intervals and rerunning jobs with earlier versions
+of constants).  This complexity is managed for the user, who can 
+control the decision-making process by adjusting the <b>Context</b> they provide.
+
+To get from an <b>"Event Context"</b> to a set of <b>Calibration Constants</b>, MINOS DBI:
+
+<ol>
+<li> Retrieves the Validity Table row(s) that satisfy the user-specified <b>Context</b> (i.e. date/time of an event [and possibly REALITY, DETECTORMASK, etc.]) 
+<li> Retrieves the set of Constants Table rows associated to each Validity Table row
+<li> Combines the sets of Constants Table rows, <i>"disambiguating"</i> (picking one row based on a comparison of CREATIONDATE, EPOCH) when multiple rows describe the same channel
+</ol>
+
+The resulting set of Constants Table rows is returned as a TResultSetHandle (a vector of TTableRows that 
+can be easily iterated and indexed by the user).
+
+This set of <b>Calibration Constants</b> is an <i>Effective</i> set (possibly 
+containing Constants from multiple <b>Validity Intervals</b>) reflecting the 
+<i>"best"</i> constants currently available for the date/time specified in the 
+<b>Context</b>. If the user wants to <i>"roll-back"</i> to earlier versions of 
+the Constants, the <b>Context</b> passed to MINOS DBI must be 
+specially adjusted.
+  
+\subsection oaOffDBIDataRetrievalDemo Demo
+
+  For the purpose of this demo we will invent a table of TFB
+  calibration constants.  The table will be called DEMO_DB_TABLE.
+
+  Each row in this table will contain:
+
+<ol>
+<li>The electronics channel ID
+<li>3 integer parameters
+<li>3 floating point parameters
+</ol>
+
+  Having obtained the set of rows for the current event date and time, we can look up a row by
+  channel ID.
+
+  Such a table, and its associated Validity Table, look like:
+
+\code
++-------+-------------+-------------+---------+---------+---------+---------+---------+---------+
+| SEQNO | ROW_COUNTER | E_CHAN_ID   | I_PARM1 | I_PARM2 | I_PARM3 | F_PARM1 | F_PARM2 | F_PARM3 |
++-------+-------------+-------------+---------+---------+---------+---------+---------+---------+
+|    21 |           1 | -2006450160 |     101 |     201 |     301 |    1.01 |    2.01 |    3.01 | 
+|    21 |           2 | -2006450170 |     102 |     202 |     302 |    1.02 |    2.02 |    3.02 | 
+|    21 |           3 | -2006450180 |     103 |     203 |     303 |    1.03 |    2.03 |    3.03 | 
+|    21 |           4 | -2006450190 |     104 |     204 |     304 |    1.04 |    2.04 |    3.04 | 
+|    22 |           1 | -2006450160 |     105 |     205 |     305 |    1.05 |    2.05 |    3.05 | 
+|    22 |           2 | -2006450170 |     106 |     206 |     306 |    1.06 |    2.06 |    3.06 | 
+|    22 |           3 | -2006450180 |     107 |     207 |     307 |    1.07 |    2.07 |    3.07 | 
++-------+-------------+-------------+---------+---------+---------+---------+---------+---------+
+
++-------+---------------------+---------------------+-------+---------+--------------+---------+------+-------------+---------------------+---------------------+
+| SEQNO | TIMESTART           | TIMEEND             | EPOCH | REALITY | DETECTORMASK | SIMMASK | TASK | AGGREGATENO | CREATIONDATE        | INSERTDATE          |
++-------+---------------------+---------------------+-------+---------+--------------+---------+------+-------------+---------------------+---------------------+
+|    21 | 2009-01-01 00:00:00 | 2009-02-00 00:00:00 |     0 |       0 |            1 |       1 |    0 |           0 | 2009-04-07 18:00:00 | 2012-03-07 14:05:44 | 
+|    22 | 2009-01-15 00:00:00 | 2009-02-15 00:00:00 |     0 |       0 |            1 |       1 |    0 |           0 | 2009-04-08 18:00:00 | 2012-03-07 14:05:45 | 
++-------+---------------------+---------------------+-------+---------+--------------+---------+------+-------------+---------------------+---------------------+
+\endcode
+
+Notice that the DEMO_DB_TABLEVLD has two rows, the first valid
+for all of January 2009 and the second valid from the 15th of January
+to the 15th of February.  The first row has 4 corresponding entries
+(i.e. the same SEQNO = 21) in the DEMO_DB_TABLE table whilst the second
+has only 3 (perhaps the TFB chip broke?).
+
+The next thing to notice is that although no DEMO_DB_TABLEVLD rows
+satisfies dates before January 1st 2009 or after February 15th, for
+dates between January 15th and February the 1st both entries do; we
+have an overlap.  Overlaps are an essential part of calibration: you
+need to have good constants ready to go long before the previous ones
+are degraded.  However, this means that there is an ambiguity that has
+to be resolved and to achieve that we introduce the CREATIONDATE
+column which is used to resolve ambiguities in favour of the row with
+the later creation date.  Consequently in our example the validity of
+the first row is effectively trimmed to end on January 15th. However there is an additional mechanism 
+depending on a value called the \ref oaOffDBIEPOCH "EPOCH number" which can supersede the CREATIONDATE.
+
+  Electronic channel IDs have their top (sign) bit set.  The MINOS
+  database doesn't support unsigned integers for historical reasons
+  so, in order to store IDs efficiently, signed integers are used and
+  all consequently channel IDs will be negative.  The interface does
+  support I/O of unsigned variables, so for this example the value
+  -2006450160 will be correctly received as 2288517136 when read into
+  an unsigned integer.
+
+To build and run the demo program (../demo/demo.cxx):
+
+<ol>
+
+<li>Initialize your ND280 development environment and the oaOfflineDatabase package in the normal way
+
+\code
+cd ~/my_nd280
+source setup_nd280.sh
+cd oaOfflineDatabase/vXrX/cmt
+source setup.sh
+\endcode
+
+Notes:
+
+Sourcing setup.sh will configure a database \ref oaOffDBIAppEnvironment "cascade"
+(unless you have already set the relevant environment variables).
+
+If you intend to use temporary tables in step 3, the cascade must contain a connection that supports temporary tables (such a connection can be added by editing caldb_env_setup.sh).
+
+<li>Build the interface library and the demo program
+
+\code
+cd cmt
+make
+make demo
+\endcode
+
+<li>Create the permanent Constants Table DEMO_DB_TABLE and upload 2 sets of constants to it (automatically, a corresponding Validity Table DEMO_DB_TABLEVLD will be created and a row will be added for each set).
+
+\code
+../app/database_updater.py apply_local_update ../demo/demo_db_table.update
+\endcode
+
+Since this step writes to the database, you will need to \ref oaOffDBIAppEnvironment "configure the cascade" to 
+point to the test database (testnd280calib) and use a writer account.
+
+Alternatively, the demo program can use \ref oaOffDBIAppTmpTbls "Temporary Tables":
+
+\code
+../app/database_updater.py --temporary_tables apply_local_update ../demo/demo_db_table.tmp.update > ~/my_temp_constant_tables/demo_db_table.tmp.sql
+
+export ENV_TSQL_TMP_TBLS=~/my_temp_constant_tables/demo_db_table.tmp.sql
+
+\endcode
+
+<li>Run the demo
+
+The demo queries the database at 5 day intervals from 2008-12-30 to
+2009-02-28 and if running correctly should produce:
+
+\code
+bash-3.2$ ../Linux-x86_64/demooaOfflineDatabase.exe 
+% Applying query at 2008-12-30 00:00:00 ... failed to find any results.
+% Applying query at 2009-01-04 00:00:00 ... result set contains 4 rows as follows:-
+% DEMO_DB_TABLE row for channel    ECal: TFB:13:00:00:A:16 integer parms: 101,201,301 floating point parms 1.01,2.01,3.01
+% DEMO_DB_TABLE row for channel    ECal: TFB:13:00:00:A:06 integer parms: 102,202,302 floating point parms 1.02,2.02,3.02
+% DEMO_DB_TABLE row for channel    ECal: TFB:12:63:31:D:28 integer parms: 103,203,303 floating point parms 1.03,2.03,3.03
+% DEMO_DB_TABLE row for channel    ECal: TFB:12:63:31:D:18 integer parms: 104,204,304 floating point parms 1.04,2.04,3.04
+%   required row    ECal: TFB:12:63:31:D:28
+% DEMO_DB_TABLE row for channel    ECal: TFB:12:63:31:D:28 integer parms: 103,203,303 floating point parms 1.03,2.03,3.03
+% Applying query at 2009-01-09 00:00:00 ... result set contains 4 rows as follows:-
+...
+% Applying query at 2009-01-14 00:00:00 ... result set contains 4 rows as follows:-
+...
+% Applying query at 2009-01-19 00:00:00 ... result set contains 3 rows as follows:-
+...
+% Applying query at 2009-01-24 00:00:00 ... result set contains 3 rows as follows:-
+...
+% Applying query at 2009-01-29 00:00:00 ... result set contains 3 rows as follows:-
+...
+% Applying query at 2009-02-03 00:00:00 ... result set contains 3 rows as follows:-
+...
+% Applying query at 2009-02-08 00:00:00 ... result set contains 3 rows as follows:-
+...
+% Applying query at 2009-02-13 00:00:00 ... result set contains 3 rows as follows:-
+...
+% Applying query at 2009-02-18 00:00:00 ... failed to find any results.
+% Applying query at 2009-02-23 00:00:00 ... failed to find any results.
+% Applying query at 2009-02-28 00:00:00 ... failed to find any results.
+\endcode
+
+Notice how after January the 14th it switches to the 3 row result.
+
+
+If you are using Temporary Tables, the parms should be boosted by +1 (demo_db_table.tmp.update has been altered for this):
+
+\code
+bash-3.2$ ../Linux-x86_64/demooaOfflineDatabase.exe
+% Cascader is processing Temp Tables File ENV_TSQL_TMP_TBLS=/home/sclaret/my_temp_constant_tables/demo_db_table.tmp.sql
+% Cascader registered temporary table DEMO_DB_TABLE to connection 0
+% Applying query at 2008-12-30 00:00:00 ... failed to find any results.
+% Applying query at 2009-01-04 00:00:00 ... result set contains 4 rows as follows:-
+% DEMO_DB_TABLE row for channel    ECal: TFB:13:00:00:A:16 integer parms: 201,301,401 floating point parms 2.01,3.01,4.01
+% DEMO_DB_TABLE row for channel    ECal: TFB:13:00:00:A:06 integer parms: 202,302,402 floating point parms 2.02,3.02,4.02
+% DEMO_DB_TABLE row for channel    ECal: TFB:12:63:31:D:28 integer parms: 203,303,403 floating point parms 2.03,3.03,4.03
+% DEMO_DB_TABLE row for channel    ECal: TFB:12:63:31:D:18 integer parms: 204,304,404 floating point parms 2.04,3.04,4.04
+%   required row    ECal: TFB:12:63:31:D:28
+% DEMO_DB_TABLE row for channel    ECal: TFB:12:63:31:D:28 integer parms: 203,303,403 floating point parms 2.03,3.03,4.03
+...
+\endcode
+
+</ol>
+
+\subsection  oaOffDBIUsingAPI Explanation of demo source code
+
+The API to get a set of DEMO_DB_TABLE rows for a given "context" (in
+our case this is an event date and time), is conceptually very simple:
+you pass the context in and the interface returns a set of rows.  Each
+row is an object of class that inherits from the base class
+ND::TTableRow. In our case it is ND::TDemo_DB_Table.  As you can see
+it has a set of getters to provide access to all its data members.
+It could in principle be more sophisticated and provide calibration
+services as well or instead of these getters.  It just depends how
+much of the table layout you want to expose.
+
+Your first job is to get a context, and for that you need an TND280Event:-
+
+\code
+
+  ND::TND280Event event;
+
+  context = event.GetContext()
+\endcode
+
+Then to get all ND::TDemo_DB_Table rows associated with the context
+you use the statement:-
+
+\code
+  ND::TResultSetHandle<ND::TDemo_DB_Table> rs(context);
+\endcode
+
+which constructs a TResultSetHandle that has access to a vector of
+TDemo_DB_Tables.  The process starts by determining the table name by
+converting the class name to upper case and removing the prefix
+"ND::T" which in this case results in DEMO_DB_TABLE.  Then it looks
+for the best SEQNO (or collection of SEQNOs in the case of aggregated
+data) in DEMO_DB_TABLEVLD and then reads in all rows of DEMO_DB_TABLE
+that have those SEQNOs and for each creates and fills a ND::TTableRow.
+
+Being a constructor, it cannot "fail" but can return an empty set.
+You can use the methods:-
+
+\code
+  Int_t GetNumRows() const;
+  const ND::TDemo_DB_Table* GetRow(irow) const;
+\endcode
+
+to loop over all rows, for example in the demo code you will see:-
+
+\code
+  Int_t numRows(rs.GetNumRows());
+ ...
+  DbiLog("Applying query at " << UnixTimeToDateTime(current_unix_time) << " ... result set contains "
+                                << numRows << " rows as follows:-");
+  for (Int_t irow = 0; irow<numRows; ++irow) rs.GetRow(irow)->Print();
+\endcode
+
+However, looping over all rows isn't normally what you want to do.
+Instead you want to directly access the row you want in order to
+calibrate a particular channel.  ResultSetHandles supports the concept
+of a "Natural Index" which can be sparse (i.e. doesn't have to run
+from 0 to positive integer n) and for our case that index is obviously
+channel ID.  The method is:-
+
+\code
+  const ND::TDemo_DB_Table GetRowByIndex(index) const;
+\endcode
+
+and again there is a (contrived) example in demo.cxx:-
+
+\code
+  UInt_t required_id      = 2288517116UL;
+
+...
+
+  const ND::TDemo_DB_Table* required_row = rs.GetRowByIndex(required_id);
+  if ( required_row ) {
+    DbiLog("  required row " << ND::TTfbChannelId(required_id).AsString());
+    required_row->Print();
+  }
+  else DbiLog("  cannot find required row" << ND::TTfbChannelId(required_id).AsString());
+\endcode
+
+Once you have access to an individual ND::TDemo_DB_Table you can use
+its getters to access the row's data.
+
+\subsection  oaOffDBIOwnership Result Set Ownership Model
+
+The name "ResultSetHandle" should hint pretty clearly that you don't
+own the vector of TDemo_DB_Tables.  Instead the interface caches them
+and just passes you a lightweight handle that you can freely pass by
+value, create and destroy.  When it receives a new query it checks its
+cache to see if it already has the results and if so returns them.  It
+uses reference counting to record how many clients are using the set
+and will not delete the set until that count drops to zero.  Indeed,
+even then it will hang on to the set just in case it gets the same
+request again so efficiently supports the model:-
+
+<pre>
+  loop over all events {
+    request calibration set
+    calibrate data
+  }
+</pre>
+
+were it to drop the set once its client once destroyed at the end of
+the event loop it would have to read it afresh at the start the next
+event.  If you run the demo you will see:
+
+<pre>
+% Applying query at 2008-12-30 00:00:00 ... failed to find any results.
+Caching new results: ResultKey: Table: row: No vrecs
+Caching new results: ResultKey: Table:DEMO_DB_TABLE row:Demo_DB_Table.  1 vrec (seqno;creationdate): 1;2009-04-07 18:00:00
+DbiTimer:DEMO_DB_TABLE: Query done. 4rows,    0.2Kb Cpu  -0.0 , elapse   0.0
+% Applying query at 2009-01-04 00:00:00 ... result set contains 4 rows as follows:-
+% Applying query at 2009-01-09 00:00:00 ... result set contains 4 rows as follows:-
+% Applying query at 2009-01-14 00:00:00 ... result set contains 4 rows as follows:-
+%% Caching new results: ResultKey: Table:DEMO_DB_TABLE row:Demo_DB_Table.  1 vrec (seqno;creationdate): 2;2009-04-08 18:00:00
+DbiTimer:DEMO_DB_TABLE: Query done. 3rows,    0.1Kb Cpu  -0.0 , elapse   0.0
+% Applying query at 2009-01-19 00:00:00 ... result set contains 3 rows as follows:-
+% Applying query at 2009-01-24 00:00:00 ... result set contains 3 rows as follows:-
+% Applying query at 2009-01-29 00:00:00 ... result set contains 3 rows as follows:-
+% Applying query at 2009-02-03 00:00:00 ... result set contains 3 rows as follows:-
+% Applying query at 2009-02-08 00:00:00 ... result set contains 3 rows as follows:-
+% Applying query at 2009-02-13 00:00:00 ... result set contains 3 rows as follows:-
+% Applying query at 2009-02-18 00:00:00 ... failed to find any results.
+% Applying query at 2009-02-23 00:00:00 ... failed to find any results.
+% Applying query at 2009-02-28 00:00:00 ... failed to find any results.
+%% Caching new results: ResultKey: Table: row: No vrecs
+</pre>
+
+you can see it perform the read of the two sets just once.
+
+
+
+See \ref oaOffDBIAppNewTables "Appendix 4" for information on defining your own tables and classes.
+
+  \section data_insertion Data Insertion
+  
+  \image html insertion_modes.png
+  
+  Two principal modes of writing to the database are anticipated:
+  
+  <ol>
+  <li> <b>Keep-up</b>: continual insertion of new <b>Calibration Constants</b> to the database, done as part of standard data taking. 
+  <li> <b>Subsequent re-analysis</b>: recreation of <b>Calibration Constants</b> at a later time (presumably with a better algorithm) to supplant older Constants
+  </ol>
+  
+  There are 3 potential routes for uploading Constants to the database:
+  
+  <ol>
+  <li> Using the MINOS C++ DbiTableRow Object -> Serializer -> SQL statements approach.  This involves initializing DbiTableRow objects and persisting them directly to the database, all inside a C++ program. 
+  <li> Executing SQL statements directly on the database, to create the required Constant & Validity Table rows.
+  <li> Using the database_updater.py script, which reads simplified "update-files" containing descriptions of the constants, and executes the appropriate SQL statements on the server (automatically creating corresponding VLD table rows).
+  </ol>
+  
+  T2K does not currently expose (1).  Instead, (3) has been adopted. 
+  
+  Please run 'database_updater.py -h' for usage instructions and a description
+  of the update-file format.
+  
+  Those who are creating constants will need to create update-files, and run the script on them.
+
+
+  \section data_distribution Data Distribution
+  
+  The calibration database is hosted at TRIUMF, and replicated to mirrors in the EU and at JPARC.  
+
+  Current information about the servers is kept on the
+  <a href="http://www.t2k.org/nd280/database/nd280calib">T2K intranet</a>.
+
+\section  oaOffDBIAppEnvironment Appendix 1: Environment Variables
+
+The C++ data retrieval interface maintains a prioritized list of database connections called a 'cascade'.
+When constants need to be retrieved, it uses the first connection that has the required tables.
+
+The cascade is configured by setting 3 or 4 environment variables.
+
+\code
+ENV_TSQL_URL  This specifies the MySQL server, the port and the database.
+              It takes the form: protocol://host[:port]/[database]
+                 where:
+                    protocol - mysql
+                    host     - host name or IP address of database server
+                    port     - port number (optional 3306 is the default)
+                    database - name of database
+
+ENV_TSQL_USER  The account user name
+
+ENV_TSQL_PSWD  The account password
+               
+ENV_TSQL_TMP_TBLS  File containing SQL statements to create and populate temporary
+                   tables.  If specifified, statements will be executed during 
+                   cascade initialization. (OPTIONAL)
+                  
+The variables can be inspected by running: 'printenv | grep TSQL'
+\endcode
+
+By default, cmt/caldb_env_setup.sh sets up a simple cascade with a single connection to the 
+master calibration database at TRIUMF.
+
+A special 'test' database is available, for users to test their constants (and any special 
+software they use to generate/upload constants) before uploading to the 'real' offline 
+calibration database.
+
+  Please customize your environment variables according to the following guidelines:
+
+<table>
+<tr>
+<th>Usage</th>
+<th>Cascade Configuration</th>
+</tr>
+<tr>
+<td>Uploading constants with database_updater.py</td>
+<td>Point to the master server</td>
+</tr>
+<tr>
+<td>Reading from nd280calib</td>
+<td>Point to the nearest server (a mirror for EU & JPARC hosts)</td>
+</tr>
+<tr>
+<td>Using \ref oaOffDBIAppTmpTbls "Temporary Tables"</td>
+<td>Point the first cascade entry to a temp-table hosting db</td>
+</tr>
+</table>
+
+  with the servers / accounts listed on the   <a href="http://www.t2k.org/nd280/database/nd280calib">T2K intranet</a>.
+
+Note: environment variables may need to be manually 'unset' if they are going to be re-assigned.
+
+
+\section  oaOffDBIAppTmpTbls Appendix 2: Temporary Tables
+
+In MySQL, users who have been granted the appropriate privileges on a database, can create 
+Temporary Tables on that database.
+
+Temporary Tables:
+
+<ol>
+<li> Are associated to a mysql connection
+<ul>
+<li> A Temporary Table created in one connection is not visible from any other connection
+<li> Multiple connections can create (completely unconnected) Temporary Tables with the same name
+</ul>
+<li> Only last the lifetime of the connection (they are cleaned up when the client disconnects)
+<li> Mask any permanent tables in the same database that have the same name
+</ol>
+
+As recommended by MINOS, T2K provides a special db dedicated to Temporary Tables 
+along with a special writer account limited to that db.  
+
+Users who wish to utilize temporary tables should place this db in the
+first position of the \ref oaOffDBIAppEnvironment "cascade".  Thanks to the 
+position of the db in the cascade, temporary tables will automatically mask any
+permanent tables of the same name in a later db.
+
+\subsection oaOffDBIAppTmpTblsInit Initializing Temporary Tables
+
+By definition, temporary tables must be initialized through the same connection
+that reads them.
+
+In MINOS, constants were uploaded by persisting DbiTableRow objects
+in compiled C++ code.  In this model, the SQL statements for initializing Temporary 
+Tables can be executed through the same mechanism (within a C++ program) that would be used for 
+permanent tables.  The same C++ program can then go on to use the constants it has 
+uploaded (re-using the same cascade, which has maintained its connections).
+
+T2K introduced a separate method for uploading constants to permanent tables: running
+a separate database_updater.py python process that executes SQL statements directly 
+on the mysql server.  The mysql connection is closed when the script finishes, and 
+cannot be re-used by a C++ calibration program.
+
+To enable usage of Temporary Tables without re-enabling the C++ upload mechanism,
+T2K added a '--temporary_tables' option to database_updater.py.  When run on a 
+modified update-file (where instances of 'CREATE TABLE' have been changed to 
+'CREATE TEMPORARY TABLE'), this option prints (but does not execute) the SQL 
+for initializing Temporary Tables.
+
+Users should save this SQL output to a file, and set the environment variable 
+ENV_TSQL_TMP_TBLS to point to it.
+
+When programs using the \ref oaOffDBIDataRetrieval are run, the constructor of 
+ND::TDbiCascader checks for the presence of this environment 
+variable.  If set, it reads SQL statements out of the file and executes them 
+on the first database in the cascade supporting Temporary Tables.
+
+This approach allows Temporary Tables to be used without any modifications to C++ 
+client code: any Temporary Tables that have been initialized on the first connection 
+will be used in preference to permanent tables on later connections.
+
+
+
+\section  oaOffDBIAppAttributes Appendix 3: Validity Interval Attributes
+
+
+Conventionally \ref oaOffDBITIMESTART is the time when the data that
+used to produce the calibration was taken.  \ref oaOffDBITIMEEND depends
+on the volatility of the data.  \ref oaOffDBIDETECTORMASK and \ref
+oaOffDBISIMMASK should be set to 1 and \ref oaOffDBITASK and \ref 
+oaOffDBIEPOCH should be set to 0 when  a table is created.  The \ref oaOffDBICREATIONDATE 
+should be set to the date when the calibration process was run.
+
+The \ref oaOffDBIINSERTDATE should be set to the date when the data
+was entered into the database.  For MINOS there was a special value
+
+<pre>
+  2031-01-01 00:00:00
+</pre>
+
+that is used by their database distribution system (not in the T2K
+repository) to signal that the data is fresh and is to have its value
+set back to the current time and the data itself written to an update
+files that can be applied at other sites.
+
+
+\subsection oaOffDBITIMESTART  TIMESTART
+
+The inclusive start time for the validity.
+
+\subsection oaOffDBITIMEEND TIMEEND
+
+The exclusive time for the validity.  The row is valid for time t where
+
+<pre>
+  TIMESTART &lt;= t &lt; TIMEEND
+</pre>
+
+\subsection oaOffDBIEPOCH  EPOCH
+
+The EPOCH number can run from 0 to 100 and provides the highest level
+of ambiguity resolution, Data with higher EPOCH numbers is always
+preferred over lower EPOCH numbers when resolving ambiguities.  In
+general incrementing the EPOCH number should indicate some significant
+improvement has occured in the way the data was geneated.
+
+  Note that EPOCH and REALITY are new additions to the VLD table and 
+  old-style tables may not have them. All such tables should no longer be put
+  in the database. 
+
+\subsection oaOffDBIREALITY  REALITY
+
+The REALITY number allows us to store data for altered realities,
+that may be useful in systematic studies.  For example, if we want
+to see the effect of recalibrationg the detector under the assumption
+that MPPCs have aged somehow, these calibration constants can
+assigned a different REALITY.  This feature is currently unused and
+all data is given a reality of 0.
+
+  Note that EPOCH and REALITY are new additions to the VLD table and 
+  old-style tables may not have them
+
+\subsection oaOffDBIDETECTORMASK  DETECTORMASK
+
+In MINOS we have near and far detectors and part of the context is
+the detector type.  DETECTORMASK is a mask specifying which detectors
+the data applies to. 
+
+We could use this in T2K for sub-detectors or abandon it.
+
+\subsection oaOffDBISIMMASK  SIMMASK
+
+SIMMASK is a mask specifying what types of data i.e. real or MC the
+data applies to.  
+
+
+\subsection oaOffDBITASK  TASK
+
+Task provides a way to further select the type of data retrieved. For
+example a Detector Configuration data could have two tasks, one for
+raw calibration and another for refined calibration.  The aim is that
+Task will allow a particular database table to be sub-divided
+according to the mode of use. The default value is zero.
+
+
+
+\subsection oaOffDBIAGGREGATENO  AGGREGATENO
+
+The calibration data for the entire detector is stored in a single
+table although in practise there may be some granularity in it.  For
+example:-
+
+<ul>
+
+<li>The constants in some sub-detectors are more volatile than others so
+have to be re-calibrated more often. 
+
+<li>The calibration procedure only operates on part of the detector at
+a time.  
+
+</ul>
+
+The solution is to write in smaller chunks (called aggregates) each
+with its own validity and then a query involves finding multiple
+SEQNOs, one for each aggregate. In our simple example the data isn't
+aggregated and the aggregate number is set to 0.
+
+If
+data comes from more than one sub-detector it must be aggregated by
+sub-detector.  If there is structure within a sub-detector then this
+can be accommodated in the aggregate numbering scheme
+
+<pre>
+e.g. 100 * (sub-detector number) + ( sub-detector internal aggregate number)
+</pre>
+
+\subsection oaOffDBICREATIONDATE  CREATIONDATE
+
+We have already seen that the CREATIONDATE serves both to record when
+the data was created and also to resolve ambiguity.
+
+In MINOS this dual role turned out to be a bad idea; the concepts can
+come into conflict.  For T2K the new EPOCH column has been introduced instead.
+
+\subsection oaOffDBIINSERTDATE  INSERTDATE
+
+This is the date when the data was entered into the local database
+which is independent of CREATIONDATE.  It's useful for rolling back
+the local database to an earlier state.
+
+\section  oaOffDBIAppNewTables Appendix 4: Adding New Tables and Classes
+
+<ul>
+<li>\ref oaOffDBINewTable
+<li>\ref oaOffDBINewClass
+</ul>
+
+\subsection  oaOffDBINewTable New Table
+
+Pick an uppercase table name using underscores to make it readable.  For example
+
+<pre>
+XXX_YYY
+</pre>
+
+It is not required to end the table name with _TABLE, but this is common parctice, and makes the associated C++ class easy to identify as part of the DBI.
+
+You need to create two tables:-
+
+
+<pre>
+XXX_YYY
+XXX_YYYVLD
+</pre>
+
+See \ref oaOffDBITableDefinitions for the constraints on XXX_YYY and
+the definition of XXX_YYYVLD.
+
+For XXX_YYY the MySQl types supported and the ROOT/C++ types they map
+to are as follows:-
+
+<table>
+<tr><th>MySQL Type    <th>ROOT/C++ Type             <th>Comments
+<tr><td>CHAR          <td>Char or Bool_t            <td>&nbsp;
+<tr><td>CHAR(n)       <td>Char_t*                   <td>n &lt; 4
+<tr><td>TEXT          <td>Char_t* or std::string    <td>n &gt;= 4
+<tr><td>TINYINT       <td>Short_t or UShort_t       <td>8 bit capacity
+<tr><td>SMALLINT      <td>Short_t or UShort_t       <td>16 bit capacity
+<tr><td>INT           <td>Int_t or UInt_t           <td>32 bit capacity
+<tr><td>FLOAT         <td>Float_t                   <td>&nbsp; 
+<tr><td>DOUBLE        <td>Double_t                  <td>&nbsp; 
+<tr><td>DATETIME      <td>VldTimeStamp              <td>Backend type
+</table>
+
+\subsection  oaOffDBINewClass New Class
+
+Study the demonstration files:-
+
+<pre>
+TDemo_DB_Table.hxx  
+TDemo_DB_Table.cxx
+</pre>
+\ref  TDemo_DB_Table_LinkDef
+
+
+
+\section  glossary Glossary
+
+\subsection glossNorm Normalization
+
+A process for decomposing information into tables, in a way that minimizes redundancy and dependencies. The decomposition of ND280's calibration data into Events, Validity Intervals and Constants is the result of such a process.
+
+\subsection glossFK Foreign Key
+
+Identifies a field in a table that references a field in another table (the 'candidate key'), thereby associating a set of rows from the first table, to a single row in the second table.  This concept is central to oaOfflineDatabase, where 'SEQNO' is a candidate key in the validity table, referenced by a foreign key in the constants table.  The main function of the package is to follow those links, combining the resulting sets according to its 'disambiguation' rules.
+
+
+
+\section  oaOffDBIFurtherReading Further Reading
+
+<a href="http://www.hep.lancs.ac.uk/nd280Doc/stable/invariant/nd280Doc/database_start-a4.pdf"> A useful user's guide has been written by Abbey Waldron and can be found in the ND280Doc area.
+</a>
+
+Although the MINOS code has been merged into the ND280 software environment, its 
+basic functionality is largely unchanged.  A comprehensive description of the
+upstream code can be found in the 
+<a href="http://www-numi.fnal.gov/offline_software/srt_public_context/doc/UserManual/node9.html#SECTION00922600000000000000\">MINOS Off-line Software User's Manual Database section
+</a>For an in-depth understanding of the interface please read that code,
+even though the class names are different and it describes many
+features not currently supported in the T2K interface.
+
+<a href="http://www.t2k.org/nd280/physics/general/2009-10/febcalsoft/24feb2010/lindner_database_summary/view">Thomas Lindner's 2010 Summary of ND280 Database Work</a>
+
+<a href="http://www.t2k.org/nd280/calib/Meetings/2010/17Aug10/caldbsoft/view">P.Litchfield's 2010 talk on Calibration DB Software</a>
+
+<a href="http://www.hep.lancs.ac.uk/%7Eajf/DatabaseTalkApril2010.pdf">Alex Finch's 2010 talk on databases</a>
+
+For information about the summer-2009 discussions that lead to oaOfflineDatabase, please see:
+
+<a href="http://www-pnp.physics.ox.ac.uk/~west/t2k/discussions/Calibration_Database_Design.ppt">N. West Calibration DB Design Presentation</a>
+
+<a href="http://www-pnp.physics.ox.ac.uk/~west/t2k/discussions/nd280_offline_database_interface_consultation.html">
+Nick West's consultation document</a>
+
+<a href="http://www.nd280.org/software/software_meetings/20090804database">Database Technical Discussion</a>
+
+
+
+\page  Evolution
+
+\section Changes Changes from v1r5 to v2r1
+
+The code has undergone major internal changes since v1r5. The immediate effect of these changes is that all existing code which uses
+DbiResultPtr has to make the following change in all corresponding LinkDef files:
+<pre>
+sed -i 's/#pragma link C++ class DbiResultPtr</#pragma link C++ class ND::TDbiResultSetHandle</g' *LinkDef.h
+</pre>
+
+The reason for this change is that the class DbiResultPtr has been renamed as ND::TDbiResultSetHandle. There is
+a define
+<pre>
+ DbiResultPtr ND::TDbiResultSetHandle
+</pre> in TResultSetHandle.cxx which mean most code does not need changing, however this is not seen by rootcint
+when it builds the dictionary files. In the long term I would like people to replace all occurences of
+DbiResultPtr with ND::TDbiResultSetHandle in their source code so that at some point this define can be removed.
+
+All code which previously resided in the MinosDBI package is now included in oaOfflineDatabase and conforms to ND280
+naming conventions. In addition it uses \ref ND::TDbiLog for error reporting and uses ND::EoaCore via the OA_EXCEPTION macro to throw
+exceptions. 
+
+
+
+\page  TDemo_DB_Table_LinkDef  TDemo_DB_Table_LinkDef.h
+<pre>
+#ifdef __CINT__
+#pragma link C++ class ND::TDemo_DB_Table+;
+
+// The TableRow subclass' *_LinkDef.h must request a dictionary for
+// the templated ND::TResultSetHandle instantiated on it.  However that
+// class inherits from the backend ND::TDbiResultSetHandle so that dictionary is
+#ifndef USE_NEW_DBI_API 
+#pragma link C++ class ND::TDbiResultSetHandle<ND::TDemo_DB_Table>+;
+#else
+#pragma link C++ class ND::TDbiResultSetHandle<ND::TDemo_DB_Table>+;
+#endif
+// also required.
+
+#pragma link C++ class ND::TResultSetHandle<ND::TDemo_DB_Table>+;
+
+#endif
+</pre>
+*/

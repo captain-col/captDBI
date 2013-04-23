@@ -1,0 +1,48 @@
+#  This is the update file to prepare a database for demooaOfflineDatabase.exe
+
+#  Update files can contain:-
+#
+#  1)  Blank lines and comments (# in column 1)
+#
+#  2)  SQL  <sql-command>;
+#      Any arbitrary SQL command that ends with a ';'.  
+#      Can span several lines (see below for example).
+#
+#  3)  BEGIN_TABLE <table-name> <start-date> <end-date> <aggregate-number> <creation-date> {<task>} {<key>=<value> ...]
+#      Followed by one or more rows of data, one per line in the form <value>,<value>, ... <value>
+#      This utility supplies both SEQNO and ROW_COUNTER to the start of each row
+
+
+#  Just to be safe, drop any existing tables
+
+SQL drop table if exists DEMO_DB_TABLE;
+SQL drop table if exists DEMO_DB_TABLEVLD;
+
+#  Now create the DEMO_DB_TABLE table (database_updater.py will create the DEMO_DB_TABLEVLD table)
+
+SQL CREATE TABLE DEMO_DB_TABLE(
+       SEQNO INTEGER not null,
+       ROW_COUNTER INTEGER not null,
+       E_CHAN_ID   INT,
+       I_PARM1     INT,
+       I_PARM2     INT,
+       I_PARM3     INT,
+       F_PARM1     FLOAT,
+       F_PARM2     FLOAT,
+       F_PARM3     FLOAT,
+       primary key(SEQNO,ROW_COUNTER));
+
+#  Now write the data
+
+BEGIN_TABLE DEMO_DB_TABLE  '2009-01-01 00:00:00' '2009-02-00 00:00:00' 0 '2009-04-07 18:00:00' 0 SIMMASK=Data EPOCH=0
+-2006450160, 101, 201, 301, 1.01, 2.01, 3.01
+-2006450170, 102, 202, 302, 1.02, 2.02, 3.02
+-2006450180, 103, 203, 303, 1.03, 2.03, 3.03
+-2006450190, 104, 204, 304, 1.04, 2.04, 3.04
+
+BEGIN_TABLE DEMO_DB_TABLE  '2009-01-15 00:00:00' '2009-02-15 00:00:00' 0 '2009-04-08 18:00:00' 0 SIMMASK=Data EPOCH=0
+-2006450160, 105, 205, 305, 1.05, 2.05, 3.05
+-2006450170, 106, 206, 306, 1.06, 2.06, 3.06
+-2006450180, 107, 207, 307, 1.07, 2.07, 3.07
+
+

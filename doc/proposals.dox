@@ -1,0 +1,24 @@
+/*! 
+\page Future Improvements
+
+\section oaOffDBIFuturePlansTransactionalStorageEngine Upgrade to a Transactional Storage Engine
+
+The schema of the Calibration Database makes extensive use of relations
+between tables based on <i>Foreign Key</i> references. 
+
+Modern database storage engines allow the use of <i>Foreign Key Constraints</i> and <i>Transactions</i>
+to guarantee the integrity of these relations, in the face of program bugs, network
+glitches and other unanticipated error conditions.  Writing to the database without the
+protection of these techniques makes it probable that sooner or later, anomalies will appear
+in the data.  Several such anomalies have already been detected (though these have not
+been harmful from a retrieval perspective).
+
+At the time MINOS DBI was written, a dependable transactional storage engine may not
+have been available.  Today, such an engine (InnoDB) is widely available.
+
+It is recommended that, once compatibility of the C++ classes has been verified and 
+database_updater.py has been suitably upgraded, the tables be upgraded to InnoDB.
+
+
+
+*/

@@ -1,0 +1,182 @@
+/*! \page oaOfflineDatabaseHistory History for the oaOfflineDatabase Package 
+
+\section oaOfflineDatabase_v0r1_history Version v0r1
+
+Freeze information:
+   - Freeze Date: Mon May 25 20:23:26 2009
+   - Freeze User: west
+   - Freeze Host: pplxint3.physics.ox.ac.uk
+
+The oaOfflineDatabase package provides access to calibration tables
+from the offline Database. The primary interface it offers is to
+return all the rows from a specified table that best satisfy the
+current "context" (i.e. date and time of the current event). The
+interface minimises database I/O by caching query results and making
+them available to its clients as required.
+
+The  current implementation of the  oaOfflineDatabase  is a short-term
+hacked version  whose back-end implementation  is the MinosDBI package
+which is  a direct copy of  the MINOS code  that in turn interfaces to
+ROOT's mysql package.
+
+
+\section oaOfflineDatabase_v0r3_history Version v0r3
+
+Freeze information:
+   - Freeze Date: Thu Oct  1 15:42:59 2009
+   - Freeze User: west
+   - Freeze Host: pplxint3.physics.ox.ac.uk
+
+Freeze principally to have a frozen version that does not require
+oaEvent v6
+
+Utilities 
+  rename to DatabaseUtils to avoid past (and possibly future) clashes.
+
+app/database_updater.py
+  Reduce NUM_ROWS_PER_QUERY = 500 -> 100. Longer queries can fail: bad update.
+  Support specifying TASK, but make it optional with a default of 0.
+  Add --convert_unsigned
+    Convert ANY integer data > 2147483647 to signed before
+    storing by subtracting 4294967296. Useful for unsigned channel IDs.
+
+TResultSetHandle
+  Add Int_t task = 0 as a second argument to the standard constructor.
+
+
+\section oaOfflineDatabase_v0r5_history Version v0r5
+
+Freeze information:
+   - Freeze Date: Thu Jan 21 15:07:59 2010
+   - Freeze User: west
+   - Freeze Host: pplxint2.physics.ox.ac.uk
+
+Add a set of scripts that will automatically set the calibration
+database environment variables, if you do not have them already set.
+
+Make clear that the example database cascade is not an operational
+one.
+
+
+\section oaOfflineDatabase_v0r7_history Version v0r7
+
+Freeze information:
+   - Freeze Date: Fri Mar  5 16:10:51 2010
+   - Freeze User: west
+   - Freeze Host: pplxint2.physics.ox.ac.uk
+
+
+Freeze prior to start of major development (EPOCH support)
+
+Only minor changes:-
+
+ doc/mainPage.dox
+   Add proper anchor command so doxygen pages link properly.
+
+ demo/demo_db_table.update
+   Extend the database table update command BEGIN_TABLE with the trailing
+   options:   {<key>=<value> ...}  
+   and support  SIMMASK=<value>  where <value> is one of: "Data", "MC" or "all"
+
+demo/demo.cxx
+  Respond to changes in default ND280 log levels and the way VldContext is constructed from TEventContext.
+
+\section oaOfflineDatabase_v1r1_history Version v1r1
+
+Freeze information:
+   - Freeze Date: Thu Mar 18 08:49:02 2010
+   - Freeze User: west
+   - Freeze Host: pplxint2.physics.ox.ac.uk
+
+Release for first pass processing.
+  
+database_updater.py
+ Add EPOCH support: 
+    Create VLD table with EPOCH and REALITY
+    columns if option EPOCH=<n> supplied.
+
+
+\section oaOfflineDatabase_v1r3_history Version v1r3
+
+Freeze information:
+   - Freeze Date: Tue Aug 24 08:43:18 2010
+   - Freeze User: phsgbj
+   - Freeze Host: grimsel.csc.warwick.ac.uk
+
+Minor Freeze: 
+
+Mostly documentation updates to reflect the post EPOCH-migration forms of the VLD tables.  (Reminder: database tables now have two extra columns, EPOCH and REALITY. The database_updater script does not attempt to fill these if these columns are not mentioned in the update file, so people must update the format of their update files accordingly)
+
+Also added a simple script database_access_string.py in order to ensure people connecting interactively to a database can automatically choose the same one that the database_update.py script uses. Added an otherwise option to the DatabaseInterface python class in database_updater.py to support this string generation without actually connecting to the DB.
+
+
+
+\section oaOfflineDatabase_v1r5_history Version v1r5
+
+Freeze information:
+   - Freeze Date: Thu Aug 26 05:41:07 2010
+   - Freeze User: phsgbj
+   - Freeze Host: grimsel.csc.warwick.ac.uk
+
+Minor freeze involving changes to the behaviour of database_updater.py only.  People using oaOfflineDatabase to add constants to the database are strongly advised to update to this version.  Those using it to process data won't see any difference.
+
+Bug that prevented EPOCH columns being set if TASK number was not provided is fixed.  Turned out this was a nasty subtlty in regexp matching.
+Also added the ability to set the task number in the same way as other 'optional'(meaning default-able) arguments with TASK=<value> in any order.
+
+Behaviour with respect to EPOCH number is unchanged but is now unhooked from the previous bug. EPOCH must be supplied if updating to a table that has validity EPOCH columns, and must *not* be supplied if updating to one that doesen't.
+
+apporiate TASK and EPOCH syntax is:
+
+... 1 [EPOCH=0]       #sets TASK to 1, [EPOCH required if VLD table has EPOCH column and vice verca]
+... TASK=1 [EPOCH=0]  #sets TASK to 1, [EPOCH required if VLD table has EPOCH column and vice verca]
+... [EPOCH=0]     # TASK defults to 0, [EPOCH required if VLD table has EPOCH column and vice verca]
+
+
+\section oaOfflineDatabase_v2r1_history Version v2r1
+
+Freeze information:
+   - Freeze Date: Mon Jan 24 15:28:00 2011
+   - Freeze User: finch
+   - Freeze Host: localhost6.localdomain6
+
+
+
+ This is a major internal reorganisation of oaOfflineDatabase. All classes which 
+ previously belonged to MinosDBI have been renamed and moved into this 
+ package and put in the ND namespace. In addition all output now goes via
+ DbiLog and exceptions are thrown using the OA_EXCEPTION macro. The change should be
+ almost transparent to the users. The one code change required is that  all existing source
+ which uses  DbiResultPtr  has to make the following change in all corresponding LinkDef files:
+
+ sed -i  's/pragma link C++ class DbiResultPtr</pragma link C++ class ND::TDbiResultSetHandle</g' *LinkDef.h
+
+
+
+
+
+
+
+
+
+
+\section oaOfflineDatabase_v2r3_history Version v2r3
+
+Freeze information:
+   - Freeze Date: Thu Jun  9 15:57:41 2011
+   - Freeze User: ajf
+   - Freeze Host: lapb1.lancs.ac.uk
+
+
+
+ Freeze candidate to go into the next  nd280 freeze.
+ Please read documentation to see changes necessary to use this new
+ version.
+ 
+
+ A few cosmetic changes to the logging and debug information have been added, 
+ and the documentation has been tweaked slightly.
+
+
+ 
+
+*/
