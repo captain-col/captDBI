@@ -26,7 +26,7 @@ using std::setfill;
 using std::setprecision;
 #include "UtilString.hxx"
 
-ClassImp(ND::TDbiStatement)
+ClassImp(CP::TDbiStatement)
 
 
 //   Definition of static data members
@@ -40,7 +40,7 @@ ClassImp(ND::TDbiStatement)
 
 //.....................................................................
 
-ND::TDbiStatement::TDbiStatement(ND::TDbiConnection& conDb) :
+CP::TDbiStatement::TDbiStatement(CP::TDbiConnection& conDb) :
 fConDb(conDb)
 {
 //
@@ -55,26 +55,26 @@ fConDb(conDb)
 //
 
 
-  DbiTrace( "Creating ND::TDbiStatement" << "  ");
+  DbiTrace( "Creating CP::TDbiStatement" << "  ");
   fConDb.ConnectStatement();
 
 }
 
 //.....................................................................
 
-ND::TDbiStatement::~TDbiStatement() {
+CP::TDbiStatement::~TDbiStatement() {
 //
 //
 //  Purpose: Destructor
 
-  DbiTrace( "Destroying ND::TDbiStatement" << "  ");
+  DbiTrace( "Destroying CP::TDbiStatement" << "  ");
 
   fConDb.DisConnectStatement();
 }
 
 //.....................................................................
 
-TSQLStatement* ND::TDbiStatement::CreateProcessedStatement(const TString& sql /* ="" */) {
+TSQLStatement* CP::TDbiStatement::CreateProcessedStatement(const TString& sql /* ="" */) {
 
 // Attempt to create a processed statement (caller must delete).  Return 0 if failure.
 
@@ -94,7 +94,7 @@ TSQLStatement* ND::TDbiStatement::CreateProcessedStatement(const TString& sql /*
 
 //.....................................................................
 
-TSQLStatement* ND::TDbiStatement::ExecuteQuery( const TString& sql) {
+TSQLStatement* CP::TDbiStatement::ExecuteQuery( const TString& sql) {
 //
 //
 //  Purpose:  Execute SQL.
@@ -130,7 +130,7 @@ TSQLStatement* ND::TDbiStatement::ExecuteQuery( const TString& sql) {
 
 //.....................................................................
 
-Bool_t ND::TDbiStatement::ExecuteUpdate( const TString& sql) {
+Bool_t CP::TDbiStatement::ExecuteUpdate( const TString& sql) {
 //
 //
 //  Purpose:  Translate SQL if required and Execute.
@@ -154,16 +154,16 @@ Bool_t ND::TDbiStatement::ExecuteUpdate( const TString& sql) {
 
 //.....................................................................
 
-Bool_t ND::TDbiStatement::PrintExceptions(Int_t level) const {
+Bool_t CP::TDbiStatement::PrintExceptions(Int_t level) const {
 
 //  Purpose:  Print accumulated exceptions at supplied Msg level,
 //            add them to the Global Exception Log if level >= kWarning
 //            and return true if there are any.
 
-  const ND::TDbiExceptionLog& el(this->GetExceptionLog());
+  const CP::TDbiExceptionLog& el(this->GetExceptionLog());
   if ( el.IsEmpty() ) return false;
    if(level <= TDbiLog::GetLogLevel())  TDbiLog::GetLogStream ()<<el;
-  if ( level >= ND::TDbiLog::WarnLevel  )  ND::TDbiExceptionLog::GetGELog().AddLog(el);
+  if ( level >= CP::TDbiLog::WarnLevel  )  CP::TDbiExceptionLog::GetGELog().AddLog(el);
   return true;
 
 }

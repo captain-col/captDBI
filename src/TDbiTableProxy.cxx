@@ -17,7 +17,7 @@
 #include <MsgFormat.h>
 using std::endl;
 
-ClassImp(ND::TDbiTableProxy)
+ClassImp(CP::TDbiTableProxy)
 
 //   Definition of static data members
 //   *********************************
@@ -52,9 +52,9 @@ ClassImp(ND::TDbiTableProxy)
 ///  Program Notes:-
 ///  =============
 ///
-ND::TDbiTableProxy::TDbiTableProxy(ND::TDbiCascader* cascader,
+CP::TDbiTableProxy::TDbiTableProxy(CP::TDbiCascader* cascader,
                              const string& tableName,
-                             const ND::TDbiTableRow* tableRow) :
+                             const CP::TDbiTableRow* tableRow) :
 fCascader(cascader),
 fMetaData(tableName),
 fMetaValid(tableName+"VLD"),
@@ -68,16 +68,16 @@ fTableRow(tableRow->CreateTableRow())
 //one.
 
 
-  fCache = new ND::TDbiCache(*this,fTableName);
+  fCache = new CP::TDbiCache(*this,fTableName);
   this->RefreshMetaData();
   fExists = fDBProxy.TableExists();
   fCanL2Cache = tableRow->CanL2Cache();
   if ( fCanL2Cache )
-    DbiInfo( "ND::TDbiTableProxy: Can use L2 cache for table " << this->GetRowName() << "  ");
+    DbiInfo( "CP::TDbiTableProxy: Can use L2 cache for table " << this->GetRowName() << "  ");
   else
-    DbiInfo( "ND::TDbiTableProxy:  L2 cache not allowed for table " << this->GetRowName() << "  ");
+    DbiInfo( "CP::TDbiTableProxy:  L2 cache not allowed for table " << this->GetRowName() << "  ");
    
-  DbiTrace( "Creating ND::TDbiTableProxy "
+  DbiTrace( "Creating CP::TDbiTableProxy "
 			  << fTableName.c_str() << " at " << this
                           << ( fExists ? " (table exists)"
                                        : " (table missing)" )
@@ -86,7 +86,7 @@ fTableRow(tableRow->CreateTableRow())
 
 //.....................................................................
 
-ND::TDbiTableProxy::~TDbiTableProxy() {
+CP::TDbiTableProxy::~TDbiTableProxy() {
 //
 //
 //  Purpose: Destructor
@@ -110,7 +110,7 @@ ND::TDbiTableProxy::~TDbiTableProxy() {
 //  None.
 
 
-    DbiTrace( "Destroying ND::TDbiTableProxy "
+    DbiTrace( "Destroying CP::TDbiTableProxy "
 			    << fTableName << " at " << this
 			    << "  ");
   delete fCache;
@@ -119,22 +119,22 @@ ND::TDbiTableProxy::~TDbiTableProxy() {
 }
 //.....................................................................
 
-Bool_t ND::TDbiTableProxy::CanReadL2Cache() const {
+Bool_t CP::TDbiTableProxy::CanReadL2Cache() const {
 //
 
-  return fCanL2Cache && ND::TDbiBinaryFile::CanReadL2Cache();
+  return fCanL2Cache && CP::TDbiBinaryFile::CanReadL2Cache();
 
 }
-Bool_t ND::TDbiTableProxy::CanWriteL2Cache() const {
+Bool_t CP::TDbiTableProxy::CanWriteL2Cache() const {
 //
 
-  return fCanL2Cache && ND::TDbiBinaryFile::CanWriteL2Cache();
+  return fCanL2Cache && CP::TDbiBinaryFile::CanWriteL2Cache();
 
 }
 
 //.....................................................................
 
-const ND::TDbiResultSet* ND::TDbiTableProxy::Query(const ND::TVldContext& vc,
+const CP::TDbiResultSet* CP::TDbiTableProxy::Query(const CP::TVldContext& vc,
                                       const TDbi::Task& task,
                                       Bool_t findFullTimeWindow) {
 //
@@ -164,24 +164,24 @@ const ND::TDbiResultSet* ND::TDbiTableProxy::Query(const ND::TVldContext& vc,
 
 //  See if there is one already in the cache for universal aggregate no.
 
-  if ( const ND::TDbiResultSet* result = fCache->Search(vc,task)
+  if ( const CP::TDbiResultSet* result = fCache->Search(vc,task)
      ) return result;
 
-  ND::TDbiConnectionMaintainer cm(fCascader);  //Stack object to hold connections
+  CP::TDbiConnectionMaintainer cm(fCascader);  //Stack object to hold connections
 
 // Make Global Exception Log bookmark
-  UInt_t startGEL = ND::TDbiExceptionLog::GetGELog().Size()+1;
+  UInt_t startGEL = CP::TDbiExceptionLog::GetGELog().Size()+1;
 
 // Build a complete set of effective validity record from the database.
-  ND::TDbiValidityRecBuilder builder(fDBProxy,vc,task,-1,findFullTimeWindow);
+  CP::TDbiValidityRecBuilder builder(fDBProxy,vc,task,-1,findFullTimeWindow);
 
 // Deal with non-aggregated data.
 
   if ( builder.NonAggregated() ) {
 
-    ND::TDbiValidityRec effVRec = builder.GetValidityRec(0);
-//  Force off const - we haven't finished with ND::TDbiResultSet yet!
-    ND::TDbiResultSet* result = const_cast<ND::TDbiResultSet*>(Query(effVRec));
+    CP::TDbiValidityRec effVRec = builder.GetValidityRec(0);
+//  Force off const - we haven't finished with CP::TDbiResultSet yet!
+    CP::TDbiResultSet* result = const_cast<CP::TDbiResultSet*>(Query(effVRec));
 //  Record latest entries from Global Exception Log.
     result->CaptureExceptionLog(startGEL);
     return result;
@@ -201,7 +201,7 @@ const ND::TDbiResultSet* ND::TDbiTableProxy::Query(const ND::TVldContext& vc,
     UInt_t numRequired = 0;
     Int_t maxRow = builder.GetNumValidityRec() - 1;
     for ( Int_t rowNo = 1; rowNo <= maxRow; ++rowNo ) {
-      const ND::TDbiValidityRec& vrec = builder.GetValidityRec(rowNo);
+      const CP::TDbiValidityRec& vrec = builder.GetValidityRec(rowNo);
       if ( fCache->Search(vrec) ) ++numPresent;
       else if ( ! vrec.IsGap() ) ++numRequired;
     }
@@ -211,7 +211,7 @@ const ND::TDbiResultSet* ND::TDbiTableProxy::Query(const ND::TVldContext& vc,
     else this->RestoreFromL2Cache(builder);
   }
 
-  ND::TDbiResultSet* result = new ND::TDbiResultSetAgg(fTableName,
+  CP::TDbiResultSet* result = new CP::TDbiResultSetAgg(fTableName,
                                        fTableRow,
                                        fCache,
                                        &builder,
@@ -226,7 +226,7 @@ const ND::TDbiResultSet* ND::TDbiTableProxy::Query(const ND::TVldContext& vc,
 }
 //.....................................................................
 
-const ND::TDbiResultSet* ND::TDbiTableProxy::Query(const string& context,
+const CP::TDbiResultSet* CP::TDbiTableProxy::Query(const string& context,
                                       const TDbi::Task& task,
                                       const string& data,
                                       const string&fillOpts) {
@@ -235,10 +235,10 @@ const ND::TDbiResultSet* ND::TDbiTableProxy::Query(const string& context,
 //  Purpose:  Apply extended context query to database table and return result.
 //
 //  Arguments:
-//    context      in    The Validity Context (see ND::TDbiSqlContext)
+//    context      in    The Validity Context (see CP::TDbiSqlContext)
 //    task         in    The task of the query.
 //    data         in    Optional SQL extension to secondary query.
-//    fillOpts     in    Optional fill options (available to ND::TDbiTableRow)
+//    fillOpts     in    Optional fill options (available to CP::TDbiTableRow)
 //
 //  Return:    Query result (never zero even if query fails).
 //
@@ -269,21 +269,21 @@ const ND::TDbiResultSet* ND::TDbiTableProxy::Query(const string& context,
 
 //  See if there is one already in the cache.
 
-  if ( const ND::TDbiResultSet* result = fCache->Search(sqlQualifiers)
+  if ( const CP::TDbiResultSet* result = fCache->Search(sqlQualifiers)
      ) return result;
 
-  ND::TDbiConnectionMaintainer cm(fCascader);  //Stack object to hold connections
+  CP::TDbiConnectionMaintainer cm(fCascader);  //Stack object to hold connections
 
 // Make Global Exception Log bookmark
-  UInt_t startGEL = ND::TDbiExceptionLog::GetGELog().Size()+1;
+  UInt_t startGEL = CP::TDbiExceptionLog::GetGELog().Size()+1;
 
 // Build a complete set of effective validity records from the database.
-  ND::TDbiValidityRecBuilder builder(fDBProxy,context,task);
+  CP::TDbiValidityRecBuilder builder(fDBProxy,context,task);
 
-// For extended context queries, ND::TDbiValidityRecBuilder will always
-// assemble a result that has to be represented by a ND::TDbiResultSetAgg
+// For extended context queries, CP::TDbiValidityRecBuilder will always
+// assemble a result that has to be represented by a CP::TDbiResultSetAgg
 
-  ND::TDbiResultSet* result = new ND::TDbiResultSetAgg(fTableName,
+  CP::TDbiResultSet* result = new CP::TDbiResultSetAgg(fTableName,
                                        fTableRow,
                                        fCache,
                                        &builder,
@@ -298,7 +298,7 @@ const ND::TDbiResultSet* ND::TDbiTableProxy::Query(const string& context,
 }
 //.....................................................................
 
-const ND::TDbiResultSet* ND::TDbiTableProxy::Query(UInt_t seqNo,UInt_t dbNo) {
+const CP::TDbiResultSet* CP::TDbiTableProxy::Query(UInt_t seqNo,UInt_t dbNo) {
 //
 //
 //  Purpose:  Apply non-agregate query to database table and return result.
@@ -309,20 +309,20 @@ const ND::TDbiResultSet* ND::TDbiTableProxy::Query(UInt_t seqNo,UInt_t dbNo) {
 //
 //  Return:    Query result (never zero even if query fails).
 
-  ND::TDbiConnectionMaintainer cm(fCascader);  //Stack object to hold connections
+  CP::TDbiConnectionMaintainer cm(fCascader);  //Stack object to hold connections
 
 // Make Global Exception Log bookmark
-  UInt_t startGEL = ND::TDbiExceptionLog::GetGELog().Size()+1;
+  UInt_t startGEL = CP::TDbiExceptionLog::GetGELog().Size()+1;
 
   // Apply SEQNO query to cascade member.
-  ND::TDbiInRowStream* rs = fDBProxy.QueryValidity(seqNo,dbNo);
-  ND::TDbiValidityRec tr;
-  ND::TDbiResultSetNonAgg result(rs,&tr,0,kFALSE);
+  CP::TDbiInRowStream* rs = fDBProxy.QueryValidity(seqNo,dbNo);
+  CP::TDbiValidityRec tr;
+  CP::TDbiResultSetNonAgg result(rs,&tr,0,kFALSE);
   delete rs;
 
   // If query failed, return an empty result.
   if ( result.GetNumRows() == 0 ) {
-    ND::TDbiResultSetNonAgg* empty = new ND::TDbiResultSetNonAgg();
+    CP::TDbiResultSetNonAgg* empty = new CP::TDbiResultSetNonAgg();
 //  Record latest entries from Global Exception Log.
     empty->CaptureExceptionLog(startGEL);
     fCache->Adopt(empty);
@@ -333,10 +333,10 @@ const ND::TDbiResultSet* ND::TDbiTableProxy::Query(UInt_t seqNo,UInt_t dbNo) {
 // allow result to be used; it's validity has not been trimmed
 // by neighbouring records.
 
-  const ND::TDbiValidityRec* vrec
-       = dynamic_cast<const ND::TDbiValidityRec*>(result.GetTableRow(0));
-//  Force off const - we haven't finished with ND::TDbiResultSet yet!
-  ND::TDbiResultSet* res = const_cast<ND::TDbiResultSet*>(Query(*vrec,kFALSE));
+  const CP::TDbiValidityRec* vrec
+       = dynamic_cast<const CP::TDbiValidityRec*>(result.GetTableRow(0));
+//  Force off const - we haven't finished with CP::TDbiResultSet yet!
+  CP::TDbiResultSet* res = const_cast<CP::TDbiResultSet*>(Query(*vrec,kFALSE));
 // Record latest entries from Global Exception Log.
   res->CaptureExceptionLog(startGEL);
   return res;
@@ -344,7 +344,7 @@ const ND::TDbiResultSet* ND::TDbiTableProxy::Query(UInt_t seqNo,UInt_t dbNo) {
 }
 //.....................................................................
 
-const ND::TDbiResultSet* ND::TDbiTableProxy::Query(const ND::TDbiValidityRec& vrec,
+const CP::TDbiResultSet* CP::TDbiTableProxy::Query(const CP::TDbiValidityRec& vrec,
                                       Bool_t canReuse /* = kTRUE */) {
 //
 //
@@ -367,46 +367,46 @@ const ND::TDbiResultSet* ND::TDbiTableProxy::Query(const ND::TDbiValidityRec& vr
 
 // See if it can be recovered from the level 2 disk cache.
 
-  ND::TDbiConnectionMaintainer cm(fCascader);  //Stack object to hold connections
+  CP::TDbiConnectionMaintainer cm(fCascader);  //Stack object to hold connections
 
 // Make Global Exception Log bookmark
-  UInt_t startGEL = ND::TDbiExceptionLog::GetGELog().Size()+1;
+  UInt_t startGEL = CP::TDbiExceptionLog::GetGELog().Size()+1;
 
   if ( canReuse ) {
-    ND::TDbiValidityRecBuilder builder(vrec,this->GetTableName());
+    CP::TDbiValidityRecBuilder builder(vrec,this->GetTableName());
     if ( this->RestoreFromL2Cache(builder) ) {
-      const ND::TDbiResultSet* res = fCache->Search(vrec);
+      const CP::TDbiResultSet* res = fCache->Search(vrec);
       if ( res ) return res;
     }
   }
 
   unsigned int seqNo = vrec.GetSeqNo();
-  ND::TDbiResultSet* result = 0;
+  CP::TDbiResultSet* result = 0;
 
-//  If no records, create an empty ND::TDbiResultSet.
+//  If no records, create an empty CP::TDbiResultSet.
   if ( ! seqNo ) {
-    result = new ND::TDbiResultSetNonAgg(0,0,&vrec);
+    result = new CP::TDbiResultSetNonAgg(0,0,&vrec);
   }
 
 //  If query does not apply to this table, report error and
-//  produce an empty ND::TDbiResultSet.
+//  produce an empty CP::TDbiResultSet.
 
   else if (vrec.GetTableProxy()->GetTableName() != GetTableName() ) {
-       DbiSevere(  "Unable to satisfy ND::TDbiValidityRec keyed query:" << "  "
+       DbiSevere(  "Unable to satisfy CP::TDbiValidityRec keyed query:" << "  "
        << vrec
        << " was filled by " << vrec.GetTableProxy()->GetTableName()
-       << " not by this ND::TDbiTableProxy ("
+       << " not by this CP::TDbiTableProxy ("
        << GetTableName() << ")" << "  ");
-    result = new ND::TDbiResultSetNonAgg(0,0,&vrec);
+    result = new CP::TDbiResultSetNonAgg(0,0,&vrec);
   }
 
   else {
 
 
-// Apply query, and build DiResult from its ND::TDbiInRowStream.
+// Apply query, and build DiResult from its CP::TDbiInRowStream.
 
-    ND::TDbiInRowStream* rs = fDBProxy.QuerySeqNo(seqNo,vrec.GetDbNo());
-    result = new ND::TDbiResultSetNonAgg(rs,fTableRow,&vrec);
+    CP::TDbiInRowStream* rs = fDBProxy.QuerySeqNo(seqNo,vrec.GetDbNo());
+    result = new CP::TDbiResultSetNonAgg(rs,fTableRow,&vrec);
     delete rs;
   }
 
@@ -425,7 +425,7 @@ const ND::TDbiResultSet* ND::TDbiTableProxy::Query(const ND::TDbiValidityRec& vr
 
 //.....................................................................
 
-void ND::TDbiTableProxy::RefreshMetaData() {
+void CP::TDbiTableProxy::RefreshMetaData() {
 //
 //
 //  Purpose:  Refresh meta data for table.
@@ -437,7 +437,7 @@ void ND::TDbiTableProxy::RefreshMetaData() {
 }
 //.....................................................................
 
-ND::TVldTimeStamp ND::TDbiTableProxy::QueryOverlayCreationDate(const ND::TDbiValidityRec& vrec,
+CP::TVldTimeStamp CP::TDbiTableProxy::QueryOverlayCreationDate(const CP::TDbiValidityRec& vrec,
 					             UInt_t dbNo)
 {
 //
@@ -489,26 +489,26 @@ ND::TVldTimeStamp ND::TDbiTableProxy::QueryOverlayCreationDate(const ND::TDbiVal
   //  all possible data that this validity range could overlay which is
   //  just what we want.
 
-  const ND::TVldRange& vr(vrec.GetVldRange());
-  ND::TVldContext vc((ND::DbiDetector::Detector_t) vr.GetDetectorMask(),
-                  (ND::DbiSimFlag::SimFlag_t) vr.GetSimMask(),
+  const CP::TVldRange& vr(vrec.GetVldRange());
+  CP::TVldContext vc((CP::DbiDetector::Detector_t) vr.GetDetectorMask(),
+                  (CP::DbiSimFlag::SimFlag_t) vr.GetSimMask(),
                                        vr.GetTimeStart());
 
-  ND::TDbiConnectionMaintainer cm(fCascader);  //Stack object to hold connections
+  CP::TDbiConnectionMaintainer cm(fCascader);  //Stack object to hold connections
 
   // Build a complete set of effective validity records from the
   // selected database.
-  ND::TDbiValidityRecBuilder builder(fDBProxy,vc,vrec.GetTask(),dbNo);
+  CP::TDbiValidityRecBuilder builder(fDBProxy,vc,vrec.GetTask(),dbNo);
 
   // Pick up the validity record for the current aggregate.
-  const ND::TDbiValidityRec& vrecOvlay(builder.GetValidityRecFromAggNo(vrec.GetAggregateNo()));
+  const CP::TDbiValidityRec& vrecOvlay(builder.GetValidityRecFromAggNo(vrec.GetAggregateNo()));
 
   // If its a gap i.e. nothing is overlayed, return the start time, otherwise
   // return its Creation Date plus one minute.
-  ND::TVldTimeStamp ovlayTS(vr.GetTimeStart());
+  CP::TVldTimeStamp ovlayTS(vr.GetTimeStart());
   if ( ! vrecOvlay.IsGap() ) {
     time_t overlaySecs = vrecOvlay.GetCreationDate().GetSec();
-    ovlayTS = ND::TVldTimeStamp(overlaySecs + 60,0);
+    ovlayTS = CP::TVldTimeStamp(overlaySecs + 60,0);
   }
 
   DbiDebug( "Looking for overlay creation date for: "
@@ -520,7 +520,7 @@ ND::TVldTimeStamp ND::TDbiTableProxy::QueryOverlayCreationDate(const ND::TDbiVal
 }
 //.....................................................................
 
-Bool_t ND::TDbiTableProxy::RestoreFromL2Cache(const ND::TDbiValidityRecBuilder& builder) {
+Bool_t CP::TDbiTableProxy::RestoreFromL2Cache(const CP::TDbiValidityRecBuilder& builder) {
 //
 //
 //  Purpose: Restore results from named level 2 disk cache into memory cache.
@@ -540,7 +540,7 @@ Bool_t ND::TDbiTableProxy::RestoreFromL2Cache(const ND::TDbiValidityRecBuilder& 
    ) cacheFileName =  this->GetTableName() + "_"
                     + this->GetRowName() + "_"
                     +  name + ".dbi_cache";
-  ND::TDbiBinaryFile bf(cacheFileName.c_str());
+  CP::TDbiBinaryFile bf(cacheFileName.c_str());
   if ( ! bf.IsOK() ) {
     DbiDebug( "Caching disabled or cannot open "
 			   << bf.GetFileName() << "  ");
@@ -556,9 +556,9 @@ Bool_t ND::TDbiTableProxy::RestoreFromL2Cache(const ND::TDbiValidityRecBuilder& 
   }
 
   DbiInfo( "Restoring query result from " << bf.GetFileName() << "  ");
-  ND::TDbiTimerManager::gTimerManager.RecMainQuery();
+  CP::TDbiTimerManager::gTimerManager.RecMainQuery();
 
-  ND::TDbiResultSet* result    = 0;
+  CP::TDbiResultSet* result    = 0;
   unsigned numRowsRest = 0;
   unsigned numRowsIgn  = 0;
   UInt_t numNonAgg     = 0;
@@ -566,18 +566,18 @@ Bool_t ND::TDbiTableProxy::RestoreFromL2Cache(const ND::TDbiValidityRecBuilder& 
 
   while ( numNonAgg-- ) {
     if ( ! bf.IsOK() ) break;
-    if ( ! result ) result = new ND::TDbiResultSetNonAgg;
+    if ( ! result ) result = new CP::TDbiResultSetNonAgg;
     bf >> *result;
 
 //  The original query may have had a validity range truncated by
-//  the time window, so replace its ND::TDbiValidityRec with the one
+//  the time window, so replace its CP::TDbiValidityRec with the one
 //  just obtained from the database.
-    const ND::TDbiValidityRec& vrec = result->GetValidityRec();
+    const CP::TDbiValidityRec& vrec = result->GetValidityRec();
     UInt_t seqNo = vrec.GetSeqNo();
-    DbiDebug( "Fix up L2 cache ND::TDbiValidityRec, by replacing: " << vrec
+    DbiDebug( "Fix up L2 cache CP::TDbiValidityRec, by replacing: " << vrec
 			   << "    with: " << builder.GetValidityRecFromSeqNo(seqNo) << "  ");
-//  Sneaky end-run round const to fix-up ND::TDbiValidityRec.
-    (const_cast<ND::TDbiValidityRec&>(vrec)) = builder.GetValidityRecFromSeqNo(seqNo);
+//  Sneaky end-run round const to fix-up CP::TDbiValidityRec.
+    (const_cast<CP::TDbiValidityRec&>(vrec)) = builder.GetValidityRecFromSeqNo(seqNo);
 
 //  Adopt only if not already in memory cache.
     if ( ! fCache->Search(vrec) ) {
@@ -598,7 +598,7 @@ Bool_t ND::TDbiTableProxy::RestoreFromL2Cache(const ND::TDbiValidityRecBuilder& 
 }
 //.....................................................................
 
-Bool_t ND::TDbiTableProxy::SaveToL2Cache(const string& name, ND::TDbiResultSet& res) {
+Bool_t CP::TDbiTableProxy::SaveToL2Cache(const string& name, CP::TDbiResultSet& res) {
 //
 //
 //  Purpose: Save result to named level 2 cache. Returns true if saved.
@@ -610,7 +610,7 @@ Bool_t ND::TDbiTableProxy::SaveToL2Cache(const string& name, ND::TDbiResultSet& 
 
   DbiDebug( "Request to save query result as " << name
                          << " ; row supports L2 cache ?"<<fCanL2Cache
-                         << " ; binary file can write L2 Cache?"<< ND::TDbiBinaryFile::CanWriteL2Cache()
+                         << " ; binary file can write L2 Cache?"<< CP::TDbiBinaryFile::CanWriteL2Cache()
 			 << " ; data from DB? " << res.ResultsFromDb()
 			 << " ; can be saved? " << res.CanSave() << "  ");
   if ( ! this->CanWriteL2Cache() || ! res.ResultsFromDb() || ! res.CanSave() ) return kFALSE;
@@ -620,15 +620,15 @@ Bool_t ND::TDbiTableProxy::SaveToL2Cache(const string& name, ND::TDbiResultSet& 
    ) cacheFileName =  this->GetTableName() + "_"
                     + this->GetRowName() + "_"
                     +  name + ".dbi_cache";
-  ND::TDbiBinaryFile bf(cacheFileName.c_str(),kFALSE);
+  CP::TDbiBinaryFile bf(cacheFileName.c_str(),kFALSE);
   if ( bf.IsOK() ) {
     DbiInfo( "Saving query result (" << res.GetNumRows()
 			  << " rows) to " << bf.GetFileName() << "  ");
-     ND::TDbiTimerManager::gTimerManager.RecMainQuery();
+     CP::TDbiTimerManager::gTimerManager.RecMainQuery();
 
-    // if writing a ND::TDbiResultSetNonAgg, add leading count of 1. (if writing
-    // a ND::TDbiResultSetAgg it will writes its one leading count.
-    if ( dynamic_cast<ND::TDbiResultSetNonAgg*>(&res) ) {
+    // if writing a CP::TDbiResultSetNonAgg, add leading count of 1. (if writing
+    // a CP::TDbiResultSetAgg it will writes its one leading count.
+    if ( dynamic_cast<CP::TDbiResultSetNonAgg*>(&res) ) {
       UInt_t numNonAgg = 1;
       bf << numNonAgg;
     }
@@ -642,10 +642,10 @@ Bool_t ND::TDbiTableProxy::SaveToL2Cache(const string& name, ND::TDbiResultSet& 
 }
 //.....................................................................
 
-void ND::TDbiTableProxy::SetSqlCondition(const string& sql) {
+void CP::TDbiTableProxy::SetSqlCondition(const string& sql) {
 //
 //
-//  Purpose:  Apply Sql condition to its ND::TDbiDBProxy.
+//  Purpose:  Apply Sql condition to its CP::TDbiDBProxy.
 //
 //  Arguments:
 //   sql           in    SQL condition string (excluding where).
@@ -657,7 +657,7 @@ void ND::TDbiTableProxy::SetSqlCondition(const string& sql) {
 //  Specification:-
 //  =============
 //
-//  o Apply Sql condition to its ND::TDbiDBProxy.
+//  o Apply Sql condition to its CP::TDbiDBProxy.
 
 //  Program Notes:-
 //  =============

@@ -8,7 +8,7 @@
 #include "TDbiRegistryItem.hxx"
 
 #include <UtilStream.hxx>
-using namespace ND::Util;
+using namespace CP::Util;
 
 #include <TDbiLog.hxx>
 #include <MsgFormat.h>
@@ -20,13 +20,13 @@ using std::endl;
 #include <cassert>
 using namespace std;
 
-ClassImp(ND::TDbiRegistry)
+ClassImp(CP::TDbiRegistry)
 
 
 
 //......................................................................
 
-ND::TDbiRegistry::TDbiRegistry(bool readonly /* = true */)
+CP::TDbiRegistry::TDbiRegistry(bool readonly /* = true */)
     : fValuesLocked(readonly),
       fKeysLocked(false),
       fErrorHandler(0)
@@ -36,7 +36,7 @@ ND::TDbiRegistry::TDbiRegistry(bool readonly /* = true */)
 }
 
 // Deep copy constructor
-ND::TDbiRegistry::TDbiRegistry(const TDbiRegistry& rhs) : TNamed(rhs)
+CP::TDbiRegistry::TDbiRegistry(const TDbiRegistry& rhs) : TNamed(rhs)
 {
     DbiTrace( "Creating TDbiRegistry at " << (void * ) this << "  ");
     TDbiRegistryKey rk = rhs.Key();
@@ -50,7 +50,7 @@ ND::TDbiRegistry::TDbiRegistry(const TDbiRegistry& rhs) : TNamed(rhs)
     this->SetName(rhs.GetName());
 }
 
-ND::TDbiRegistry& ND::TDbiRegistry::operator=(const TDbiRegistry& rhs)
+CP::TDbiRegistry& CP::TDbiRegistry::operator=(const TDbiRegistry& rhs)
 {
     if (this == &rhs) return *this;
 
@@ -74,7 +74,7 @@ ND::TDbiRegistry& ND::TDbiRegistry::operator=(const TDbiRegistry& rhs)
     return *this;
 }
 
-void ND::TDbiRegistry::Merge(const TDbiRegistry& rhs)
+void CP::TDbiRegistry::Merge(const TDbiRegistry& rhs)
 {
     if (this == &rhs) return;
 
@@ -102,12 +102,12 @@ void ND::TDbiRegistry::Merge(const TDbiRegistry& rhs)
     this->SetDirty();
 }
 
-bool ND::TDbiRegistry::KeyExists(const char* key) const
+bool CP::TDbiRegistry::KeyExists(const char* key) const
 {
     return fMap.find(key) != fMap.end();
 }
 
-void ND::TDbiRegistry::RemoveKey(const char* key)
+void CP::TDbiRegistry::RemoveKey(const char* key)
 {
     tRegMap::iterator dead = fMap.find(key);
     if (dead == fMap.end()) return;
@@ -116,7 +116,7 @@ void ND::TDbiRegistry::RemoveKey(const char* key)
     this->SetDirty();
 }
 
-void ND::TDbiRegistry::Clear(Option_t * /* option */)
+void CP::TDbiRegistry::Clear(Option_t * /* option */)
 {
     if (fValuesLocked || fKeysLocked) {
         DbiWarn(  "Clear: can't, there are locks in \""
@@ -133,7 +133,7 @@ void ND::TDbiRegistry::Clear(Option_t * /* option */)
     this->SetDirty();
 }
 
-void ND::TDbiRegistry::Dump(void) const
+void CP::TDbiRegistry::Dump(void) const
 {
     this->TNamed::Dump();
     tRegMap::const_iterator mit = fMap.begin();
@@ -151,7 +151,7 @@ void ND::TDbiRegistry::Dump(void) const
 
 }
 
-ostream& ND::TDbiRegistry::PrettyPrint(ostream& os) const
+ostream& CP::TDbiRegistry::PrettyPrint(ostream& os) const
 {
     static int print_depth = 0;
 
@@ -177,13 +177,13 @@ ostream& ND::TDbiRegistry::PrettyPrint(ostream& os) const
     return os;
 }
 
-void ND::TDbiRegistry::Print(Option_t* /* option */) const
+void CP::TDbiRegistry::Print(Option_t* /* option */) const
 {
     this->PrettyPrint(cout);
 }
 
 
-ND::TDbiRegistry::~TDbiRegistry()
+CP::TDbiRegistry::~TDbiRegistry()
 {
     tRegMap::iterator mit = fMap.begin();
     while (mit != fMap.end()) {
@@ -192,23 +192,23 @@ ND::TDbiRegistry::~TDbiRegistry()
     }
 }
 
-ND::TDbiRegistry::TDbiRegistryKey::TDbiRegistryKey(const TDbiRegistry* r) :
+CP::TDbiRegistry::TDbiRegistryKey::TDbiRegistryKey(const TDbiRegistry* r) :
     fReg(r)
 {
     // FIXME!  Figure out how to correctly declare fIt to reflect
     // constness.
-    fIt = const_cast<ND::TDbiRegistry*>(fReg)->fMap.begin();
+    fIt = const_cast<CP::TDbiRegistry*>(fReg)->fMap.begin();
 }
 
-ND::TDbiRegistry::TDbiRegistryKey::TDbiRegistryKey()
+CP::TDbiRegistry::TDbiRegistryKey::TDbiRegistryKey()
 {
 }
 
-ND::TDbiRegistry::TDbiRegistryKey::~TDbiRegistryKey()
+CP::TDbiRegistry::TDbiRegistryKey::~TDbiRegistryKey()
 {
 }
 
-const char* ND::TDbiRegistry::TDbiRegistryKey::operator()(void)
+const char* CP::TDbiRegistry::TDbiRegistryKey::operator()(void)
 {
     if (fIt == fReg->fMap.end()) return 0;
     const char* s = fIt->first.c_str();
@@ -216,13 +216,13 @@ const char* ND::TDbiRegistry::TDbiRegistryKey::operator()(void)
     return s;
 }
 
-ND::TDbiRegistry::TDbiRegistryKey ND::TDbiRegistry::Key(void) const
+CP::TDbiRegistry::TDbiRegistryKey CP::TDbiRegistry::Key(void) const
 {
-    return ND::TDbiRegistry::TDbiRegistryKey(this);
+    return CP::TDbiRegistry::TDbiRegistryKey(this);
 }
 
 #define REGISTRY_SET(TYPE)                                              \
-bool ND::TDbiRegistry::Set(const char* key, TYPE val)                           \
+bool CP::TDbiRegistry::Set(const char* key, TYPE val)                           \
 {                                                                       \
     tRegMap::iterator mit = fMap.find(key);                             \
     if (mit != fMap.end()) {                                            \
@@ -231,7 +231,7 @@ bool ND::TDbiRegistry::Set(const char* key, TYPE val)                           
                << key << "\" with \"" << val << "\" in registry \"" << this->GetName() << "\"\n");\
             return false;                                               \
         }                                                               \
-        if (!dynamic_cast<ND::TDbiRegistryItemXxx<TYPE>*>(mit->second)) {       \
+        if (!dynamic_cast<CP::TDbiRegistryItemXxx<TYPE>*>(mit->second)) {       \
             DbiWarn(  "Set: attempt to overwrite old value for key \""     \
                 << key << "\" with different type value "               \
                 << val << " in registry \"" << this->GetName() << "\"\n");\
@@ -261,7 +261,7 @@ REGISTRY_SET(TDbiRegistry)
 
 
 // Must treat char* special
-bool ND::TDbiRegistry::Set(const char* key, const char* val)
+bool CP::TDbiRegistry::Set(const char* key, const char* val)
 {
     tRegMap::iterator mit = fMap.find(key);
     if (mit != fMap.end()) {    // Found it
@@ -270,7 +270,7 @@ bool ND::TDbiRegistry::Set(const char* key, const char* val)
                 << key << "\" with \"" << val << "\" in registry \"" << this->GetName() << "\"\n");
             return false;
         }
-        if (! dynamic_cast<ND::TDbiRegistryItemXxx<const char*>*>(mit->second) ) {
+        if (! dynamic_cast<CP::TDbiRegistryItemXxx<const char*>*>(mit->second) ) {
             DbiWarn(  "Set: attempt to overwrite old value for key \""
                 << key << "\" with different type value "
                 << val << " in registry \"" << this->GetName() << "\"\n");
@@ -281,7 +281,7 @@ bool ND::TDbiRegistry::Set(const char* key, const char* val)
     }
     else {                      // didn't find it
         if (fKeysLocked) {
-            DbiWarn(  "ND::TDbiRegistry::Set: Keys are locked - not adding `"
+            DbiWarn(  "CP::TDbiRegistry::Set: Keys are locked - not adding `"
                 << key << "' in registry \"" << this->GetName() << "\"\n");
             return false;
         }
@@ -299,12 +299,12 @@ bool ND::TDbiRegistry::Set(const char* key, const char* val)
 
 
 #define REGISTRY_GET(TYPE)                                      \
-bool ND::TDbiRegistry::Get(const char* key, TYPE & val) const           \
+bool CP::TDbiRegistry::Get(const char* key, TYPE & val) const           \
 {                                                               \
     tRegMap::const_iterator mit = fMap.find(key);               \
     if (mit == fMap.end()) return false;                        \
     TDbiRegistryItemXxx<TYPE>* rix =                                \
-        dynamic_cast<ND::TDbiRegistryItemXxx<TYPE>*>(mit->second);      \
+        dynamic_cast<CP::TDbiRegistryItemXxx<TYPE>*>(mit->second);      \
     if (rix == 0){                                              \
       DbiSevere( "Key " << key             \
                                    << " does not have type "    \
@@ -321,20 +321,20 @@ REGISTRY_GET(TDbiRegistry)
 REGISTRY_GET(const char*)
 REGISTRY_GET(int)
 //REGISTRY_GET(double)
-bool ND::TDbiRegistry::Get(const char* key, double & val) const
+bool CP::TDbiRegistry::Get(const char* key, double & val) const
 {
     tRegMap::const_iterator mit = fMap.find(key);
     if (mit == fMap.end()) return false;
     // try correct type
     TDbiRegistryItemXxx<double>* rixd =
-        dynamic_cast<ND::TDbiRegistryItemXxx<double>*>(mit->second);
+        dynamic_cast<CP::TDbiRegistryItemXxx<double>*>(mit->second);
     if (rixd) {
         val = *(rixd->Get());
         return true;
     }
     // try int
     TDbiRegistryItemXxx<int>* rixi =
-        dynamic_cast<ND::TDbiRegistryItemXxx<int>*>(mit->second);
+        dynamic_cast<CP::TDbiRegistryItemXxx<int>*>(mit->second);
     if (rixi) {
         val = *(rixi->Get());
         return true;
@@ -346,13 +346,13 @@ bool ND::TDbiRegistry::Get(const char* key, double & val) const
 }
 
 #define REGISTRY_GET_TYPE(NAME, RETTYPE, TYPE)                            \
-RETTYPE ND::TDbiRegistry::Get##NAME(const char* key) const                        \
+RETTYPE CP::TDbiRegistry::Get##NAME(const char* key) const                        \
 {                                                                         \
     TYPE retval = 0;                                                      \
     if (Get(key,retval)) return retval;                                   \
     if (fErrorHandler) { fErrorHandler(); return 0; }                     \
     else {                                                                \
-        DbiWarn(  "\nND::TDbiRegistry::GetTYPE: failed to get value for key \""      \
+        DbiWarn(  "\nCP::TDbiRegistry::GetTYPE: failed to get value for key \""      \
             << key << "\" from TDbiRegistry \"" << this->GetName()            \
             << "\".  Aborting\n\n");                                       \
         bool must_get_a_value = false;                                    \
@@ -368,13 +368,13 @@ REGISTRY_GET_TYPE(Int, int, int)
 REGISTRY_GET_TYPE(Double, double, double)
 //REGISTRY_GET_TYPE(TDbiRegistry, TDbiRegistry, TDbiRegistry)
 #undef REGISTRY_GET_TYPE
-ND::TDbiRegistry ND::TDbiRegistry::GetTDbiRegistry(const char* key) const
+CP::TDbiRegistry CP::TDbiRegistry::GetTDbiRegistry(const char* key) const
 {
     TDbiRegistry retval;
     if (Get(key,retval)) return retval;
     if (fErrorHandler) { fErrorHandler(); return retval; }
     else {
-        DbiWarn(  "\nND::TDbiRegistry::GetTYPE: failed to get value for key \""
+        DbiWarn(  "\nCP::TDbiRegistry::GetTYPE: failed to get value for key \""
             << key << "\" from TDbiRegistry \"" << this->GetName()
             << "\".  Aborting\n\n");
         bool must_get_a_value = false;
@@ -383,20 +383,20 @@ ND::TDbiRegistry ND::TDbiRegistry::GetTDbiRegistry(const char* key) const
     }
 }
 
-const type_info& ND::TDbiRegistry::GetType(const char* key) const
+const type_info& CP::TDbiRegistry::GetType(const char* key) const
 {
     tRegMap::const_iterator mit = fMap.find(key);
     if (mit == fMap.end()) return typeid(void);
     return mit->second->GetType();
 }
-string ND::TDbiRegistry::GetTypeAsString(const char* key) const
+string CP::TDbiRegistry::GetTypeAsString(const char* key) const
 {
     tRegMap::const_iterator mit = fMap.find(key);
     if (mit == fMap.end()) return "void";
     return mit->second->GetTypeAsString();
 }
 
-string ND::TDbiRegistry::GetValueAsString(const char* key) const
+string CP::TDbiRegistry::GetValueAsString(const char* key) const
 {
     ostringstream os;
     tRegMap::const_iterator mit = fMap.find(key);
@@ -405,7 +405,7 @@ string ND::TDbiRegistry::GetValueAsString(const char* key) const
     return os.str();
 }
 
-void ND::TDbiRegistry::Streamer(TBuffer& b)
+void CP::TDbiRegistry::Streamer(TBuffer& b)
 {
     int nobjects;
 
@@ -436,7 +436,7 @@ void ND::TDbiRegistry::Streamer(TBuffer& b)
         } // end reading in all TDbiRegistryItems
     } // isReading
     else {
-        b.WriteVersion(ND::TDbiRegistry::IsA());
+        b.WriteVersion(CP::TDbiRegistry::IsA());
         TNamed::Streamer(b);
 
         nobjects = fMap.size();
@@ -458,7 +458,7 @@ void ND::TDbiRegistry::Streamer(TBuffer& b)
 }
 
 
-std::ostream& ND::TDbiRegistry::PrintStream(std::ostream& os) const
+std::ostream& CP::TDbiRegistry::PrintStream(std::ostream& os) const
 {
     os << "['" << this->GetName() << "'";
 
@@ -477,11 +477,11 @@ std::ostream& ND::TDbiRegistry::PrintStream(std::ostream& os) const
 
 static std::istream& bail(std::istream& is)
 {
-    DbiWarn(  "ND::TDbiRegistry::Read(istream&) stream corrupted\n");
+    DbiWarn(  "CP::TDbiRegistry::Read(istream&) stream corrupted\n");
     return is;
 }
 
-std::istream& ND::TDbiRegistry::ReadStream(std::istream& is)
+std::istream& CP::TDbiRegistry::ReadStream(std::istream& is)
 {
     TDbiRegistry reg;
 
@@ -533,7 +533,7 @@ std::istream& ND::TDbiRegistry::ReadStream(std::istream& is)
         else if (type == "string")
             ri = new TDbiRegistryItemXxx<const char*>();
         else if (type == "TDbiRegistry")
-            ri = new TDbiRegistryItemXxx<ND::TDbiRegistry>();
+            ri = new TDbiRegistryItemXxx<CP::TDbiRegistry>();
         else return bail(is);
 
         ri->ReadStream(is);

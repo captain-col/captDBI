@@ -2,7 +2,7 @@
 
 ////////////////////////////////////////////////////////////////////
 //
-// ND::TDbiAsciiDbImporter
+// CP::TDbiAsciiDbImporter
 // Acknowledgments
 //   The code is essentially a translation of
 //   RDBC/TSQLImporter by Valeriy Onuchin 21/03/2001
@@ -22,7 +22,7 @@
 #include <MsgFormat.h>
 using std::endl;
 
-ClassImpQ(ND::TDbiAsciiDbImporter)
+ClassImpQ(CP::TDbiAsciiDbImporter)
 
 //   Definition of static data members
 //   *********************************
@@ -35,44 +35,44 @@ ClassImpQ(ND::TDbiAsciiDbImporter)
 
 
 //___________________________________________________________________
-ND::TDbiAsciiDbImporter::TDbiAsciiDbImporter():
+CP::TDbiAsciiDbImporter::TDbiAsciiDbImporter():
   fServer(0),
   fTablePreparer(0)
 {
    // ctor
 
 
-     DbiTrace( "Creating ND::TDbiAsciiDbImporter " << (void*) this << "  ");
+     DbiTrace( "Creating CP::TDbiAsciiDbImporter " << (void*) this << "  ");
 
    fStatus = HTTP_BAD_REQUEST; // not OK
 }
 
 //___________________________________________________________________
-ND::TDbiAsciiDbImporter::TDbiAsciiDbImporter(const TString& url,TSQLServer* server):
+CP::TDbiAsciiDbImporter::TDbiAsciiDbImporter(const TString& url,TSQLServer* server):
   fServer(server),
   fTablePreparer(0)
 {
    // ctor
 
 
-   DbiTrace( "Creating ND::TDbiAsciiDbImporter "  << (void*) this << "  ");
+   DbiTrace( "Creating CP::TDbiAsciiDbImporter "  << (void*) this << "  ");
 
    Import(url,server);
 }
 
 //___________________________________________________________________
-ND::TDbiAsciiDbImporter::~TDbiAsciiDbImporter()
+CP::TDbiAsciiDbImporter::~TDbiAsciiDbImporter()
 {
    // dtor
 
 
-   DbiTrace( "Destroying ND::TDbiAsciiDbImporter" << "  ");
+   DbiTrace( "Destroying CP::TDbiAsciiDbImporter" << "  ");
    delete fTablePreparer;
    fTablePreparer = 0;
 }
 
 //___________________________________________________________________
-void ND::TDbiAsciiDbImporter::LoadTable(const TString& url)
+void CP::TDbiAsciiDbImporter::LoadTable(const TString& url)
 {
    //
 
@@ -81,12 +81,12 @@ void ND::TDbiAsciiDbImporter::LoadTable(const TString& url)
    // Prepare the table for importing.
    delete fTablePreparer;
    fTablePreparer = 0;
-   fTablePreparer = new ND::TDbiAsciiTablePreparer(url);
+   fTablePreparer = new CP::TDbiAsciiTablePreparer(url);
 
    // Check for exceptions from table preparer and include them.
    if(!fTablePreparer->IsValid()) {
       fStatus = fTablePreparer->GetStatus();
-      const ND::TDbiExceptionLog& el = fTablePreparer->GetExceptionLog();
+      const CP::TDbiExceptionLog& el = fTablePreparer->GetExceptionLog();
       if(! el.IsEmpty() ) fExceptionLog.AddLog(el);
       delete fTablePreparer;
       fTablePreparer = 0;
@@ -140,7 +140,7 @@ void ND::TDbiAsciiDbImporter::LoadTable(const TString& url)
 }
 
 //___________________________________________________________________
-void ND::TDbiAsciiDbImporter::LoadCatalog(const TString& url)
+void CP::TDbiAsciiDbImporter::LoadCatalog(const TString& url)
 {
 
   // Laod the catalogue
@@ -191,7 +191,7 @@ void ND::TDbiAsciiDbImporter::LoadCatalog(const TString& url)
 }
 
 //___________________________________________________________________
-Int_t ND::TDbiAsciiDbImporter::Import(const TString& url,TSQLServer* server)
+Int_t CP::TDbiAsciiDbImporter::Import(const TString& url,TSQLServer* server)
 {
    // import data from url to server
 
@@ -215,7 +215,7 @@ Int_t ND::TDbiAsciiDbImporter::Import(const TString& url,TSQLServer* server)
 }
 
 //___________________________________________________________________
-Bool_t ND::TDbiAsciiDbImporter::IsValid() const
+Bool_t CP::TDbiAsciiDbImporter::IsValid() const
 {
    //
 

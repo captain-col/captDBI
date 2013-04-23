@@ -5,7 +5,7 @@
  *
  * $Id: TDbiResultKey.hxx,v 1.1 2011/01/18 05:49:20 finch Exp $
  *
- * \class ND::TDbiResultKey
+ * \class CP::TDbiResultKey
  *
  *
  * \brief
@@ -27,12 +27,12 @@
 
 #include "TVldTimeStamp.hxx"
 
-namespace ND {
+namespace CP {
 class TDbiResultKey;
 }
-std::ostream& operator<<(std::ostream& os, const ND::TDbiResultKey& key);
+std::ostream& operator<<(std::ostream& os, const CP::TDbiResultKey& key);
 
-namespace ND {
+namespace CP {
 class TDbiResultKey : public TObject
 {
 
@@ -45,7 +45,7 @@ public:
            TDbiResultKey(std::string tableName,
                         std::string rowName,
                         UInt_t seqno,
-                        ND::TVldTimeStamp ts);
+                        CP::TVldTimeStamp ts);
   virtual ~TDbiResultKey();
 
 // State testing member functions
@@ -60,16 +60,16 @@ static const TDbiResultKey*
 
 // State changing member functions
 
-  void AddVRecKey(UInt_t seqno, ND::TVldTimeStamp ts);
+  void AddVRecKey(UInt_t seqno, CP::TVldTimeStamp ts);
   
   
   // push VRecKey put to the public: portion so that rootcint dict compiles
   /// Container for  a SeqNo and  CreationDate pair. 
   struct VRecKey {
     VRecKey() : SeqNo(0), CreationDate() {}
-    VRecKey(UInt_t seqno, ND::TVldTimeStamp ts) : SeqNo(seqno), CreationDate(ts) {}
+    VRecKey(UInt_t seqno, CP::TVldTimeStamp ts) : SeqNo(seqno), CreationDate(ts) {}
     UInt_t SeqNo;
-    ND::TVldTimeStamp CreationDate;
+    CP::TVldTimeStamp CreationDate;
   };
 
 private:

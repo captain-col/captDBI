@@ -11,7 +11,7 @@
 /**
  *
  *
- * \class ND::TDbiConnection
+ * \class CP::TDbiConnection
  *
  *
  * \brief
@@ -40,7 +40,7 @@
 #include "TDbi.hxx"
 #include "TDbiExceptionLog.hxx"
 
-namespace ND {
+namespace CP {
 class TDbiConnection
 {
 
@@ -52,7 +52,7 @@ public:
 /// user - username to use
 /// password - password to use
 /// macConnects = maximum number of connections to attempt before giving up, default to 20
-///      throws ND::EBadConnection() if can not make connection
+///      throws CP::EBadConnection() if can not make connection
 ///
            TDbiConnection(const std::string& url = "",
                          const std::string& user = "",

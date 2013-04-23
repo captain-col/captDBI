@@ -1,3 +1,3 @@
 #ifdef __CINT__
-#pragma link C++ class ND::TDbiSimFlagAssociation;
+#pragma link C++ class CP::TDbiSimFlagAssociation;
 #endif

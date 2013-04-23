@@ -1,5 +1,5 @@
 #ifdef __CINT__
 
-#pragma link C++ class ND::TDbiValidityRec;
+#pragma link C++ class CP::TDbiValidityRec;
 
 #endif

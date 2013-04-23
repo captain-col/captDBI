@@ -4,7 +4,7 @@
 #define DBITIMERMANAGER
 
 ////////////////////////////////////////////////////////////////////////
-/// \class ND::TDbiTimerManager                                                    
+/// \class CP::TDbiTimerManager                                                    
 ///
 /// \brief <b> Concept: </b>Manager of a set of simple timers.                      
 ///                                                                    
@@ -18,12 +18,12 @@
 using std::string;
 using std::list;
 
-namespace ND {
+namespace CP {
 class TDbiTableMetaData;
 class TDbiTimer;
 }
 
-namespace ND {
+namespace CP {
 class TDbiTimerManager
 {
 

@@ -4,7 +4,7 @@
 /**
  *
  *
- * \class ND::TDbiCache
+ * \class CP::TDbiCache
  *
  *
  * \brief
@@ -27,10 +27,10 @@ using std::string;
 
 #include "TDbi.hxx"
 
-namespace ND {
+namespace CP {
 class TVldContext;
 };
-namespace ND {
+namespace CP {
 class TDbiResultSet;
 class TDbiDatabaseManager;
 class TDbiTableProxy;
@@ -38,7 +38,7 @@ class TDbiValidityRec;
 }
 //class ostream;
 
-namespace ND {
+namespace CP {
 class TDbiCache
 {
 
@@ -47,7 +47,7 @@ public:
 
 // Typedefs
 
-typedef std::list<ND::TDbiResultSet*> ResultList_t;
+typedef std::list<CP::TDbiResultSet*> ResultList_t;
 
 // Constructors and destructors.
 
@@ -62,7 +62,7 @@ typedef std::list<ND::TDbiResultSet*> ResultList_t;
           UInt_t GetNumAdopted() const { return fNumAdopted; }
           UInt_t GetNumReused() const { return fNumReused; }
 // Primary searches.
-const TDbiResultSet* Search(const ND::TVldContext& vc,
+const TDbiResultSet* Search(const CP::TVldContext& vc,
                         const TDbi::Task& task) const;
 const TDbiResultSet* Search(const string& sqlQualifiers) const;
 
@@ -86,7 +86,7 @@ private:
 
 // Disabled (not implemented) copy constructor and asignment.
  TDbiCache(const TDbiCache&);
- ND::TDbiCache& operator=(const ND::TDbiCache&);
+ CP::TDbiCache& operator=(const CP::TDbiCache&);
 
   const ResultList_t* GetSubCache(Int_t aggNo) const;
                 void Purge(ResultList_t& subCache, const TDbiResultSet* res=0);

@@ -5,13 +5,14 @@
 
 #include <TCaptLog.hxx>
 
-#define TDBiLog TCaptLog
-#include DbiLog CaptLog
-#include DbiInfo CaptVerbose
-#include DbiVerbose CaptVerbose
-#include DbiError CaptError
-#include DbiSevere CaptSevere
-#include DbiWarn CaptWarn
-#include DbiTrace CaptTrace
+#define TDbiLog TCaptLog
+#define DbiLog CaptLog
+#define DbiInfo CaptVerbose
+#define DbiVerbose CaptVerbose
+#define DbiError CaptError
+#define DbiSevere CaptSevere
+#define DbiWarn CaptWarn
+#define DbiDebug CaptDebug
+#define DbiTrace CaptTrace
 
 #endif

@@ -1,10 +1,10 @@
 ////////////////////////////////////////////////////////////////////////
 // $Id: TDbiCfgDialog.hxx,v 1.1 2011/01/18 05:49:19 finch Exp $
 ///
-/// \class ND::TDbiCfgDialog
+/// \class CP::TDbiCfgDialog
 ///
 /// \brief A simple class to query a user to supply values for a registry. Internally 
-/// stores three ND::TDbiRegistry objects,  current, default and reset
+/// stores three CP::TDbiRegistry objects,  current, default and reset
 ///
 /// messier@huhepl.harvard.edu
 ////////////////////////////////////////////////////////////////////////
@@ -14,7 +14,7 @@
 #include "TDbiRegistry.hxx"
 #endif
 
-namespace ND {
+namespace CP {
 class TDbiCfgDialog
 {
 public:

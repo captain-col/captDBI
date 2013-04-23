@@ -9,19 +9,19 @@
 #include <MsgFormat.h>
 using std::endl;
 
-ClassImp(ND::TDbiResultKey)
+ClassImp(CP::TDbiResultKey)
 
 
 //   Definition of static data members
 //   *********************************
 
 
-ND::TDbiResultKey ND::TDbiResultKey::fgEmptyKey;
+CP::TDbiResultKey CP::TDbiResultKey::fgEmptyKey;
 
 //   Global Functions
 //   ****************
 
-std::ostream& operator<<(std::ostream& os, const ND::TDbiResultKey& key) {
+std::ostream& operator<<(std::ostream& os, const CP::TDbiResultKey& key) {
     os << key.AsString() << endl;
     return os;
 }
@@ -32,7 +32,7 @@ std::ostream& operator<<(std::ostream& os, const ND::TDbiResultKey& key) {
 
 //.....................................................................
 
-ND::TDbiResultKey::TDbiResultKey(const ND::TDbiResultKey* that /* =0 */) :
+CP::TDbiResultKey::TDbiResultKey(const CP::TDbiResultKey* that /* =0 */) :
 fNumVRecKeys(0)
 {
     //
@@ -41,16 +41,16 @@ fNumVRecKeys(0)
     //
     
     
-    DbiTrace( "Creating ND::TDbiResultKey" << "  ");
+    DbiTrace( "Creating CP::TDbiResultKey" << "  ");
     if ( that ) *this = *that;
 }
 
 ///.....................................................................
 
-ND::TDbiResultKey::TDbiResultKey(std::string tableName,
+CP::TDbiResultKey::TDbiResultKey(std::string tableName,
     std::string rowName,
     UInt_t seqno,
-    ND::TVldTimeStamp ts) :
+    CP::TVldTimeStamp ts) :
 fTableName(tableName),
 fRowName(rowName),
 fNumVRecKeys(0)
@@ -64,17 +64,17 @@ fNumVRecKeys(0)
     //  Specification:-
     //  =============
     //
-    //  o  Create ND::TDbiResultKey.
+    //  o  Create CP::TDbiResultKey.
     
     
-    DbiTrace( "Creating ND::TDbiResultKey" << "  ");
+    DbiTrace( "Creating CP::TDbiResultKey" << "  ");
     
     this->AddVRecKey(seqno,ts);
 }
 
 //.....................................................................
 
-ND::TDbiResultKey::~TDbiResultKey() {
+CP::TDbiResultKey::~TDbiResultKey() {
     //
     //
     //  Purpose: Destructor
@@ -84,19 +84,19 @@ ND::TDbiResultKey::~TDbiResultKey() {
     //  Specification:-
     //  =============
     //
-    //  o  Destroy ND::TDbiResultKey
+    //  o  Destroy CP::TDbiResultKey
     
     
-    DbiTrace( "Destroying ND::TDbiResultKey" << "  ");
+    DbiTrace( "Destroying CP::TDbiResultKey" << "  ");
     
 }
 
 //.....................................................................
 
-void ND::TDbiResultKey::AddVRecKey(UInt_t seqno, ND::TVldTimeStamp ts) {
+void CP::TDbiResultKey::AddVRecKey(UInt_t seqno, CP::TVldTimeStamp ts) {
     //
     //
-    //  Purpose:  Add a ND::TDbiValidityRec key.
+    //  Purpose:  Add a CP::TDbiValidityRec key.
     //
     
     fVRecKeys.push_back(VRecKey(seqno,ts));
@@ -106,7 +106,7 @@ void ND::TDbiResultKey::AddVRecKey(UInt_t seqno, ND::TVldTimeStamp ts) {
 
 //.....................................................................
 
-std::string ND::TDbiResultKey::AsString() const {
+std::string CP::TDbiResultKey::AsString() const {
     //
     //
     //  Purpose:  Return a string that summarises this key giving:-
@@ -127,12 +127,12 @@ std::string ND::TDbiResultKey::AsString() const {
     	std::list<VRecKey>::const_iterator itrEnd = fVRecKeys.end();
     	UInt_t seqnoMin    = itr->SeqNo;
     	UInt_t seqnoMax    = seqnoMin;
-    	ND::TVldTimeStamp tsMin = itr->CreationDate;
-    	ND::TVldTimeStamp tsMax = tsMin;
+    	CP::TVldTimeStamp tsMin = itr->CreationDate;
+    	CP::TVldTimeStamp tsMax = tsMin;
     	++itr;
     	while ( itr != itrEnd ) {
     	    UInt_t       seqno = itr->SeqNo;
-    	    ND::TVldTimeStamp ts    = itr->CreationDate;
+    	    CP::TVldTimeStamp ts    = itr->CreationDate;
     	    if ( seqno < seqnoMin ) seqnoMin = seqno;
     	    if ( seqno > seqnoMax ) seqnoMax = seqno;
     	    if (    ts < tsMin    ) tsMin    = ts;
@@ -149,14 +149,14 @@ std::string ND::TDbiResultKey::AsString() const {
 }
 //.....................................................................
 
-Float_t ND::TDbiResultKey::Compare(const ND::TDbiResultKey* that) const {
+Float_t CP::TDbiResultKey::Compare(const CP::TDbiResultKey* that) const {
     //
     //
-    //  Purpose:  Compare 2 ND::TDbiResultKeys
+    //  Purpose:  Compare 2 CP::TDbiResultKeys
     //
     //  Return:    = -2. Table names don't match.
     //             = -1. Table names match but row names don't
-    //                   i.e. contain different ND::TDbiTableRow sub-classes.
+    //                   i.e. contain different CP::TDbiTableRow sub-classes.
     //             >= f  Table and row names match and fraction f of the
     //                   SEQNOs have same creation date.
     //                   So f = 1.  = perfect match.
@@ -175,8 +175,8 @@ Float_t ND::TDbiResultKey::Compare(const ND::TDbiResultKey* that) const {
     DbiDebug( "Comparing " << *this << " to "
     	<< *that << "  ");
     
-    const ND::TDbiResultKey* keyBig   = this;
-    const ND::TDbiResultKey* keySmall = that;
+    const CP::TDbiResultKey* keyBig   = this;
+    const CP::TDbiResultKey* keySmall = that;
     if ( that->GetNumVrecs() > this->GetNumVrecs() ) {
     	keyBig   = that;
     	keySmall = this;
@@ -184,14 +184,14 @@ Float_t ND::TDbiResultKey::Compare(const ND::TDbiResultKey* that) const {
     int numVrecs = keyBig->GetNumVrecs();
     if ( numVrecs == 0 ) return 0.;
     
-    std::map<UInt_t,ND::TVldTimeStamp> seqnoToCreationDate;
-    std::list<ND::TDbiResultKey::VRecKey>::const_iterator itrEnd = keyBig->fVRecKeys.end();
-    for (  std::list<ND::TDbiResultKey::VRecKey>::const_iterator itr = keyBig->fVRecKeys.begin();
+    std::map<UInt_t,CP::TVldTimeStamp> seqnoToCreationDate;
+    std::list<CP::TDbiResultKey::VRecKey>::const_iterator itrEnd = keyBig->fVRecKeys.end();
+    for (  std::list<CP::TDbiResultKey::VRecKey>::const_iterator itr = keyBig->fVRecKeys.begin();
     	itr != itrEnd;
     	++itr ) seqnoToCreationDate[itr->SeqNo] = itr->CreationDate;
     float match = 0;
     itrEnd = keySmall->fVRecKeys.end();
-    for (  std::list<ND::TDbiResultKey::VRecKey>::const_iterator itr = keySmall->fVRecKeys.begin();
+    for (  std::list<CP::TDbiResultKey::VRecKey>::const_iterator itr = keySmall->fVRecKeys.begin();
     	itr != itrEnd;
     	++itr ) {
     DbiDebug( "Comparing seqno " << itr->SeqNo << " with creation date " << itr->CreationDate
@@ -206,7 +206,7 @@ Float_t ND::TDbiResultKey::Compare(const ND::TDbiResultKey* that) const {
 
 //.....................................................................
 
-std::string ND::TDbiResultKey::GetTableRowName() const {
+std::string CP::TDbiResultKey::GetTableRowName() const {
     //
     //
     //  Purpose:  Return TableName::RowName
@@ -220,7 +220,7 @@ std::string ND::TDbiResultKey::GetTableRowName() const {
 
 //.....................................................................
 
-ND::TDbiResultKey:: {
+CP::TDbiResultKey:: {
 //
 //
 //  Purpose:

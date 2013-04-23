@@ -5,7 +5,7 @@
  *
  * $Id: TDbiOutRowStream.hxx,v 1.1 2011/01/18 05:49:20 finch Exp $
  *
- * \class ND::TDbiOutRowStream
+ * \class CP::TDbiOutRowStream
  *
  *
  * \brief
@@ -13,7 +13,7 @@
  *  with type checking and deferred sequence number asignment.
  *
  * \brief
- * <b>Purpose</b> This is a helper class ND::for TDbiSqlValPacket. Its
+ * <b>Purpose</b> This is a helper class CP::for TDbiSqlValPacket. Its
  *  primary purpose is to provide an << operator with built-type
  *  checking to simplify the writing of TDbiTableRow subclasses.
  *
@@ -27,17 +27,17 @@
 #include "TDbi.hxx"
 #include "TDbiRowStream.hxx"
 
-namespace ND {
+namespace CP {
 class TDbiTableMetaData;
 }
-namespace ND {
+namespace CP {
 class TVldTimeStamp;
 };
-namespace ND {
+namespace CP {
 class TDbiValidityRec;
 }
 
-namespace ND {
+namespace CP {
 class TDbiOutRowStream : public TDbiRowStream
 {
 
@@ -56,19 +56,19 @@ const string& GetCSV() const { return fCSV; }
 
 // State changing member functions
 
-ND::TDbiOutRowStream& operator<<(Bool_t src);
-ND::TDbiOutRowStream& operator<<(Char_t src);
-ND::TDbiOutRowStream& operator<<(const Char_t* src);
-ND::TDbiOutRowStream& operator<<(Short_t src);
-ND::TDbiOutRowStream& operator<<(UShort_t src);
-ND::TDbiOutRowStream& operator<<(Int_t src);
-ND::TDbiOutRowStream& operator<<(UInt_t src);
+CP::TDbiOutRowStream& operator<<(Bool_t src);
+CP::TDbiOutRowStream& operator<<(Char_t src);
+CP::TDbiOutRowStream& operator<<(const Char_t* src);
+CP::TDbiOutRowStream& operator<<(Short_t src);
+CP::TDbiOutRowStream& operator<<(UShort_t src);
+CP::TDbiOutRowStream& operator<<(Int_t src);
+CP::TDbiOutRowStream& operator<<(UInt_t src);
 /*  TDbiOutRowStream& operator<<(Long_t& src); */
 /*  TDbiOutRowStream& operator<<(ULong_t& src); */
 TDbiOutRowStream& operator<<(Float_t src);
 TDbiOutRowStream& operator<<(Double_t src);
 TDbiOutRowStream& operator<<(const string& src);
-TDbiOutRowStream& operator<<(const ND::TVldTimeStamp& src);
+TDbiOutRowStream& operator<<(const CP::TVldTimeStamp& src);
 
             void Clear() { fBadData = kFALSE; fCSV.erase(); ClearCurCol();}
 

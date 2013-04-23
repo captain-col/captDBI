@@ -4,7 +4,7 @@
 /**
  *
  *
- * \class ND::TDbiResultSet
+ * \class CP::TDbiResultSet
  *
  *
  * \brief
@@ -31,23 +31,23 @@ using std::string;
 #include "TDbiExceptionLog.hxx"
 #include "TDbiValidityRec.hxx"
 
-typedef std::map<UInt_t,const ND::TDbiTableRow*> IndexToRow_t;
+typedef std::map<UInt_t,const CP::TDbiTableRow*> IndexToRow_t;
 
-namespace ND {
+namespace CP {
 class TDbiBinaryFile;
 class TDbiResultKey;
 class TDbiResultSet;
 class TDbiInRowStream;
 class TDbiTableRow;
 }
-namespace ND {
+namespace CP {
 class TVldContext;
 };
 
-ND::TDbiBinaryFile& operator<<(ND::TDbiBinaryFile& bf, const ND::TDbiResultSet& res);
-ND::TDbiBinaryFile& operator>>(ND::TDbiBinaryFile& bf, ND::TDbiResultSet& res);
+CP::TDbiBinaryFile& operator<<(CP::TDbiBinaryFile& bf, const CP::TDbiResultSet& res);
+CP::TDbiBinaryFile& operator>>(CP::TDbiBinaryFile& bf, CP::TDbiResultSet& res);
 
-namespace ND {
+namespace CP {
 class TDbiResultSet
 {
 
@@ -95,7 +95,7 @@ public:
 
 /// All TDbiResultSet classes can satisfy this type of primary
 /// query so impliment here.
- virtual    Bool_t Satisfies(const ND::TVldContext& vc,
+ virtual    Bool_t Satisfies(const CP::TVldContext& vc,
                              const TDbi::Task& task);
 /// Not all TDbiResultSet classes can satisfy these types of
 /// query so those that do must override.

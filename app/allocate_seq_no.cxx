@@ -27,8 +27,8 @@
 
 
 int main(int argc, char **argv) {
-    ND::TDbiLog::SetDebugLevel(ND::TDbiLog::WarnLevel);
-    ND::TDbiLog::SetLogLevel(ND::TDbiLog::QuietLevel);
+    CP::TDbiLog::SetDebugLevel(CP::TDbiLog::WarnLevel);
+    CP::TDbiLog::SetLogLevel(CP::TDbiLog::QuietLevel);
     if ( argc < 2 ) {
         CaptError("ERROR: Insufficient arguments to allocate_seq_no.exe.");
         std::cout << "0" << std::endl;
@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
     Int_t dbNo          = 0;
     if ( argc > 2 ) requireGlobal = atoi(argv[2]);
     if ( argc > 3 ) dbNo          = atoi(argv[3]);
-    ND::TSeqNoAllocator sna = ND::TSeqNoAllocator();
+    CP::TSeqNoAllocator sna = CP::TSeqNoAllocator();
     Int_t seqno = sna.GetSeqNo(table_name,requireGlobal,dbNo);
     std::cout << seqno << std::endl;
     return 0;

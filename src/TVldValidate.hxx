@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////
 // $Id: TVldValidate.hxx,v 1.1 2011/01/18 05:49:20 finch Exp $
 //
-/// \class ND::TVldValidate
+/// \class CP::TVldValidate
 ///
 /// \brief TVldValidate is a test harness for Validity package
 ///
@@ -12,11 +12,11 @@
 #ifndef VLDVALIDATE_H
 #define VLDVALIDATE_H
 
-namespace ND {
+namespace CP {
 class TVldTimeStamp;
 }
 #include "TObject.h"
-namespace ND {
+namespace CP {
 
 class TVldValidate : public TObject {
 
@@ -40,11 +40,11 @@ class TVldValidate : public TObject {
    //   TVldValidate& operator=(const TVldValidate &tf);
 
    Bool_t CompareTimeStamps(const char *label, 
-                            ND::TVldTimeStamp& test, ND::TVldTimeStamp& std);
+                            CP::TVldTimeStamp& test, CP::TVldTimeStamp& std);
 
  private:
 
-   ClassDef(ND::TVldValidate,1)  // TVldValidate version 1
+   ClassDef(CP::TVldValidate,1)  // TVldValidate version 1
 };
 };
 

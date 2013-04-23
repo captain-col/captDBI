@@ -2,7 +2,7 @@
 ///
 /// $Id: TDbiRegistryItemXxx.hxx,v 1.1 2011/01/18 05:49:20 finch Exp $
 ///
-/// \class  ND::TDbiRegistryItemXxx<T>
+/// \class  CP::TDbiRegistryItemXxx<T>
 ///
 /// \brief Encapsulates a value of type T (really!).
 ///
@@ -22,10 +22,10 @@
 
 #include <typeinfo>
 #include <iostream>
-namespace ND {
+namespace CP {
 /// Encapsulates a value of type T
 class TDbiRegistry;
-template<class T> class TDbiRegistryItemXxx : public ND::TDbiRegistryItem
+template<class T> class TDbiRegistryItemXxx : public CP::TDbiRegistryItem
 {
 public:
     // Only Want TDbiRegistry to call Get/Set/etc methods
@@ -59,7 +59,7 @@ private:
 
     ClassDefT(TDbiRegistryItemXxx<T>,1)
 };
-ClassDefT2(ND::TDbiRegistryItemXxx,T)
+ClassDefT2(CP::TDbiRegistryItemXxx,T)
 }
 
 
@@ -83,7 +83,7 @@ TBuffer& operator<<(TBuffer &buf, float*& xptr);
 
 ClassImpT(TDbiRegistryItemXxx,T)
 
-namespace ND 
+namespace CP 
 {  
 template<class T>
 TDbiRegistryItemXxx<T>::TDbiRegistryItemXxx(void) : fData(0) 
@@ -172,7 +172,7 @@ template<> std::istream& TDbiRegistryItemXxx<TDbiRegistry>::ReadStream(std::istr
 #endif
 
 // This assumes that objects spring forth (like ROOT objects)
-namespace ND
+namespace CP
 { 
 template<class T>
 void TDbiRegistryItemXxx<T>::Streamer(TBuffer &buf)
@@ -180,13 +180,13 @@ void TDbiRegistryItemXxx<T>::Streamer(TBuffer &buf)
     if (buf.IsReading()) {
         Version_t v = buf.ReadVersion(); 
         if (v) { }
-        ND::TDbiRegistryItem::Streamer(buf);
+        CP::TDbiRegistryItem::Streamer(buf);
 
         buf >> fData;
     } 
     else {
         buf.WriteVersion(IsA());
-        ND::TDbiRegistryItem::Streamer(buf);
+        CP::TDbiRegistryItem::Streamer(buf);
         buf << fData;
     }
 }
@@ -194,14 +194,14 @@ void TDbiRegistryItemXxx<T>::Streamer(TBuffer &buf)
 
 
 #include <TDbiRegistry.hxx>
-namespace ND 
+namespace CP 
 { 
 
 template<>
-std::ostream& TDbiRegistryItemXxx<ND::TDbiRegistry>::PrintStream(std::ostream& os) const;
+std::ostream& TDbiRegistryItemXxx<CP::TDbiRegistry>::PrintStream(std::ostream& os) const;
 
 template<>
-std::istream& TDbiRegistryItemXxx<ND::TDbiRegistry>::ReadStream(std::istream& is);
+std::istream& TDbiRegistryItemXxx<CP::TDbiRegistry>::ReadStream(std::istream& is);
 } 
 
 #endif // __CINT__

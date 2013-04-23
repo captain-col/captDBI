@@ -11,7 +11,7 @@
 #include <MsgFormat.h>
 using std::endl;
 
-ClassImp(ND::TDbiValRecSet)
+ClassImp(CP::TDbiValRecSet)
 
 
 //   Definition of static data members
@@ -25,7 +25,7 @@ ClassImp(ND::TDbiValRecSet)
 
 //.....................................................................
 
-ND::TDbiValRecSet::TDbiValRecSet(const string& tableName,UInt_t dbNo,UInt_t seqNo) :
+CP::TDbiValRecSet::TDbiValRecSet(const string& tableName,UInt_t dbNo,UInt_t seqNo) :
 fDbNo(dbNo),
 fResult(0)
 {
@@ -34,7 +34,7 @@ fResult(0)
 //  Purpose:  Constructor
 //
 //  Arguments:
-//    tableName    in    Table Name whose ND::TDbiValidityRecs are required.
+//    tableName    in    Table Name whose CP::TDbiValidityRecs are required.
 //    dbNo         in    Database number in the cascade.
 //    seqNo        in    Just this SEQNO if >0 or all if 0 [default: 0]
 //
@@ -46,7 +46,7 @@ fResult(0)
 //  =============
 //
 //  o  For the required table in the required database, load every
-//     ND::TDbiValidityRec into ND::TDbiResultSet.
+//     CP::TDbiValidityRec into CP::TDbiResultSet.
 
 
 //  Program Notes:-
@@ -55,17 +55,17 @@ fResult(0)
 //  None.
 
 
-  DbiTrace( "Creating ND::TDbiValRecSet" << "  ");
+  DbiTrace( "Creating CP::TDbiValRecSet" << "  ");
 
 // Get Db proxy for the table.
-  ND::TDbiValidityRec pet;
-  const ND::TDbiDBProxy& proxy = ND::TDbiDatabaseManager::Instance()
+  CP::TDbiValidityRec pet;
+  const CP::TDbiDBProxy& proxy = CP::TDbiDatabaseManager::Instance()
                            .GetTableProxy(tableName,&pet)
                            .GetDBProxy();
 
 // Collect up all validity records.
-  ND::TDbiInRowStream* rset = proxy.QueryAllValidities(dbNo,seqNo);
-  fResult = new ND::TDbiResultSetNonAgg(rset,&pet,0,kFALSE);
+  CP::TDbiInRowStream* rset = proxy.QueryAllValidities(dbNo,seqNo);
+  fResult = new CP::TDbiResultSetNonAgg(rset,&pet,0,kFALSE);
   delete rset;
 
 
@@ -74,7 +74,7 @@ fResult(0)
 
 //.....................................................................
 
-ND::TDbiValRecSet::~TDbiValRecSet() {
+CP::TDbiValRecSet::~TDbiValRecSet() {
 //
 //
 //  Purpose: Destructor
@@ -98,14 +98,14 @@ ND::TDbiValRecSet::~TDbiValRecSet() {
 //  None.
 
 
-  DbiTrace( "Destroying ND::TDbiValRecSet" << "  ");
+  DbiTrace( "Destroying CP::TDbiValRecSet" << "  ");
   delete fResult;
 
 }
 
 //.....................................................................
 
-UInt_t ND::TDbiValRecSet::GetNumRows() const {
+UInt_t CP::TDbiValRecSet::GetNumRows() const {
 //
 //
 //  Purpose:  Return the number of rows.
@@ -131,7 +131,7 @@ UInt_t ND::TDbiValRecSet::GetNumRows() const {
 
 //.....................................................................
 
-const string ND::TDbiValRecSet::GetTableName() const {
+const string CP::TDbiValRecSet::GetTableName() const {
 //
 //
 //  Purpose:  Return the table name.
@@ -157,10 +157,10 @@ const string ND::TDbiValRecSet::GetTableName() const {
 
 //.....................................................................
 
-const ND::TDbiValidityRec* ND::TDbiValRecSet::GetTableRow(UInt_t rowNum) const {
+const CP::TDbiValidityRec* CP::TDbiValRecSet::GetTableRow(UInt_t rowNum) const {
 //
 //
-//  Purpose:  Return ND::TDbiValidityRec at supplied row number.
+//  Purpose:  Return CP::TDbiValidityRec at supplied row number.
 //
 //  Arguments:
 //    rowNum      in    Row number whose entry is required or 0 if none.
@@ -172,7 +172,7 @@ const ND::TDbiValidityRec* ND::TDbiValRecSet::GetTableRow(UInt_t rowNum) const {
 //  Specification:-
 //  =============
 //
-//  o Return ND::TDbiValidityRec at supplied row number.
+//  o Return CP::TDbiValidityRec at supplied row number.
 
 //  Program Notes:-
 //  =============
@@ -180,13 +180,13 @@ const ND::TDbiValidityRec* ND::TDbiValRecSet::GetTableRow(UInt_t rowNum) const {
 //  None.
 
     return fResult ?
-      dynamic_cast<const ND::TDbiValidityRec*>(fResult->GetTableRow(rowNum))
+      dynamic_cast<const CP::TDbiValidityRec*>(fResult->GetTableRow(rowNum))
     : 0;
 }
 
 //.....................................................................
 
-const ND::TDbiValidityRec* ND::TDbiValRecSet::GetTableRowBySeqNo(UInt_t seqNo
+const CP::TDbiValidityRec* CP::TDbiValRecSet::GetTableRowBySeqNo(UInt_t seqNo
                                                                ) const {
 //
 //
@@ -202,7 +202,7 @@ const ND::TDbiValidityRec* ND::TDbiValRecSet::GetTableRowBySeqNo(UInt_t seqNo
 //  Specification:-
 //  =============
 //
-//  o Return ND::TDbiValidityRec at supplied row number.
+//  o Return CP::TDbiValidityRec at supplied row number.
 
 //  Program Notes:-
 //  =============
@@ -216,12 +216,12 @@ const ND::TDbiValidityRec* ND::TDbiValRecSet::GetTableRowBySeqNo(UInt_t seqNo
 
   if ( fSeqNoToRec.size() == 0 ) {
     for ( UInt_t irow = 0; irow < numRows; ++irow) {
-      const ND::TDbiValidityRec* vrec = GetTableRow(irow);
+      const CP::TDbiValidityRec* vrec = GetTableRow(irow);
       fSeqNoToRec[vrec->GetSeqNo()] = vrec;
     }
   }
 
-  map<UInt_t,const ND::TDbiValidityRec*>::const_iterator itr = fSeqNoToRec.find(seqNo);
+  map<UInt_t,const CP::TDbiValidityRec*>::const_iterator itr = fSeqNoToRec.find(seqNo);
   return ( itr == fSeqNoToRec.end() ) ? 0 : itr->second;
 
 }

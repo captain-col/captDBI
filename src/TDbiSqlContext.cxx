@@ -5,7 +5,7 @@
 #include <MsgFormat.h>
 using std::endl;
 
-ClassImp(ND::TDbiSqlContext)
+ClassImp(CP::TDbiSqlContext)
 
 
 //   Definition of static data members
@@ -17,11 +17,11 @@ ClassImp(ND::TDbiSqlContext)
 
 //.....................................................................
 
-ND::TDbiSqlContext::TDbiSqlContext(const std::string& ctxt) :
-ND::TDbiString(ctxt),
+CP::TDbiSqlContext::TDbiSqlContext(const std::string& ctxt) :
+CP::TDbiString(ctxt),
 fIntervalType(kUndefined),
-fDetType(ND::DbiDetector::kUnknown),
-fSimType(ND::DbiSimFlag::kUnknown)
+fDetType(CP::DbiDetector::kUnknown),
+fSimType(CP::DbiSimFlag::kUnknown)
 {
 //
 //  Purpose:  Default constructor
@@ -30,16 +30,16 @@ fSimType(ND::DbiSimFlag::kUnknown)
 //
 
 
-  DbiTrace( "Creating ND::TDbiSqlContext" << "  ");
+  DbiTrace( "Creating CP::TDbiSqlContext" << "  ");
 
 }
 //.....................................................................
 
-ND::TDbiSqlContext::TDbiSqlContext(IntervalType interval,
-                             ND::TVldTimeStamp start,
-                             ND::TVldTimeStamp end,
-		   	     ND::DbiDetector::Detector_t det,
-                             ND::DbiSimFlag::SimFlag_t sim) :
+CP::TDbiSqlContext::TDbiSqlContext(IntervalType interval,
+                             CP::TVldTimeStamp start,
+                             CP::TVldTimeStamp end,
+		   	     CP::DbiDetector::Detector_t det,
+                             CP::DbiSimFlag::SimFlag_t sim) :
 fIntervalType(interval),
 fTimeStart(start),
 fTimeEnd(end),
@@ -53,7 +53,7 @@ fSimType(sim)
 //
 
 
-  DbiTrace( "Creating ND::TDbiSqlContext" << "  ");
+  DbiTrace( "Creating CP::TDbiSqlContext" << "  ");
 
   switch (interval) {
 
@@ -106,7 +106,7 @@ fSimType(sim)
 
 //.....................................................................
 
-ND::TDbiSqlContext::~TDbiSqlContext() {
+CP::TDbiSqlContext::~TDbiSqlContext() {
 //
 //
 //  Purpose: Destructor
@@ -115,7 +115,7 @@ ND::TDbiSqlContext::~TDbiSqlContext() {
 //
 
 
-  DbiTrace( "Destroying ND::TDbiSqlContext" << "  ");
+  DbiTrace( "Destroying CP::TDbiSqlContext" << "  ");
 
 }
 
@@ -124,7 +124,7 @@ ND::TDbiSqlContext::~TDbiSqlContext() {
 
 //.....................................................................
 
-ND::TDbiSqlContext:: {
+CP::TDbiSqlContext:: {
 //
 //
 //  Purpose:

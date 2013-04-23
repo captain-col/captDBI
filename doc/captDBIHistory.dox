@@ -148,7 +148,7 @@ Freeze information:
  almost transparent to the users. The one code change required is that  all existing source
  which uses  DbiResultPtr  has to make the following change in all corresponding LinkDef files:
 
- sed -i  's/pragma link C++ class DbiResultPtr</pragma link C++ class ND::TDbiResultSetHandle</g' *LinkDef.h
+ sed -i  's/pragma link C++ class DbiResultPtr</pragma link C++ class CP::TDbiResultSetHandle</g' *LinkDef.h
 
 
 

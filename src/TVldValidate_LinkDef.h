@@ -1,3 +1,3 @@
 #ifdef __CINT__
-#pragma link C++ class ND::TVldValidate;
+#pragma link C++ class CP::TVldValidate;
 #endif

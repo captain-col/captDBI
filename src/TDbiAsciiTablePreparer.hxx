@@ -5,7 +5,7 @@
  *
  * $Id: TDbiAsciiTablePreparer.hxx,v 1.1 2011/01/18 05:49:19 finch Exp $
  *
- * \class ND::TDbiAsciiTablePreparer
+ * \class CP::TDbiAsciiTablePreparer
  *
  *
  * \brief
@@ -32,7 +32,7 @@
 
 #include "TDbiExceptionLog.hxx"
 
-namespace ND {
+namespace CP {
 class TDbiAsciiTablePreparer
 {
 

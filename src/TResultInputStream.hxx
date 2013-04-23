@@ -2,17 +2,17 @@
 #define TResultInputStream_hxx_seen
 
 #include "TDbiInRowStream.hxx"
-namespace ND {
+namespace CP {
 class TVldTimeStamp;
 };
 
-namespace ND {
+namespace CP {
     class TResultInputStream;
 };
 
 /// This is the class used to fill table rows from query results.
 
-class ND::TResultInputStream {
+class CP::TResultInputStream {
 
 public:
 

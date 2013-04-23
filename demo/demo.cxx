@@ -33,9 +33,9 @@
 
 int main() {
 
-  // Can be boosted up to VerboseLevel / DebugLevel, see ND::TDbiLog documentation for more information
-  ND::TDbiLog::SetLogLevel(ND::TDbiLog::LogLevel);
-  ND::TDbiLog::SetDebugLevel(ND::TDbiLog::SevereLevel);
+  // Can be boosted up to VerboseLevel / DebugLevel, see CP::TDbiLog documentation for more information
+  CP::TDbiLog::SetLogLevel(CP::TDbiLog::LogLevel);
+  CP::TDbiLog::SetDebugLevel(CP::TDbiLog::SevereLevel);
 
   // Examine the Database table DEMO_DB_TABLE every 5 days between the start
   // and end date.
@@ -49,23 +49,23 @@ int main() {
   UInt_t required_id      = 2288517116UL;
 
   for (Int_t current_unix_time = start_unix_time; current_unix_time <= end_unix_time; current_unix_time += 5*24*60*60) {
-    ND::TEventContext context;
+    CP::TEventContext context;
     context.SetTimeStamp(current_unix_time);
     // Prevent context being treated as MC.
     context.SetPartition(0);  
-    ND::TResultSetHandle<ND::TDemo_DB_Table> rs(context);
+    CP::TResultSetHandle<CP::TDemo_DB_Table> rs(context);
     Int_t numRows(rs.GetNumRows());
     if ( ! numRows )  DbiLog("Applying query at " << UnixTimeToDateTime(current_unix_time) << " ... failed to find any results.");
     else {
       DbiLog("Applying query at " << UnixTimeToDateTime(current_unix_time) << " ... result set contains " 
                                     << numRows << " rows as follows:-");
       for (Int_t irow = 0; irow<numRows; ++irow) rs.GetRow(irow)->Print();
-      const ND::TDemo_DB_Table* required_row = rs.GetRowByIndex(required_id);
+      const CP::TDemo_DB_Table* required_row = rs.GetRowByIndex(required_id);
       if ( required_row ) {
-	DbiLog("  required row " << ND::TTFBChannelId(required_id).AsString());
+	DbiLog("  required row " << CP::TTFBChannelId(required_id).AsString());
 	required_row->Print();
       }
-      else DbiLog("  cannot find required row" << ND::TTFBChannelId(required_id).AsString());      
+      else DbiLog("  cannot find required row" << CP::TTFBChannelId(required_id).AsString());      
     }
   }
 

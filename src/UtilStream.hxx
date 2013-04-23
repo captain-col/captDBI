@@ -1,5 +1,5 @@
 /**
- * \class ND::UtilStream
+ * \class CP::UtilStream
  *
  * \ingroup Util
  *
@@ -28,7 +28,7 @@
 
 #include <iostream>
 #include <string>
-namespace ND {
+namespace CP {
 
 namespace Util {
 

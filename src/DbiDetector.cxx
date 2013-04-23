@@ -5,12 +5,12 @@
 #include "TString.h"
 
 //_____________________________________________________________________________
-Int_t ND::DbiDetector::FullMask()
+Int_t CP::DbiDetector::FullMask()
 {
    return kNear|kFar|kCalib|kTestStand|kMapper;
 }
 //_____________________________________________________________________________
-const Char_t* ND::DbiDetector::AsString(Detector_t detector)
+const Char_t* CP::DbiDetector::AsString(Detector_t detector)
 {
    switch (detector) {
    case kUnknown:   return "Unknown";    break;
@@ -24,7 +24,7 @@ const Char_t* ND::DbiDetector::AsString(Detector_t detector)
 }
 
 //_____________________________________________________________________________
-ND::DbiDetector::Detector_t ND::DbiDetector::CharToEnum(Char_t c)
+CP::DbiDetector::Detector_t CP::DbiDetector::CharToEnum(Char_t c)
 {
   switch(c) {
   case 'N':
@@ -57,7 +57,7 @@ ND::DbiDetector::Detector_t ND::DbiDetector::CharToEnum(Char_t c)
 }
 
 //_____________________________________________________________________________
-Char_t* ND::DbiDetector::MaskToString(Int_t mask)
+Char_t* CP::DbiDetector::MaskToString(Int_t mask)
 {
    // Return a mask of Detector as a string
    //
@@ -70,12 +70,12 @@ Char_t* ND::DbiDetector::MaskToString(Int_t mask)
    Char_t* ptr = newstring;  // start at the beginning
 
    *ptr = 0; // start with nothing
-   Int_t fullmask = ND::DbiDetector::FullMask();
+   Int_t fullmask = CP::DbiDetector::FullMask();
    
    for (Int_t i=0; i<32; i++) {
-      ND::DbiDetector::Detector_t adet = (ND::DbiDetector::Detector_t)(1<<i);
+      CP::DbiDetector::Detector_t adet = (CP::DbiDetector::Detector_t)(1<<i);
       if (mask & adet & fullmask) {
-         const Char_t* toadd = ND::DbiDetector::AsString(adet);
+         const Char_t* toadd = CP::DbiDetector::AsString(adet);
          if (ptr != newstring) *ptr++ = ',';
          strcpy(ptr,toadd);
          ptr += strlen(toadd);
@@ -87,11 +87,11 @@ Char_t* ND::DbiDetector::MaskToString(Int_t mask)
 }
 
 //_____________________________________________________________________________
-ND::DbiDetector::Detector_t ND::DbiDetector::StringToEnum(const Char_t* chars, Int_t maxChar)
+CP::DbiDetector::Detector_t CP::DbiDetector::StringToEnum(const Char_t* chars, Int_t maxChar)
 {
    // convert a set of chars to a valid enum
 
-   Int_t mask = ND::DbiDetector::StringToMask(chars,maxChar);
+   Int_t mask = CP::DbiDetector::StringToMask(chars,maxChar);
 
    switch (mask) {
    case kUnknown:   return kUnknown;    break;
@@ -106,7 +106,7 @@ ND::DbiDetector::Detector_t ND::DbiDetector::StringToEnum(const Char_t* chars, I
 }
 
 //_____________________________________________________________________________
-Int_t ND::DbiDetector::StringToMask(const Char_t* chars, Int_t maxChar)
+Int_t CP::DbiDetector::StringToMask(const Char_t* chars, Int_t maxChar)
 {
    // convert a set of chars to a mask of enum's
    // simple tests for unique characters: {n,f,c,t,m}

@@ -5,11 +5,11 @@
  *
  * $Id: TDbiWriter.hxx,v 1.1 2011/01/18 05:49:20 finch Exp $
  *
- * \class ND::TDbiWriter
+ * \class CP::TDbiWriter
  *
  *
  * \brief
- * <b>Concept</b>  Templated class ND::of pointers to Writer objects.
+ * <b>Concept</b>  Templated class CP::of pointers to Writer objects.
  *   Writer objects are lightweight and provide type safe write
  *   access to a single validity set of a specific table.
  *   A TDbiWriter knows about publishing protocols but uses a
@@ -37,13 +37,13 @@
 #include "TVldRange.hxx"
 #include "TVldTimeStamp.hxx"
 
-namespace ND {
+namespace CP {
 class TDbiSqlValPacket;
 class TDbiTableProxy;
 class TDbiValidityRec;
 }
 
-namespace ND {
+namespace CP {
 template <class T> class TDbiWriter
 {
 
@@ -51,17 +51,17 @@ public:
 
 // Constructors and destructors.
            TDbiWriter();
-           TDbiWriter(const ND::TVldRange& vr,
+           TDbiWriter(const CP::TVldRange& vr,
                      Int_t aggNo,
                      TDbi::Task task,
-                     ND::TVldTimeStamp creationDate,
+                     CP::TVldTimeStamp creationDate,
                      const std::string& dbName,
                      const std::string& logComment = "",
                      const std::string& tableName = "");
-           TDbiWriter(const ND::TVldRange& vr,
+           TDbiWriter(const CP::TVldRange& vr,
                      Int_t aggNo,
                      TDbi::Task task = 0,
-                     ND::TVldTimeStamp creationDate = ND::TVldTimeStamp(0,0),
+                     CP::TVldTimeStamp creationDate = CP::TVldTimeStamp(0,0),
                      UInt_t dbNo = 0,
                      const std::string& logComment = "",
                      const std::string& tableName = "");
@@ -97,16 +97,16 @@ public:
 //  I/O functions
   void Abort() { Reset(); }
   Bool_t Close(const char* fileSpec=0);
-  Bool_t Open(const ND::TVldRange& vr,
+  Bool_t Open(const CP::TVldRange& vr,
             Int_t aggNo,
             TDbi::Task task,
-            ND::TVldTimeStamp creationDate,
+            CP::TVldTimeStamp creationDate,
             const string& dbName,
             const std::string& logComment = "");
-   Bool_t Open(const ND::TVldRange& vr,
+   Bool_t Open(const CP::TVldRange& vr,
             Int_t aggNo,
             TDbi::Task task = 0,
-            ND::TVldTimeStamp creationDate = ND::TVldTimeStamp(),
+            CP::TVldTimeStamp creationDate = CP::TVldTimeStamp(),
             UInt_t dbNo = 0,
             const std::string& logComment = "");
  Bool_t Open(const TDbiValidityRec& vrec,
@@ -116,7 +116,7 @@ public:
               UInt_t dbNo = 0,
               const std::string& logComment = "");
 
-  ND::TDbiWriter<T>& operator<<(const T& row);
+  CP::TDbiWriter<T>& operator<<(const T& row);
 
 private:
 

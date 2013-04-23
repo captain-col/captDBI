@@ -3,7 +3,7 @@
 
 /**
  *
- * \class ND::TDbiBinaryFile
+ * \class CP::TDbiBinaryFile
  *
  *
  * \brief
@@ -35,17 +35,17 @@ using std::vector;
 #endif
 #endif
 
-namespace ND {
+namespace CP {
 class TDbiTableRow;
 }
-namespace ND {
+namespace CP {
 class TVldTimeStamp;
 };
-namespace ND {
+namespace CP {
 class TVldRange;
 };
 
-namespace ND {
+namespace CP {
 class TDbiBinaryFile
 {
 
@@ -77,42 +77,42 @@ public:
 
 /// Builtin data type I/O.
 
-  ND::TDbiBinaryFile& operator >> (Bool_t& num);
-  ND::TDbiBinaryFile& operator << (const Bool_t& num);
-  ND::TDbiBinaryFile& operator >> (Int_t& num);
-  ND::TDbiBinaryFile& operator << (const Int_t& num);
-  ND::TDbiBinaryFile& operator >> (UInt_t& num);
-  ND::TDbiBinaryFile& operator << (const UInt_t& num);
-  ND::TDbiBinaryFile& operator >> (Double_t& num);
-  ND::TDbiBinaryFile& operator << (const Double_t& num);
+  CP::TDbiBinaryFile& operator >> (Bool_t& num);
+  CP::TDbiBinaryFile& operator << (const Bool_t& num);
+  CP::TDbiBinaryFile& operator >> (Int_t& num);
+  CP::TDbiBinaryFile& operator << (const Int_t& num);
+  CP::TDbiBinaryFile& operator >> (UInt_t& num);
+  CP::TDbiBinaryFile& operator << (const UInt_t& num);
+  CP::TDbiBinaryFile& operator >> (Double_t& num);
+  CP::TDbiBinaryFile& operator << (const Double_t& num);
 
 /// Simple Virtual object I/O.
 /// (i.e. object with vptr but only built-in data types)
 
-  ND::TDbiBinaryFile& operator >> (ND::TVldTimeStamp& ts);
-  ND::TDbiBinaryFile& operator << (const ND::TVldTimeStamp& ts);
+  CP::TDbiBinaryFile& operator >> (CP::TVldTimeStamp& ts);
+  CP::TDbiBinaryFile& operator << (const CP::TVldTimeStamp& ts);
 
 /// String I/O.
 /// Warning: Implimentation assumes that string does not contain
 ///          a null character.
 
-  ND::TDbiBinaryFile& operator >> (string& str);
-  ND::TDbiBinaryFile& operator << (const string& str);
+  CP::TDbiBinaryFile& operator >> (string& str);
+  CP::TDbiBinaryFile& operator << (const string& str);
 
 /// Compound object I/O.
 
-  ND::TDbiBinaryFile& operator >> (ND::TVldRange& vr);
-  ND::TDbiBinaryFile& operator << (const ND::TVldRange& vr);
+  CP::TDbiBinaryFile& operator >> (CP::TVldRange& vr);
+  CP::TDbiBinaryFile& operator << (const CP::TVldRange& vr);
 
 // Vector I/O.
-///\brief Read a vector of objects inheriting from ND::TDbiTableRow.
+///\brief Read a vector of objects inheriting from CP::TDbiTableRow.
 ///
 ///\verbatim
 /// Vector I/O.
 /// ***********
 ///
 ///
-///  Purpose: Read a vector of objects inheriting from ND::TDbiTableRow.
+///  Purpose: Read a vector of objects inheriting from CP::TDbiTableRow.
 ///
 ///   NB:     On entry, array must be empty.
 ///
@@ -125,10 +125,10 @@ public:
 ///
 ///  For the format of record see the operator <<.
 ///\endverbatim
-  ND::TDbiBinaryFile& operator >>  (vector<ND::TDbiTableRow*>& arr);
+  CP::TDbiBinaryFile& operator >>  (vector<CP::TDbiTableRow*>& arr);
 ///\verbatim
 ///
-///  Purpose: Write a vector of objects inheriting from ND::TDbiTableRow.
+///  Purpose: Write a vector of objects inheriting from CP::TDbiTableRow.
 ///
 ///  Format of record:-
 ///
@@ -145,7 +145,7 @@ public:
 ///
 ///  Int_t     EndMarker  End of record marker = 0xddbbccaa
 ///\endverbatim
-  ND::TDbiBinaryFile& operator <<  (vector<ND::TDbiTableRow*>& arr);
+  CP::TDbiBinaryFile& operator <<  (vector<CP::TDbiTableRow*>& arr);
   char* ReleaseArrayBuffer() { char* buff = fArrayBuffer;
                                fArrayBuffer = 0;
                                return buff; }

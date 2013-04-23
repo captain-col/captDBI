@@ -1,3 +1,3 @@
 #ifdef __CINT__
-#pragma link C++ class ND::TResultInputStream+;
+#pragma link C++ class CP::TResultInputStream+;
 #endif

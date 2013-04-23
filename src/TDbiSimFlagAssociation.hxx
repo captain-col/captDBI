@@ -6,7 +6,7 @@
  *
  * $Id: TDbiSimFlagAssociation.hxx,v 1.1 2011/01/18 05:49:20 finch Exp $
  *
- * \class ND::TDbiSimFlagAssociation
+ * \class CP::TDbiSimFlagAssociation
  *
  *
  * \brief
@@ -32,16 +32,16 @@ using std::map;
 
 #include "DbiSimFlag.hxx"
 
-namespace ND {
+namespace CP {
 class TDbiSimFlagAssociation;
 }
-namespace ND{
+namespace CP{
 class TDbiRegistry;
 }
 
-ostream& operator<<(ostream& s, const ND::TDbiSimFlagAssociation& simFlagAss);
+ostream& operator<<(ostream& s, const CP::TDbiSimFlagAssociation& simFlagAss);
 
-namespace ND {
+namespace CP {
 class TDbiSimFlagAssociation
 {
 
@@ -49,8 +49,8 @@ class TDbiSimFlagAssociation
 public:
 
 // Typedefs for tired fingers.
-  typedef list<ND::DbiSimFlag::SimFlag_t>           SimList_t;
-  typedef map<ND::DbiSimFlag::SimFlag_t,SimList_t > SimMap_t;
+  typedef list<CP::DbiSimFlag::SimFlag_t>           SimList_t;
+  typedef map<CP::DbiSimFlag::SimFlag_t,SimList_t > SimMap_t;
 
 // Constructors and destructors.
            TDbiSimFlagAssociation();
@@ -58,7 +58,7 @@ public:
 
 // State testing member functions
 
-  SimList_t Get(const ND::DbiSimFlag::SimFlag_t value)const;
+  SimList_t Get(const CP::DbiSimFlag::SimFlag_t value)const;
                       void Print(ostream& s)const;
                       void Show();
 
@@ -68,7 +68,7 @@ public:
 // State changing member functions.
 
   void Clear() { fAssociations.clear(); }
-  void Set(const ND::DbiSimFlag::SimFlag_t value, SimList_t list) {
+  void Set(const CP::DbiSimFlag::SimFlag_t value, SimList_t list) {
                                           fAssociations[value] = list; }
   void Set(TDbiRegistry& reg);
 

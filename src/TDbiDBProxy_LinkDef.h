@@ -1,3 +1,3 @@
 #ifdef __CINT__
-#pragma link C++ class ND::TDbiDBProxy;
+#pragma link C++ class CP::TDbiDBProxy;
 #endif

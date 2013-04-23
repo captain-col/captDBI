@@ -1,5 +1,5 @@
 /**
- * \class ND::TVldRange
+ * \class CP::TVldRange
  *
  * \ingroup Validity
  *
@@ -29,7 +29,7 @@
 #include "TVldTimeStamp.hxx"
 #include <iosfwd>
 
-namespace ND {
+namespace CP {
 class TVldContext;
 
 class TVldRange;
@@ -58,12 +58,12 @@ class TVldRange : public TObject {
    */
    const char* AsString(Option_t *option = "") const;
 
-   /** Compare ND::TVldContext with this TVldRange to see if the
+   /** Compare CP::TVldContext with this TVldRange to see if the
     * the tagged set is compatible.*/
-   Bool_t IsCompatible(const ND::TVldContext &vldc) const;
-   /** Compare ND::TVldContext with this TVldRange to see if the
+   Bool_t IsCompatible(const CP::TVldContext &vldc) const;
+   /** Compare CP::TVldContext with this TVldRange to see if the
     * the tagged set is compatible.*/
-   Bool_t IsCompatible(const ND::TVldContext *vldc) const;
+   Bool_t IsCompatible(const CP::TVldContext *vldc) const;
 
    Int_t  GetDetectorMask()    const { return fDetectorMask; }
    Int_t  GetSimMask()         const { return fSimMask; }
@@ -82,7 +82,7 @@ class TVldRange : public TObject {
 
  protected:
 
-   Int_t              fDetectorMask; /// or's of ND::DbiDetector::Detector_t
+   Int_t              fDetectorMask; /// or's of CP::DbiDetector::Detector_t
    Int_t              fSimMask;      /// or's of data/mc conditions
    TVldTimeStamp       fTimeStart;
    TVldTimeStamp       fTimeEnd;
@@ -90,8 +90,8 @@ class TVldRange : public TObject {
 
  private:
 
-   ClassDef(ND::TVldRange,1)  // TVldRange version 1
+   ClassDef(CP::TVldRange,1)  // TVldRange version 1
 };
-}; std::ostream& operator<<(std::ostream& os, const ND::TVldRange& vldts);
+}; std::ostream& operator<<(std::ostream& os, const CP::TVldRange& vldts);
 
 #endif // VLDRANGE_H

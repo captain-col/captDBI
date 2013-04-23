@@ -2,7 +2,7 @@
 
 using namespace std;
 
-void ND::Util::eat_whitespace(std::istream& is)
+void CP::Util::eat_whitespace(std::istream& is)
 {
     char c;
     while (is.get(c)) {
@@ -13,7 +13,7 @@ void ND::Util::eat_whitespace(std::istream& is)
     }
 }
 
-std::string ND::Util::read_quoted_string(std::istream& is)
+std::string CP::Util::read_quoted_string(std::istream& is)
 {
     eat_whitespace(is);
 

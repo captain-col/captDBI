@@ -18,7 +18,7 @@ using std::ostringstream;
 #include "UtilString.hxx"
 #include "TVldTimeStamp.hxx"
 
-ClassImp(ND::TDbiInRowStream)
+ClassImp(CP::TDbiInRowStream)
 
 
 //   Definition of static data members
@@ -37,10 +37,10 @@ ClassImp(ND::TDbiInRowStream)
 ///  Purpose:  Default constructor
 ///
 ///  Arguments:
-///     stmtDb     in  ND::TDbiStatement to be used for query.  May be zero.
+///     stmtDb     in  CP::TDbiStatement to be used for query.  May be zero.
 ///     sql        in  The query to be applied to the statement.
 ///     metaData   in  Meta data for query.
-///     tableProxy in  Source ND::TDbiTableProxy.
+///     tableProxy in  Source CP::TDbiTableProxy.
 ///     dbNo       in  Cascade no. of source.
 ///
 ///  Return:    n/a
@@ -53,13 +53,13 @@ ClassImp(ND::TDbiInRowStream)
 ///  o  Create ResultSet for query.
 ///\endverbatim
 
-ND::TDbiInRowStream::TDbiInRowStream(ND::TDbiStatement* stmtDb,
-                           const ND::TDbiString& sql,
-                           const ND::TDbiTableMetaData* metaData,
-                           const ND::TDbiTableProxy* tableProxy,
+CP::TDbiInRowStream::TDbiInRowStream(CP::TDbiStatement* stmtDb,
+                           const CP::TDbiString& sql,
+                           const CP::TDbiTableMetaData* metaData,
+                           const CP::TDbiTableProxy* tableProxy,
                            UInt_t dbNo,
                            const string& fillOpts) :
-ND::TDbiRowStream(metaData),
+CP::TDbiRowStream(metaData),
 fCurRow(0),
 fDbNo(dbNo),
 fStatement(stmtDb),
@@ -76,12 +76,12 @@ fFillOpts(fillOpts)
 //  None.
 
 
-  DbiTrace( "Creating ND::TDbiInRowStream" << "  ");
+  DbiTrace( "Creating CP::TDbiInRowStream" << "  ");
 
   if ( stmtDb ) {
     fTSQLStatement = stmtDb->ExecuteQuery(sql.c_str());
     if ( fTSQLStatement && fTSQLStatement->NextResultRow() ) fExhausted = false;
-    stmtDb->PrintExceptions(ND::TDbiLog::DebugLevel );
+    stmtDb->PrintExceptions(CP::TDbiLog::DebugLevel );
   }
 
 }
@@ -102,10 +102,10 @@ fFillOpts(fillOpts)
 ///  Specification:-
 ///  =============
 ///
-///  o  Destroy ResultSet and owned ND::TDbiStatement if any.
+///  o  Destroy ResultSet and owned CP::TDbiStatement if any.
 ///\endverbatim
 
-ND::TDbiInRowStream::~TDbiInRowStream() {
+CP::TDbiInRowStream::~TDbiInRowStream() {
 
 //  Program Notes:-
 //  =============
@@ -113,7 +113,7 @@ ND::TDbiInRowStream::~TDbiInRowStream() {
 //  None.
 
 
-  DbiTrace( "Destroying ND::TDbiInRowStream" << "  ");
+  DbiTrace( "Destroying CP::TDbiInRowStream" << "  ");
   delete fTSQLStatement;
   fTSQLStatement = 0;
   delete fStatement;
@@ -151,7 +151,7 @@ ND::TDbiInRowStream::~TDbiInRowStream() {
 // Caution: Column numbering in TSQLStatement starts at 0.
 #define IN3(t)                                                      \
 int col = this->CurColNum()-1;                                      \
-const ND::TDbiFieldType& fType = this->ColFieldType(col+1);              \
+const CP::TDbiFieldType& fType = this->ColFieldType(col+1);              \
 if ( fType.GetSize() == 8 ) {                                       \
   dest=fTSQLStatement->GetUInt(col);				    \
 }                                                                   \
@@ -164,32 +164,32 @@ else {                                                              \
   if ( fType.GetSize() == 4 ) dest &= 0xffffffff;                   \
 }\
 
-ND::TDbiInRowStream& ND::TDbiInRowStream::operator>>(Bool_t& dest) {
+CP::TDbiInRowStream& CP::TDbiInRowStream::operator>>(Bool_t& dest) {
                                  IN(TDbi::kBool) >> dest;  return *this;}
-ND::TDbiInRowStream& ND::TDbiInRowStream::operator>>(Char_t& dest) {
+CP::TDbiInRowStream& CP::TDbiInRowStream::operator>>(Char_t& dest) {
                                  IN(TDbi::kChar) >> dest; return *this;}
-ND::TDbiInRowStream& ND::TDbiInRowStream::operator>>(Short_t& dest) {
+CP::TDbiInRowStream& CP::TDbiInRowStream::operator>>(Short_t& dest) {
                                  IN2(TDbi::kInt,GetInt);    return *this;}
-ND::TDbiInRowStream& ND::TDbiInRowStream::operator>>(UShort_t& dest) {
+CP::TDbiInRowStream& CP::TDbiInRowStream::operator>>(UShort_t& dest) {
                                  IN3(Short_t); return *this;}
-ND::TDbiInRowStream& ND::TDbiInRowStream::operator>>(Int_t& dest) {
+CP::TDbiInRowStream& CP::TDbiInRowStream::operator>>(Int_t& dest) {
                                  IN2(TDbi::kInt,GetInt);      return *this;}
-ND::TDbiInRowStream& ND::TDbiInRowStream::operator>>(UInt_t& dest) {
+CP::TDbiInRowStream& CP::TDbiInRowStream::operator>>(UInt_t& dest) {
                                  IN3(Int_t);  return *this;}
-ND::TDbiInRowStream& ND::TDbiInRowStream::operator>>(Long_t& dest) {
+CP::TDbiInRowStream& CP::TDbiInRowStream::operator>>(Long_t& dest) {
                                  IN2(TDbi::kLong, GetLong);   return *this;}
-ND::TDbiInRowStream& ND::TDbiInRowStream::operator>>(ULong_t& dest) {
+CP::TDbiInRowStream& CP::TDbiInRowStream::operator>>(ULong_t& dest) {
                                  IN3(Long_t);  return *this;}
-ND::TDbiInRowStream& ND::TDbiInRowStream::operator>>(Float_t& dest) {
+CP::TDbiInRowStream& CP::TDbiInRowStream::operator>>(Float_t& dest) {
                                  IN2(TDbi::kFloat,GetDouble);  return *this;}
-ND::TDbiInRowStream& ND::TDbiInRowStream::operator>>(Double_t& dest) {
+CP::TDbiInRowStream& CP::TDbiInRowStream::operator>>(Double_t& dest) {
                                  IN2(TDbi::kDouble,GetDouble);return *this;}
 
-// Also use AsString() for string and ND::TVldTimeStamp; conversion to string
+// Also use AsString() for string and CP::TVldTimeStamp; conversion to string
 // is needed in any case.
-ND::TDbiInRowStream& ND::TDbiInRowStream::operator>>(string& dest) {
+CP::TDbiInRowStream& CP::TDbiInRowStream::operator>>(string& dest) {
                           dest = AsString(TDbi::kString);  return *this;}
-ND::TDbiInRowStream& ND::TDbiInRowStream::operator>>(ND::TVldTimeStamp& dest){
+CP::TDbiInRowStream& CP::TDbiInRowStream::operator>>(CP::TVldTimeStamp& dest){
            dest=TDbi::MakeTimeStamp(AsString(TDbi::kDate)); return *this;}
 
 //.....................................................................
@@ -216,7 +216,7 @@ ND::TDbiInRowStream& ND::TDbiInRowStream::operator>>(ND::TVldTimeStamp& dest){
 /// o Check for compatibility between required data type and table
 ///   data type, report problems and return default if incompatible.
 ///\endverbatim
-string& ND::TDbiInRowStream::AsString(TDbi::DataTypes type) {
+string& CP::TDbiInRowStream::AsString(TDbi::DataTypes type) {
 //
 
 //  Program Notes:-
@@ -224,7 +224,7 @@ string& ND::TDbiInRowStream::AsString(TDbi::DataTypes type) {
 
 //  None.
 
-  ND::TDbiFieldType  reqdt(type);
+  CP::TDbiFieldType  reqdt(type);
 
 //  Place table value string in value string buffer.
 
@@ -243,7 +243,7 @@ string& ND::TDbiInRowStream::AsString(TDbi::DataTypes type) {
 
 //  Check for compatibility with required data type.
 
-  const ND::TDbiFieldType& actdt = MetaData()->ColFieldType(col);
+  const CP::TDbiFieldType& actdt = MetaData()->ColFieldType(col);
 
   if ( reqdt.IsCompatible(actdt) ) {
     Bool_t smaller = reqdt.IsSmaller(actdt);
@@ -295,7 +295,7 @@ string& ND::TDbiInRowStream::AsString(TDbi::DataTypes type) {
 ///
 ///  o  Test if current column exists.
 ///\endverbatim
-Bool_t ND::TDbiInRowStream::CurColExists() const {
+Bool_t CP::TDbiInRowStream::CurColExists() const {
 
 //  Program Notes:-
 //  =============
@@ -340,7 +340,7 @@ Bool_t ND::TDbiInRowStream::CurColExists() const {
 ///
 ///  o Return current column as a string.
 ///\endverbatim
-string ND::TDbiInRowStream::CurColString() const {
+string CP::TDbiInRowStream::CurColString() const {
 
 //  Program Notes:-
 //  =============
@@ -370,7 +370,7 @@ string ND::TDbiInRowStream::CurColString() const {
 ///
 ///  o Load next row with string lengths.
 ///\endverbatim
-Bool_t ND::TDbiInRowStream::FetchRow() {
+Bool_t CP::TDbiInRowStream::FetchRow() {
 
 
 //  Program Notes:-
@@ -398,7 +398,7 @@ Bool_t ND::TDbiInRowStream::FetchRow() {
 ///  o Get string from underlying TSQL interface.
 ///
 ///\endverbatim
-TString ND::TDbiInRowStream::GetStringFromTSQL(Int_t col) const {
+TString CP::TDbiInRowStream::GetStringFromTSQL(Int_t col) const {
 
 // Caution: Column numbering in TSQLStatement starts at 0.
   TString valStr = fTSQLStatement->GetString(col-1);
@@ -422,7 +422,7 @@ TString ND::TDbiInRowStream::GetStringFromTSQL(Int_t col) const {
 ///  o Load current value into buffer fValString stripping off any
 ///    enclosing quotes.
 ///\endverbatim
-Bool_t ND::TDbiInRowStream::LoadCurValue() const{
+Bool_t CP::TDbiInRowStream::LoadCurValue() const{
 
 
   fValString.clear();
@@ -468,9 +468,9 @@ Bool_t ND::TDbiInRowStream::LoadCurValue() const{
 ///    row          in    String to append to.
 ///
 ///\endverbatim
-void ND::TDbiInRowStream::RowAsCsv(string& row) const {
+void CP::TDbiInRowStream::RowAsCsv(string& row) const {
 
-  const ND::TDbiTableMetaData* md = this->MetaData();
+  const CP::TDbiTableMetaData* md = this->MetaData();
 
   Int_t maxCol = this->NumCols();
   for (Int_t col = 1; col <= maxCol; ++col) {
@@ -487,7 +487,7 @@ void ND::TDbiInRowStream::RowAsCsv(string& row) const {
     const char* value = str.Data();
 
     // Make strings printable.
-    if ( concept == TDbi::kString ) ND::UtilString::MakePrintable(value,row);
+    if ( concept == TDbi::kString ) CP::UtilString::MakePrintable(value,row);
 
     // For floating point, use binary interface to preserve precision
     // e.g.-1.234567890123457e-100 as string is -0.000000

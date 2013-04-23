@@ -9,22 +9,22 @@
 #include "TDbiCfg.hxx"
 #include "TDbiCfgDialog.hxx"
 
-ClassImp(ND::TDbiCfgConfigurable)
+ClassImp(CP::TDbiCfgConfigurable)
 
 //......................................................................
 
-ND::TDbiCfgConfigurable::TDbiCfgConfigurable() : fConfig(false) { }
+CP::TDbiCfgConfigurable::TDbiCfgConfigurable() : fConfig(false) { }
 
 //......................................................................
 
-ND::TDbiCfgConfigurable::~TDbiCfgConfigurable() { }
+CP::TDbiCfgConfigurable::~TDbiCfgConfigurable() { }
 
 //......................................................................
 ///
 /// Subclass must call this before the Configurable can have
 /// meaningful entries
 ///
-void ND::TDbiCfgConfigurable::CommitDefaultConfig(const TDbiRegistry& r)
+void CP::TDbiCfgConfigurable::CommitDefaultConfig(const TDbiRegistry& r)
 {
 
   fDefConfig = r;
@@ -35,7 +35,7 @@ void ND::TDbiCfgConfigurable::CommitDefaultConfig(const TDbiRegistry& r)
 /// Eventually this might go in the database and load the
 /// configuration. This would take a name or something. 
 //====================================================================
-const ND::TDbiRegistry& ND::TDbiCfgConfigurable::DefaultConfig() const 
+const CP::TDbiRegistry& CP::TDbiCfgConfigurable::DefaultConfig() const 
 {
   return fDefConfig;
 }
@@ -43,7 +43,7 @@ const ND::TDbiRegistry& ND::TDbiCfgConfigurable::DefaultConfig() const
 /// Returns the configuration TDbiRegistry, this is non-const as the user
 /// is user is free to modify
 //======================================================================
-ND::TDbiRegistry& ND::TDbiCfgConfigurable::GetConfig()
+CP::TDbiRegistry& CP::TDbiCfgConfigurable::GetConfig()
 {
 
   return fConfig;
@@ -53,7 +53,7 @@ ND::TDbiRegistry& ND::TDbiCfgConfigurable::GetConfig()
 /// the user any freedom to modify it, but does mean that a
 /// configurable object can use it in a const method.
 //======================================================================
-const ND::TDbiRegistry& ND::TDbiCfgConfigurable::GetConfig() const
+const CP::TDbiRegistry& CP::TDbiCfgConfigurable::GetConfig() const
 {
 
   return fConfig;
@@ -65,7 +65,7 @@ const ND::TDbiRegistry& ND::TDbiCfgConfigurable::GetConfig() const
 /// is nothing to do just return w/o taking any action. Return's 0 if
 /// no action was taken, >0 if the object was reconfigured.
 //======================================================================
-int ND::TDbiCfgConfigurable::Update() 
+int CP::TDbiCfgConfigurable::Update() 
 {
 
   if (! fConfig.IsDirty()) return 0;  // Nothing to do if config is current
@@ -80,7 +80,7 @@ int ND::TDbiCfgConfigurable::Update()
 /// passed in. If none is passed in use the default, text based dialog
 // object.
 //======================================================================
-void ND::TDbiCfgConfigurable::Set(TDbiCfgDialog* d) 
+void CP::TDbiCfgConfigurable::Set(TDbiCfgDialog* d) 
 {
 
   bool deleteDialog = false;
@@ -108,11 +108,11 @@ void ND::TDbiCfgConfigurable::Set(TDbiCfgDialog* d)
 /// Update the configuration given a text string s. Format:
 /// "key1=true, key2=10, key3=11.1, key4='A string'"
 //======================================================================
-void ND::TDbiCfgConfigurable::Set(const char* s) 
+void CP::TDbiCfgConfigurable::Set(const char* s) 
 {
 
   TDbiRegistry r;
-  ND::TDbiCfg::StringToTDbiRegistry(r,s);
+  CP::TDbiCfg::StringToTDbiRegistry(r,s);
   this->GetConfig().UnLockValues();
   this->GetConfig().Merge(r);
   this->GetConfig().LockValues();

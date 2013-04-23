@@ -5,7 +5,7 @@
  *
  * $Id: TDbiValRecSet.hxx,v 1.1 2011/01/18 05:49:20 finch Exp $
  *
- * \class ND::TDbiValRecSet
+ * \class CP::TDbiValRecSet
  *
  *
  * \brief
@@ -23,12 +23,12 @@
 #include <map>
 #include <string>
 
-namespace ND {
+namespace CP {
 class TDbiResultSet;
 class TDbiValidityRec;
 }
 
-namespace ND {
+namespace CP {
 class TDbiValRecSet
 {
 

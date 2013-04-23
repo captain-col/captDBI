@@ -11,8 +11,8 @@ using std::endl;
 
 //CVSID("$Id: TDbiServices.cxx,v 1.1 2011/01/18 05:49:20 finch Exp $");
 
-bool ND::TDbiServices::fOrderContextQuery          = false;
-bool ND::TDbiServices::fAsciiDBConectionsTemporary = true;
+bool CP::TDbiServices::fOrderContextQuery          = false;
+bool CP::TDbiServices::fAsciiDBConectionsTemporary = true;
 
 // Definition of static member functions (alphabetical order)
 // **********************************************************

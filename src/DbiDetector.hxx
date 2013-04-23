@@ -23,7 +23,7 @@
 //typedef DetectorType Detector;
 //#define DetectorType Detector
 
-namespace ND{
+namespace CP{
 namespace DbiDetector {
   typedef enum EDetector {
       kUnknown   = 0x00,

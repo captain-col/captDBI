@@ -4,13 +4,13 @@
 #include <string>
 #include "Rtypes.h"
 
-namespace ND {
+namespace CP {
     class TSeqNoAllocator;
 };
 
 /// This is the class can be used to supply local or global SEQNOs.
 
-class ND::TSeqNoAllocator {
+class CP::TSeqNoAllocator {
 
 public:
     TSeqNoAllocator() {}

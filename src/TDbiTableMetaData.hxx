@@ -10,7 +10,7 @@
  *
  * $Id: TDbiTableMetaData.hxx,v 1.1 2011/01/18 05:49:20 finch Exp $
  *
- * \class ND::TDbiTableMetaData
+ * \class CP::TDbiTableMetaData
  *
  *
  * \brief
@@ -31,7 +31,7 @@ using std::string;
 
 #include "TDbiFieldType.hxx"
 
-namespace ND {
+namespace CP {
 class TDbiTableMetaData
 {
 

@@ -40,9 +40,9 @@ void SetVTptr(void* obj, const void* vt) {
 //   Definition of static data members
 //   *********************************
 
-string ND::TDbiBinaryFile::fgWorkDir;
-Bool_t ND::TDbiBinaryFile::fgReadAccess  = kTRUE;
-Bool_t ND::TDbiBinaryFile::fgWriteAccess = kTRUE;
+string CP::TDbiBinaryFile::fgWorkDir;
+Bool_t CP::TDbiBinaryFile::fgReadAccess  = kTRUE;
+Bool_t CP::TDbiBinaryFile::fgWriteAccess = kTRUE;
 
 
 
@@ -52,7 +52,7 @@ Bool_t ND::TDbiBinaryFile::fgWriteAccess = kTRUE;
 
 //.....................................................................
 
-ND::TDbiBinaryFile::TDbiBinaryFile(const char* fileName, Bool_t input ) :
+CP::TDbiBinaryFile::TDbiBinaryFile(const char* fileName, Bool_t input ) :
 fFile(0),
 fReading(input),
 fHasErrors(kFALSE),
@@ -97,7 +97,7 @@ fArrayBuffer(0)
 }
 //.....................................................................
 ///  Purpose:  Default Destructor.
-ND::TDbiBinaryFile::~TDbiBinaryFile()
+CP::TDbiBinaryFile::~TDbiBinaryFile()
 {
 //
 //
@@ -112,7 +112,7 @@ ND::TDbiBinaryFile::~TDbiBinaryFile()
 }
 //.....................................................................
 ///  Purpose:  Close file.
-void ND::TDbiBinaryFile::Close()
+void CP::TDbiBinaryFile::Close()
 {
 //
 //
@@ -126,7 +126,7 @@ void ND::TDbiBinaryFile::Close()
 
 #define READ_BUILTIN(t)                                   \
                                                           \
-ND::TDbiBinaryFile& ND::TDbiBinaryFile::operator >> (t& v) {        \
+CP::TDbiBinaryFile& CP::TDbiBinaryFile::operator >> (t& v) {        \
   UInt_t numBytes = sizeof(v);                            \
   char* bytes = reinterpret_cast<char*>(&v);              \
   this->Read(bytes,numBytes);                             \
@@ -134,7 +134,7 @@ ND::TDbiBinaryFile& ND::TDbiBinaryFile::operator >> (t& v) {        \
 }
 #define WRITE_BUILTIN(t)                                  \
                                                           \
-ND::TDbiBinaryFile& ND::TDbiBinaryFile::operator << (const t& v) {  \
+CP::TDbiBinaryFile& CP::TDbiBinaryFile::operator << (const t& v) {  \
   UInt_t numBytes = sizeof(v);                            \
   const char* bytes = reinterpret_cast<const char*>(&v);  \
   this->Write(bytes,numBytes);                            \
@@ -156,7 +156,7 @@ WRITE_BUILTIN(Double_t)
 
 #define READ_SIMPLE(t)                                    \
                                                           \
-ND::TDbiBinaryFile& ND::TDbiBinaryFile::operator >> (t& v) {        \
+CP::TDbiBinaryFile& CP::TDbiBinaryFile::operator >> (t& v) {        \
   void* vt = GetVTptr(&v);                                \
   UInt_t numBytes = sizeof(v);                            \
   char* bytes = reinterpret_cast<char*>(&v);              \
@@ -166,15 +166,15 @@ ND::TDbiBinaryFile& ND::TDbiBinaryFile::operator >> (t& v) {        \
 }
 #define WRITE_SIMPLE(t)                                   \
                                                           \
-ND::TDbiBinaryFile& ND::TDbiBinaryFile::operator << (const t& v) {  \
+CP::TDbiBinaryFile& CP::TDbiBinaryFile::operator << (const t& v) {  \
   UInt_t numBytes = sizeof(v);                            \
   const char* bytes = reinterpret_cast<const char*>(&v);  \
   this->Write(bytes,numBytes);                            \
   return *this;                                           \
 }
 
-READ_SIMPLE(ND::TVldTimeStamp)
-WRITE_BUILTIN(ND::TVldTimeStamp)
+READ_SIMPLE(CP::TVldTimeStamp)
+WRITE_BUILTIN(CP::TVldTimeStamp)
 
 
 //  String I/O.
@@ -182,7 +182,7 @@ WRITE_BUILTIN(ND::TVldTimeStamp)
 
 //.....................................................................
 
-ND::TDbiBinaryFile& ND::TDbiBinaryFile::operator >> (string& str) {
+CP::TDbiBinaryFile& CP::TDbiBinaryFile::operator >> (string& str) {
 
   if ( this->CanRead() ) {
     getline(*fFile,str,'\0');
@@ -192,7 +192,7 @@ ND::TDbiBinaryFile& ND::TDbiBinaryFile::operator >> (string& str) {
 }
 //.....................................................................
 
-ND::TDbiBinaryFile& ND::TDbiBinaryFile::operator << (const string& str) {
+CP::TDbiBinaryFile& CP::TDbiBinaryFile::operator << (const string& str) {
 
   UInt_t numBytes = str.size()+1;
   this->Write(str.c_str(),numBytes);
@@ -201,13 +201,13 @@ ND::TDbiBinaryFile& ND::TDbiBinaryFile::operator << (const string& str) {
 
 //.....................................................................
 
-ND::TDbiBinaryFile& ND::TDbiBinaryFile::operator >> (ND::TVldRange& vr) {
+CP::TDbiBinaryFile& CP::TDbiBinaryFile::operator >> (CP::TVldRange& vr) {
 
   if ( this->CanRead() ) {
     Int_t        detectorMask;
     Int_t        simMask;
-    ND::TVldTimeStamp timeStart;
-    ND::TVldTimeStamp timeEnd;
+    CP::TVldTimeStamp timeStart;
+    CP::TVldTimeStamp timeEnd;
     string str;
     (*this) >> detectorMask
             >> simMask
@@ -215,14 +215,14 @@ ND::TDbiBinaryFile& ND::TDbiBinaryFile::operator >> (ND::TVldRange& vr) {
             >> timeEnd
             >> str;
     TString dataSource(str.c_str());
-    ND::TVldRange tmp(detectorMask,simMask,timeStart,timeEnd,dataSource);
+    CP::TVldRange tmp(detectorMask,simMask,timeStart,timeEnd,dataSource);
     vr = tmp;
   }
   return *this;
 }
 //.....................................................................
 
-ND::TDbiBinaryFile& ND::TDbiBinaryFile::operator << (const ND::TVldRange& vr) {
+CP::TDbiBinaryFile& CP::TDbiBinaryFile::operator << (const CP::TVldRange& vr) {
 
   if ( this->CanWrite() ) {
     string str(vr.GetDataSource().Data());
@@ -237,7 +237,7 @@ ND::TDbiBinaryFile& ND::TDbiBinaryFile::operator << (const ND::TVldRange& vr) {
 
 //.....................................................................
 
-ND::TDbiBinaryFile& ND::TDbiBinaryFile::operator >> (vector<ND::TDbiTableRow*>& arr) {
+CP::TDbiBinaryFile& CP::TDbiBinaryFile::operator >> (vector<CP::TDbiTableRow*>& arr) {
 
 
   if ( ! this->CanRead() ) return *this;
@@ -278,7 +278,7 @@ ND::TDbiBinaryFile& ND::TDbiBinaryFile::operator >> (vector<ND::TDbiTableRow*>& 
     void* vt  = GetVTptr(obj);
 //  This only works if the address of the sub-class object is the same
 //  as the underlying base class, which should be true in this simple case.
-    ND::TDbiTableRow* tr = reinterpret_cast<ND::TDbiTableRow*>(obj);
+    CP::TDbiTableRow* tr = reinterpret_cast<CP::TDbiTableRow*>(obj);
     delete tr;
 
     DbiVerbose(  "Restoring array of " << arrSize << " "
@@ -309,7 +309,7 @@ ND::TDbiBinaryFile& ND::TDbiBinaryFile::operator >> (vector<ND::TDbiTableRow*>& 
     arr.reserve(arrSize);
     for (int row = 0; row < arrSize; ++row ) {
       SetVTptr(elem,vt);
-      arr.push_back(reinterpret_cast<ND::TDbiTableRow*>(elem));
+      arr.push_back(reinterpret_cast<CP::TDbiTableRow*>(elem));
       elem += objSize;
     }
 
@@ -329,7 +329,7 @@ ND::TDbiBinaryFile& ND::TDbiBinaryFile::operator >> (vector<ND::TDbiTableRow*>& 
 }
 
 ///.....................................................................
-ND::TDbiBinaryFile& ND::TDbiBinaryFile::operator << (vector<ND::TDbiTableRow*>& arr) {
+CP::TDbiBinaryFile& CP::TDbiBinaryFile::operator << (vector<CP::TDbiTableRow*>& arr) {
 
 
   if ( ! this->CanWrite() ) return *this;
@@ -340,7 +340,7 @@ ND::TDbiBinaryFile& ND::TDbiBinaryFile::operator << (vector<ND::TDbiTableRow*>& 
   (*this) << arrSize;
 
   if ( arrSize ) {
-    ND::TDbiTableRow* obj = arr[0];
+    CP::TDbiTableRow* obj = arr[0];
     Int_t objSize  = obj->IsA()->Size();
     string objName = obj->ClassName();
     (*this) << objName << objSize;
@@ -364,7 +364,7 @@ ND::TDbiBinaryFile& ND::TDbiBinaryFile::operator << (vector<ND::TDbiTableRow*>& 
 
 //.....................................................................
 
-Bool_t ND::TDbiBinaryFile::CanRead() {
+Bool_t CP::TDbiBinaryFile::CanRead() {
 
   if ( ! fReading ) {
        DbiSevere( "Attempting to read from a write-only file" << "  ");
@@ -375,7 +375,7 @@ Bool_t ND::TDbiBinaryFile::CanRead() {
 }
 //.....................................................................
 
-Bool_t ND::TDbiBinaryFile::CanWrite() {
+Bool_t CP::TDbiBinaryFile::CanWrite() {
 
   if ( fReading ) {
        DbiSevere( "Attempting to write to a read-only file" << "  ");
@@ -387,7 +387,7 @@ Bool_t ND::TDbiBinaryFile::CanWrite() {
 
 //.....................................................................
 
-void ND::TDbiBinaryFile::CheckFileStatus() {
+void CP::TDbiBinaryFile::CheckFileStatus() {
 
 //  If file was good but has just gone bad, report and close it.
 //  Delete it if writing.
@@ -412,7 +412,7 @@ void ND::TDbiBinaryFile::CheckFileStatus() {
 
 //.....................................................................
 
-Bool_t ND::TDbiBinaryFile::Read(char* bytes, UInt_t numBytes) {
+Bool_t CP::TDbiBinaryFile::Read(char* bytes, UInt_t numBytes) {
 //
 //
 //  Purpose: Low-level I/O with error checking.
@@ -427,7 +427,7 @@ Bool_t ND::TDbiBinaryFile::Read(char* bytes, UInt_t numBytes) {
 
 //.....................................................................
 
-Bool_t ND::TDbiBinaryFile::Write(const char* bytes, UInt_t numBytes) {
+Bool_t CP::TDbiBinaryFile::Write(const char* bytes, UInt_t numBytes) {
 //
 //
 //  Purpose: Low-level I/O with error checking.

@@ -7,7 +7,7 @@
  *
  * $Id: TDbiServices.hxx,v 1.1 2011/01/18 05:49:20 finch Exp $
  *
- * \class ND::TDbiServices
+ * \class CP::TDbiServices
  *
  *
  * \brief
@@ -16,7 +16,7 @@
  * \brief
  * <b>Purpose</b> To break dependency loops and to simplify communication of
  * some elements of the global environment, TDbiDatabaseManager registers
- * some support services and environment with TDbiServices, a class ND::which
+ * some support services and environment with TDbiServices, a class CP::which
  * only contains static methods.  Other TDbi classes can then obtain the
  * necessary information from TDbiServices and avoids having those classes ask
  * TDbiDatabaseManager directly.
@@ -26,7 +26,7 @@
  *
  */
 
-namespace ND {
+namespace CP {
 class TDbiServices
 {
 

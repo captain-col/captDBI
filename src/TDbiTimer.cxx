@@ -1,9 +1,9 @@
 ///////////////////////////////////////////////////////////////////////
 // $Id: TDbiTimer.cxx,v 1.1 2011/01/18 05:49:20 finch Exp $
 //
-// ND::TDbiTimer
+// CP::TDbiTimer
 //
-// Package: ND::TDbi (Database Interface).
+// Package: CP::TDbi (Database Interface).
 //
 // N. West 01/2002
 //
@@ -19,7 +19,7 @@
 #include <MsgFormat.h>
 using std::endl;
 
-ClassImp(ND::TDbiTimer)
+ClassImp(CP::TDbiTimer)
 
 
 //   Definition of static data members
@@ -31,7 +31,7 @@ ClassImp(ND::TDbiTimer)
 
 //.....................................................................
 
-ND::TDbiTimer::TDbiTimer() :
+CP::TDbiTimer::TDbiTimer() :
 fCurSubWatch(0),
 fRowSize(0),
 fQueryStage(kPassive)
@@ -44,7 +44,7 @@ fQueryStage(kPassive)
 //
 
 
-  DbiTrace( "Creating ND::TDbiTimer" << "  ");
+  DbiTrace( "Creating CP::TDbiTimer" << "  ");
 
   fWatch.Stop();
   for ( int subWatch = 0; subWatch <  kMaxSubWatch; ++subWatch) {
@@ -56,7 +56,7 @@ fQueryStage(kPassive)
 
 //.....................................................................
 
-ND::TDbiTimer::~TDbiTimer() {
+CP::TDbiTimer::~TDbiTimer() {
 //
 //
 //  Purpose: Destructor
@@ -65,13 +65,13 @@ ND::TDbiTimer::~TDbiTimer() {
 //
 
 
-  DbiTrace( "Destroying ND::TDbiTimer" << "  ");
+  DbiTrace( "Destroying CP::TDbiTimer" << "  ");
 
 }
 
 //.....................................................................
 
-void ND::TDbiTimer::RecBegin(string tableName, UInt_t rowSize) {
+void CP::TDbiTimer::RecBegin(string tableName, UInt_t rowSize) {
 //
 //
 //  Purpose:  Record the start of initial query on supplied table.
@@ -96,7 +96,7 @@ void ND::TDbiTimer::RecBegin(string tableName, UInt_t rowSize) {
 }
 //.....................................................................
 
-void ND::TDbiTimer::RecEnd(UInt_t numRows) {
+void CP::TDbiTimer::RecEnd(UInt_t numRows) {
 //
 //
 //  Purpose:  Record the end of query.
@@ -128,7 +128,7 @@ void ND::TDbiTimer::RecEnd(UInt_t numRows) {
   }
   MsgFormat ffmt("%6.1f");
 
-  DbiInfo( "ND::TDbiTimer:" <<  fTableName
+  DbiInfo( "CP::TDbiTimer:" <<  fTableName
 			<< ": Query done. "  << numRows
   			<< "rows, " << ffmt(tableSize) << units
   			<< " Cpu" << ffmt(fWatch.CpuTime())
@@ -155,7 +155,7 @@ void ND::TDbiTimer::RecEnd(UInt_t numRows) {
 }
 //.....................................................................
 
-void ND::TDbiTimer::RecMainQuery() {
+void CP::TDbiTimer::RecMainQuery() {
 //
 //
 //  Purpose:  Record the start of main query.
@@ -167,7 +167,7 @@ void ND::TDbiTimer::RecMainQuery() {
 }
 //.....................................................................
 
-void ND::TDbiTimer::RecFillAgg(Int_t /* aggNo */) {
+void CP::TDbiTimer::RecFillAgg(Int_t /* aggNo */) {
 //
 //
 //  Purpose:  Record filling of aggregate.
@@ -179,7 +179,7 @@ void ND::TDbiTimer::RecFillAgg(Int_t /* aggNo */) {
 
 }
 
-void ND::TDbiTimer::Resume() {
+void CP::TDbiTimer::Resume() {
 //
 //
 //  Purpose:  Resume timer and any partial timer.
@@ -192,7 +192,7 @@ void ND::TDbiTimer::Resume() {
 
 //.....................................................................
 
-void ND::TDbiTimer::StartSubWatch(UInt_t subWatch) {
+void CP::TDbiTimer::StartSubWatch(UInt_t subWatch) {
 //
 //
 //  Purpose:  Start specified SubWatch if SubWatch timers enabled.
@@ -211,7 +211,7 @@ void ND::TDbiTimer::StartSubWatch(UInt_t subWatch) {
 
 }
 
-void ND::TDbiTimer::Suspend() {
+void CP::TDbiTimer::Suspend() {
 //
 //
 //  Purpose:  Suspend timer and any partial timer.
@@ -226,7 +226,7 @@ void ND::TDbiTimer::Suspend() {
 
 //.....................................................................
 
-ND::TDbiTimer:: {
+CP::TDbiTimer:: {
 //
 //
 //  Purpose:

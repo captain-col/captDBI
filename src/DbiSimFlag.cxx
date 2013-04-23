@@ -7,14 +7,14 @@
 
 //_____________________________________________________________________________
 
-Int_t ND::DbiSimFlag::FullMask()
+Int_t CP::DbiSimFlag::FullMask()
 {
    return kData|kDaqFakeData|kMC|kReroot;
 }
 
 //_____________________________________________________________________________
 
-const Char_t* ND::DbiSimFlag::AsString(SimFlag_t simFlag)
+const Char_t* CP::DbiSimFlag::AsString(SimFlag_t simFlag)
 {
    // static function to return mapping enum --> string
 
@@ -30,7 +30,7 @@ const Char_t* ND::DbiSimFlag::AsString(SimFlag_t simFlag)
 
 //_____________________________________________________________________________
 
-const Char_t* ND::DbiSimFlag::MaskToString(Int_t mask)
+const Char_t* CP::DbiSimFlag::MaskToString(Int_t mask)
 {
    // Return a mask of SimFlags as a string
    //
@@ -43,12 +43,12 @@ const Char_t* ND::DbiSimFlag::MaskToString(Int_t mask)
    Char_t* ptr = newstring;  // start at the beginning
 
    *ptr = 0; // start with nothing
-   Int_t fullmask = ND::DbiSimFlag::FullMask();
+   Int_t fullmask = CP::DbiSimFlag::FullMask();
 
    for (Int_t i=0; i<32; i++) {
-      ND::DbiSimFlag::SimFlag_t flag = (ND::DbiSimFlag::SimFlag_t)(1<<i);
+      CP::DbiSimFlag::SimFlag_t flag = (CP::DbiSimFlag::SimFlag_t)(1<<i);
       if (mask & flag & fullmask) {
-         const Char_t* toadd = ND::DbiSimFlag::AsString(flag);
+         const Char_t* toadd = CP::DbiSimFlag::AsString(flag);
          if (ptr != newstring) *ptr++ = ',';
          strcpy(ptr,toadd);
          ptr += strlen(toadd);
@@ -61,11 +61,11 @@ const Char_t* ND::DbiSimFlag::MaskToString(Int_t mask)
 
 //_____________________________________________________________________________
 
-ND::DbiSimFlag::SimFlag_t ND::DbiSimFlag::StringToEnum(const Char_t* chars, Int_t maxChar)
+CP::DbiSimFlag::SimFlag_t CP::DbiSimFlag::StringToEnum(const Char_t* chars, Int_t maxChar)
 {
    // convert a set of chars to a valid enum
 
-   Int_t mask = ND::DbiSimFlag::StringToMask(chars,maxChar);
+   Int_t mask = CP::DbiSimFlag::StringToMask(chars,maxChar);
 
    switch (mask) {
    case kUnknown:     return kUnknown;     break;
@@ -80,7 +80,7 @@ ND::DbiSimFlag::SimFlag_t ND::DbiSimFlag::StringToEnum(const Char_t* chars, Int_
 
 //_____________________________________________________________________________
 
-Int_t ND::DbiSimFlag::StringToMask(const Char_t* chars, Int_t maxChar)
+Int_t CP::DbiSimFlag::StringToMask(const Char_t* chars, Int_t maxChar)
 {
    // convert a set of chars to a mask of enum's
    // simple tests for unique characters: {d,f,m,r}
@@ -101,7 +101,7 @@ Int_t ND::DbiSimFlag::StringToMask(const Char_t* chars, Int_t maxChar)
 
 //_____________________________________________________________________________
 
-Int_t ND::DbiSimFlag::Compact(SimFlag_t simFlag)
+Int_t CP::DbiSimFlag::Compact(SimFlag_t simFlag)
 {
    // turn mask-like enum value into sequential int
 
@@ -118,7 +118,7 @@ Int_t ND::DbiSimFlag::Compact(SimFlag_t simFlag)
 
 //_____________________________________________________________________________
 
-ND::DbiSimFlag::SimFlag_t ND::DbiSimFlag::Expand(Int_t compactSimFlag)
+CP::DbiSimFlag::SimFlag_t CP::DbiSimFlag::Expand(Int_t compactSimFlag)
 {
    // turn sequential int into mask-like enum value
 

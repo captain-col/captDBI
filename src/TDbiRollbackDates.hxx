@@ -5,7 +5,7 @@
  *
  * $Id: TDbiRollbackDates.hxx,v 1.1 2011/01/18 05:49:20 finch Exp $
  *
- * \class ND::TDbiRollbackDates
+ * \class CP::TDbiRollbackDates
  *
  *
  * \brief
@@ -29,11 +29,11 @@
 #endif
 #endif
 
-namespace ND{
+namespace CP{
 class TDbiRegistry;
 }
 
-namespace ND {
+namespace CP {
 class TDbiRollbackDates
 {
 

@@ -7,7 +7,7 @@
  *
  * $Id: TDbiString.hxx,v 1.1 2011/01/18 05:49:20 finch Exp $
  *
- * \class ND::TDbiString
+ * \class CP::TDbiString
  *
  *
  * \brief
@@ -32,7 +32,7 @@
 #endif
 #endif
 
-namespace ND {
+namespace CP {
 class TDbiString
 {
 
@@ -49,12 +49,12 @@ public:
   const std::string& GetString() const { return fString; }
 
 // State changing member functions
-  ND::TDbiString& operator<<(Int_t data);
-  ND::TDbiString& operator<<(UInt_t data);
-  ND::TDbiString& operator<<(Float_t data);
-  ND::TDbiString& operator<<(Char_t data);
-  ND::TDbiString& operator<<(const Char_t* data);
-  ND::TDbiString& operator<<(const std::string& data);
+  CP::TDbiString& operator<<(Int_t data);
+  CP::TDbiString& operator<<(UInt_t data);
+  CP::TDbiString& operator<<(Float_t data);
+  CP::TDbiString& operator<<(Char_t data);
+  CP::TDbiString& operator<<(const Char_t* data);
+  CP::TDbiString& operator<<(const std::string& data);
         void Clear() { fString.clear(); }
   std::string& GetString() { return fString; }
 

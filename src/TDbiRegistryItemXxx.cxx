@@ -26,7 +26,7 @@
 #include <string>
 using namespace std;
 
-namespace ND
+namespace CP
 // Only for GCC 3.3 and above.  See bug 3797
 {
 // http://gcc.gnu.org/bugzilla/show_bug.cgi?id=3797
@@ -43,13 +43,13 @@ template<> const char* TDbiRegistryItemXxx<double>::GetTypeAsString(void) const
 template<> const char* TDbiRegistryItemXxx<const char*>::GetTypeAsString(void) const
 { return "string"; }
 
-template<> const char* TDbiRegistryItemXxx<ND::TDbiRegistry>::GetTypeAsString(void) const
+template<> const char* TDbiRegistryItemXxx<CP::TDbiRegistry>::GetTypeAsString(void) const
 { return "TDbiRegistry"; }
 
-template<> std::ostream& TDbiRegistryItemXxx<ND::TDbiRegistry>::PrintStream(std::ostream& os) const
+template<> std::ostream& TDbiRegistryItemXxx<CP::TDbiRegistry>::PrintStream(std::ostream& os) const
 { return fData->PrintStream(os); }
 
-template<> std::istream& TDbiRegistryItemXxx<ND::TDbiRegistry>::ReadStream(std::istream& is)
+template<> std::istream& TDbiRegistryItemXxx<CP::TDbiRegistry>::ReadStream(std::istream& is)
 { if (!fData) fData = new TDbiRegistry(); return fData->ReadStream(is); }
 #endif
 
@@ -125,7 +125,7 @@ TBuffer& operator<<(TBuffer &buf, const char*& xptr)
 }
 #endif
 #include <string>
-namespace ND
+namespace CP
 {
 template<>
 void TDbiRegistryItemXxx<const char*>::Streamer(TBuffer &buf)

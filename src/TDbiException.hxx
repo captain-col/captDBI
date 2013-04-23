@@ -5,7 +5,7 @@
 /**
  *
  *
- * \class ND::TDbiException
+ * \class CP::TDbiException
  *
  *
  * \brief
@@ -25,7 +25,7 @@
 #include <string>
 #include "Rtypes.h"
 
-namespace ND {
+namespace CP {
 class TDbiException;
 }
 class TSQLServer;
@@ -33,9 +33,9 @@ class TSQLStatement;
 
 class ostreamx;
 
-std::ostream& operator<<(std::ostream& s, const ND::TDbiException& e);
+std::ostream& operator<<(std::ostream& s, const CP::TDbiException& e);
 
-namespace ND {
+namespace CP {
 class TDbiException
 
 {

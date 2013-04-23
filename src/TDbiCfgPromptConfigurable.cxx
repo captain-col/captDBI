@@ -9,9 +9,9 @@ using std::endl;
 #include "TDbi.hxx" 
 #include <assert.h>
 
-ClassImp(ND::TDbiCfgPromptConfigurable)
+ClassImp(CP::TDbiCfgPromptConfigurable)
 
-ND::TDbiCfgPromptConfigurable::TDbiCfgPromptConfigurable()
+CP::TDbiCfgPromptConfigurable::TDbiCfgPromptConfigurable()
 {
   ////////////////////////////////////////////////////////////////////////////////////
   /// TDbiCfgPromptConfigurable
@@ -63,7 +63,7 @@ ND::TDbiCfgPromptConfigurable::TDbiCfgPromptConfigurable()
   ///};
 }
 
-void ND::TDbiCfgPromptConfigurable::InitializeConfig(const TDbiRegistry& initConfig)
+void CP::TDbiCfgPromptConfigurable::InitializeConfig(const TDbiRegistry& initConfig)
 {
   fConfig.UnLockKeys();
   fConfig.UnLockValues();
@@ -79,7 +79,7 @@ void ND::TDbiCfgPromptConfigurable::InitializeConfig(const TDbiRegistry& initCon
   ConfigModified();
 }
 
-Bool_t ND::TDbiCfgPromptConfigurable::Split(const char* line, char sep, std::string& a, std::string& b)
+Bool_t CP::TDbiCfgPromptConfigurable::Split(const char* line, char sep, std::string& a, std::string& b)
 {
  //======================================================================
   // Purpose: Split a character string into two pieces given a
@@ -114,7 +114,7 @@ Bool_t ND::TDbiCfgPromptConfigurable::Split(const char* line, char sep, std::str
   return split;
 }
 
-bool ND::TDbiCfgPromptConfigurable::IsInt(const std::string& s, Int_t& i)
+bool CP::TDbiCfgPromptConfigurable::IsInt(const std::string& s, Int_t& i)
 {
   //======================================================================
   // Does the string s represent an integer?
@@ -138,7 +138,7 @@ bool ND::TDbiCfgPromptConfigurable::IsInt(const std::string& s, Int_t& i)
 
 //......................................................................
 
-bool ND::TDbiCfgPromptConfigurable::IsFloat(const std::string& s, Double_t& val)
+bool CP::TDbiCfgPromptConfigurable::IsFloat(const std::string& s, Double_t& val)
 {
 //======================================================================
 // Does the string s represent an integer?
@@ -153,7 +153,7 @@ bool ND::TDbiCfgPromptConfigurable::IsFloat(const std::string& s, Double_t& val)
 }
 
 
-void ND::TDbiCfgPromptConfigurable::Set(TDbiCfgDialog* d)
+void CP::TDbiCfgPromptConfigurable::Set(TDbiCfgDialog* d)
 {
 //======================================================================
 // Update the configuration parameters. Allow a TDbiCfgDialog object to be
@@ -178,28 +178,28 @@ void ND::TDbiCfgPromptConfigurable::Set(TDbiCfgDialog* d)
   if (deleteDialog) { delete d; d = 0; }
 }
 
-void ND::TDbiCfgPromptConfigurable::Set(const char* key, char val)
+void CP::TDbiCfgPromptConfigurable::Set(const char* key, char val)
 { TDbiRegistry r;  r.Set(key,val); Set(r); }
 
 
-void ND::TDbiCfgPromptConfigurable::Set(const char* key, const char* val)
+void CP::TDbiCfgPromptConfigurable::Set(const char* key, const char* val)
 { TDbiRegistry r;  r.Set(key,val); Set(r); }
 
 
 
-void ND::TDbiCfgPromptConfigurable::Set(const char* key, double val)
+void CP::TDbiCfgPromptConfigurable::Set(const char* key, double val)
 { TDbiRegistry r;  r.Set(key,val); Set(r); }
 
 
-void ND::TDbiCfgPromptConfigurable::Set(const char* key, int val)
+void CP::TDbiCfgPromptConfigurable::Set(const char* key, int val)
 { TDbiRegistry r;  r.Set(key,val); Set(r); }
 
 
-void ND::TDbiCfgPromptConfigurable::Set(const char* key, const TDbiRegistry& val )
+void CP::TDbiCfgPromptConfigurable::Set(const char* key, const TDbiRegistry& val )
 { TDbiRegistry r;  r.Set(key,val); Set(r); }
 
 
-void ND::TDbiCfgPromptConfigurable::Set(const char* setstring)
+void CP::TDbiCfgPromptConfigurable::Set(const char* setstring)
 {
   // Parse a whole string.
 
@@ -241,7 +241,7 @@ void ND::TDbiCfgPromptConfigurable::Set(const char* setstring)
 // Granddaddy of set() routines
 /// 
 ///
-void ND::TDbiCfgPromptConfigurable::Set(const TDbiRegistry& stuff, Bool_t recursive)
+void CP::TDbiCfgPromptConfigurable::Set(const TDbiRegistry& stuff, Bool_t recursive)
 {
   if(SafeMerge(fConfig,stuff,recursive)) {
     // Something got changed, so allow user to change stuff:
@@ -255,7 +255,7 @@ void ND::TDbiCfgPromptConfigurable::Set(const TDbiRegistry& stuff, Bool_t recurs
 /// Keeps type-safety.. better than TDbiRegistry::Merge()
 ///
 ///	Throws EBadTDbiRegistryKeys();
-Bool_t ND::TDbiCfgPromptConfigurable::SafeMerge(TDbiRegistry& modify,
+Bool_t CP::TDbiCfgPromptConfigurable::SafeMerge(TDbiRegistry& modify,
 				     const TDbiRegistry& stuff,
 				     Bool_t recursive )
 {

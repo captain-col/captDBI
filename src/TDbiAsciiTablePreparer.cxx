@@ -2,7 +2,7 @@
 
 /////////////////////////////////////////////////////////////////////
 //
-// ND::TDbiAsciiTablePreparer
+// CP::TDbiAsciiTablePreparer
 //
 // Acknowledgments
 //    The code is essentially a translation of
@@ -24,7 +24,7 @@
 #include <MsgFormat.h>
 using std::endl;
 
-ClassImp(ND::TDbiAsciiTablePreparer)
+ClassImp(CP::TDbiAsciiTablePreparer)
 
 //   Definition of static data members
 //   *********************************
@@ -75,12 +75,12 @@ exit:
 
 //___________________________________________________________________
 
-ND::TDbiAsciiTablePreparer::TDbiAsciiTablePreparer(const TString& url)
+CP::TDbiAsciiTablePreparer::TDbiAsciiTablePreparer(const TString& url)
 {
    // ctor.
 
 
-   DbiTrace( "Creating ND::TDbiAsciiTablePreparer "  << (void*) this << "  ");
+   DbiTrace( "Creating CP::TDbiAsciiTablePreparer "  << (void*) this << "  ");
 
    fUrl = new TUrl(url);
    fStatus = 0;
@@ -122,18 +122,18 @@ ND::TDbiAsciiTablePreparer::TDbiAsciiTablePreparer(const TString& url)
 }
 
 //___________________________________________________________________
-ND::TDbiAsciiTablePreparer::~TDbiAsciiTablePreparer()
+CP::TDbiAsciiTablePreparer::~TDbiAsciiTablePreparer()
 {
    // dtor.
 
 
-   DbiTrace( "Destroying ND::TDbiAsciiTablePreparer "  << (void*) this << "  ");
+   DbiTrace( "Destroying CP::TDbiAsciiTablePreparer "  << (void*) this << "  ");
 
    Clean();
 }
 
 //___________________________________________________________________
-void ND::TDbiAsciiTablePreparer::Clean()
+void CP::TDbiAsciiTablePreparer::Clean()
 {
    //
 
@@ -145,7 +145,7 @@ void ND::TDbiAsciiTablePreparer::Clean()
 
 
 //___________________________________________________________________
-void ND::TDbiAsciiTablePreparer::GET(const TString& url)
+void CP::TDbiAsciiTablePreparer::GET(const TString& url)
 {
    // Download url into local temporary file
 
@@ -205,7 +205,7 @@ void ND::TDbiAsciiTablePreparer::GET(const TString& url)
 }
 
 //___________________________________________________________________
-Int_t ND::TDbiAsciiTablePreparer::Init()
+Int_t CP::TDbiAsciiTablePreparer::Init()
 {
    // - read first line from local file
    // - determine column names and types

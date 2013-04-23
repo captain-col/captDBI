@@ -1,9 +1,9 @@
 ///////////////////////////////////////////////////////////////////////
 // $Id: TDbiRowStream.cxx,v 1.1 2011/01/18 05:49:20 finch Exp $
 //
-// ND::TDbiRowStream
+// CP::TDbiRowStream
 //
-// Package: ND::TDbi (Database Interface).
+// Package: CP::TDbi (Database Interface).
 
 // Begin_Html<img src="../../pedestrians.gif" align=center>
 // <a href="../source_warning.html">Warning for beginners</a>.<br>
@@ -14,8 +14,8 @@
 //
 // Concept: I/O buffer for a row of a table.
 //
-// Purpose: This forms the base class for ND::TDbiInRowStream (input)
-//          and ND::TDbiWriter (input)
+// Purpose: This forms the base class for CP::TDbiInRowStream (input)
+//          and CP::TDbiWriter (input)
 //
 ///////////////////////////////////////////////////////////////////////
 
@@ -27,7 +27,7 @@ using std::endl;
 
 #include "UtilString.hxx"
 
-ClassImp(ND::TDbiRowStream)
+ClassImp(CP::TDbiRowStream)
 
 
 //   Definition of static data members
@@ -42,7 +42,7 @@ ClassImp(ND::TDbiRowStream)
 
 //.....................................................................
 
-ND::TDbiRowStream::TDbiRowStream(const ND::TDbiTableMetaData* metaData) :
+CP::TDbiRowStream::TDbiRowStream(const CP::TDbiTableMetaData* metaData) :
 fCurCol(1),
 fMetaData(metaData),
 fIsVLDTable(false)
@@ -71,7 +71,7 @@ fIsVLDTable(false)
 //  None.
 
 
-  DbiTrace( "Creating ND::TDbiRowStream" << "  ");
+  DbiTrace( "Creating CP::TDbiRowStream" << "  ");
 
   std::string suffix(this->TableName(),this->TableName().size()-3);
   fIsVLDTable = suffix == "VLD";
@@ -81,7 +81,7 @@ fIsVLDTable(false)
 
 //.....................................................................
 
-ND::TDbiRowStream::~TDbiRowStream() {
+CP::TDbiRowStream::~TDbiRowStream() {
 //
 //
 //  Purpose: Destructor
@@ -105,13 +105,13 @@ ND::TDbiRowStream::~TDbiRowStream() {
 //  None.
 
 
-  DbiTrace( "Destroying ND::TDbiRowStream" << "  ");
+  DbiTrace( "Destroying CP::TDbiRowStream" << "  ");
 
 }
 
 //.....................................................................
 
-const ND::TDbiFieldType& ND::TDbiRowStream::ColFieldType(UInt_t col) const {
+const CP::TDbiFieldType& CP::TDbiRowStream::ColFieldType(UInt_t col) const {
 //
 //
 //  Purpose: Return specified column type, if defined
@@ -122,7 +122,7 @@ const ND::TDbiFieldType& ND::TDbiRowStream::ColFieldType(UInt_t col) const {
 }
 //.....................................................................
 
-string ND::TDbiRowStream::ColName(UInt_t col) const {
+string CP::TDbiRowStream::ColName(UInt_t col) const {
 //
 //
 //  Purpose: Return specified column name, if defined
@@ -131,7 +131,7 @@ string ND::TDbiRowStream::ColName(UInt_t col) const {
 }
 //.....................................................................
 
-const ND::TDbiFieldType& ND::TDbiRowStream::CurColFieldType() const {
+const CP::TDbiFieldType& CP::TDbiRowStream::CurColFieldType() const {
 //
 //
 //  Purpose: Return current column type, if defined
@@ -157,7 +157,7 @@ const ND::TDbiFieldType& ND::TDbiRowStream::CurColFieldType() const {
 
 //.....................................................................
 
-string ND::TDbiRowStream::CurColName() const {
+string CP::TDbiRowStream::CurColName() const {
 //
 //
 //  Purpose: Return current column name, if defined
@@ -183,7 +183,7 @@ string ND::TDbiRowStream::CurColName() const {
 
 //.....................................................................
 
-UInt_t ND::TDbiRowStream::NumCols() const {
+UInt_t CP::TDbiRowStream::NumCols() const {
 //
 //
 //  Purpose: Return the number of columns.
@@ -210,24 +210,24 @@ UInt_t ND::TDbiRowStream::NumCols() const {
 
 //.....................................................................
 
-Bool_t ND::TDbiRowStream::HasEpoch() const {
+Bool_t CP::TDbiRowStream::HasEpoch() const {
   return fMetaData->HasEpoch();
 }
 
 //.....................................................................
 
-string ND::TDbiRowStream::TableName() const {
+string CP::TDbiRowStream::TableName() const {
 //
 //
 //  Purpose: Return table name in upper case.
 //
 
-  return ND::UtilString::ToUpper(fMetaData->TableName());
+  return CP::UtilString::ToUpper(fMetaData->TableName());
 }
 
 //.....................................................................
 
-string ND::TDbiRowStream::TableNameTc() const {
+string CP::TDbiRowStream::TableNameTc() const {
 //
 //
 //  Purpose: Return table name in true case.
@@ -238,7 +238,7 @@ string ND::TDbiRowStream::TableNameTc() const {
 
 //.....................................................................
 
-ND::TDbiRowStream:: {
+CP::TDbiRowStream:: {
 //
 //
 //  Purpose:

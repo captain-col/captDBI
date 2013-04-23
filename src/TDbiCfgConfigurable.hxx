@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////
 // $Id: TDbiCfgConfigurable.hxx,v 1.1 2011/01/18 05:49:19 finch Exp $
 //
-/// \class ND::TDbiCfgConfigurable
+/// \class CP::TDbiCfgConfigurable
 /// \brief A base class for classes configured using registries.
 ///\verbatim
 /// Configurable classes must implement the "Config" method which
@@ -42,7 +42,7 @@
 #ifndef REGISTRY_H
 # include "TDbiRegistry.hxx"
 #endif
-namespace ND {
+namespace CP {
 class TDbiCfgDialog;
 }
 
@@ -52,7 +52,7 @@ class TDbiCfgDialog;
 #endif
 #endif
 
-namespace ND {
+namespace CP {
 class TDbiCfgConfigurable
 {
   
@@ -74,7 +74,7 @@ public:
   int  Update();
 
   /// Set config via interactive dialog
-  void Set(ND::TDbiCfgDialog* d=0);
+  void Set(CP::TDbiCfgDialog* d=0);
 
   /// Set config via string
   void Set(const char* s);

@@ -1,5 +1,5 @@
 /**
- * \class ND::TVldTimeStamp
+ * \class CP::TVldTimeStamp
  *
  * \ingroup Validity
  *
@@ -56,19 +56,19 @@
 // make the TVldTimeStamp cout'able
 #include <iosfwd>
 
-namespace ND {
+namespace CP {
 class TVldTimeStamp;
 
 class TVldTimeStamp {
 
-   friend Bool_t operator==(const ND::TVldTimeStamp &lhs, const ND::TVldTimeStamp &rhs);
-   friend Bool_t operator!=(const ND::TVldTimeStamp &lhs, const ND::TVldTimeStamp &rhs);
-   friend Bool_t operator< (const ND::TVldTimeStamp &lhs, const ND::TVldTimeStamp &rhs);
-   friend Bool_t operator<=(const ND::TVldTimeStamp &lhs, const ND::TVldTimeStamp &rhs);
-   friend Bool_t operator> (const ND::TVldTimeStamp &lhs, const ND::TVldTimeStamp &rhs);
-   friend Bool_t operator>=(const ND::TVldTimeStamp &lhs, const ND::TVldTimeStamp &rhs);
+   friend Bool_t operator==(const CP::TVldTimeStamp &lhs, const CP::TVldTimeStamp &rhs);
+   friend Bool_t operator!=(const CP::TVldTimeStamp &lhs, const CP::TVldTimeStamp &rhs);
+   friend Bool_t operator< (const CP::TVldTimeStamp &lhs, const CP::TVldTimeStamp &rhs);
+   friend Bool_t operator<=(const CP::TVldTimeStamp &lhs, const CP::TVldTimeStamp &rhs);
+   friend Bool_t operator> (const CP::TVldTimeStamp &lhs, const CP::TVldTimeStamp &rhs);
+   friend Bool_t operator>=(const CP::TVldTimeStamp &lhs, const CP::TVldTimeStamp &rhs);
 
-   friend ND::TVldTimeStamp operator- (const ND::TVldTimeStamp &lhs, const ND::TVldTimeStamp &rhs);
+   friend CP::TVldTimeStamp operator- (const CP::TVldTimeStamp &lhs, const CP::TVldTimeStamp &rhs);
 
  public:
 
@@ -257,46 +257,46 @@ class TVldTimeStamp {
    Int_t  fSec;
    Int_t  fNanoSec;
 
-   ClassDef(ND::TVldTimeStamp,2)
+   ClassDef(CP::TVldTimeStamp,2)
 };
-}; std::ostream& operator<<(std::ostream& os, const ND::TVldTimeStamp& vldts);
+}; std::ostream& operator<<(std::ostream& os, const CP::TVldTimeStamp& vldts);
 
 #ifndef __CINT__
 //=============================================================================
 // Implementation details -- inlines need to be hidden from CINT
 //=============================================================================
 
-namespace ND
+namespace CP
 {
-inline Bool_t operator==(const ND::TVldTimeStamp &lhs, const ND::TVldTimeStamp &rhs)
+inline Bool_t operator==(const CP::TVldTimeStamp &lhs, const CP::TVldTimeStamp &rhs)
    { return lhs.fSec  == rhs.fSec && 
             lhs.fNanoSec == rhs.fNanoSec; }
 
-inline Bool_t operator!=(const ND::TVldTimeStamp &lhs, const ND::TVldTimeStamp &rhs)
+inline Bool_t operator!=(const CP::TVldTimeStamp &lhs, const CP::TVldTimeStamp &rhs)
    { return lhs.fSec  != rhs.fSec ||
             lhs.fNanoSec != rhs.fNanoSec; }
 
-inline Bool_t operator<(const ND::TVldTimeStamp &lhs, const ND::TVldTimeStamp &rhs)
+inline Bool_t operator<(const CP::TVldTimeStamp &lhs, const CP::TVldTimeStamp &rhs)
    { return lhs.fSec  < rhs.fSec ||
              ( lhs.fSec  == rhs.fSec &&
                lhs.fNanoSec <  rhs.fNanoSec   ); }
 
-inline Bool_t operator<=(const ND::TVldTimeStamp &lhs, const ND::TVldTimeStamp &rhs)
+inline Bool_t operator<=(const CP::TVldTimeStamp &lhs, const CP::TVldTimeStamp &rhs)
    { return lhs.fSec  < rhs.fSec ||
              ( lhs.fSec  == rhs.fSec &&
                lhs.fNanoSec <= rhs.fNanoSec   ); }
 
-inline Bool_t operator>(const ND::TVldTimeStamp &lhs, const ND::TVldTimeStamp &rhs)
+inline Bool_t operator>(const CP::TVldTimeStamp &lhs, const CP::TVldTimeStamp &rhs)
    { return lhs.fSec  > rhs.fSec ||
              ( lhs.fSec  == rhs.fSec &&
                lhs.fNanoSec >  rhs.fNanoSec   ); }
 
-inline Bool_t operator>=(const ND::TVldTimeStamp &lhs, const ND::TVldTimeStamp &rhs)
+inline Bool_t operator>=(const CP::TVldTimeStamp &lhs, const CP::TVldTimeStamp &rhs)
    { return lhs.fSec  > rhs.fSec ||
              ( lhs.fSec  == rhs.fSec &&
                lhs.fNanoSec >= rhs.fNanoSec   ); }
 
-inline ND::TVldTimeStamp operator-(const ND::TVldTimeStamp& lhs, const ND::TVldTimeStamp& rhs)
+inline CP::TVldTimeStamp operator-(const CP::TVldTimeStamp& lhs, const CP::TVldTimeStamp& rhs)
 {
     return TVldTimeStamp(lhs.GetSec()     - rhs.GetSec(),
 			lhs.GetNanoSec() - rhs.GetNanoSec());

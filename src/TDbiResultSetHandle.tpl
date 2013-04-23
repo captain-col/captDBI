@@ -16,16 +16,16 @@ using std::endl;
 ClassImpT(TDbiResultSetHandle,T)
 
 //   Definition of static data members
-namespace ND {
+namespace CP {
 //   *********************************
 
 //CVSID("$Id: TDbiResultSetHandle.tpl,v 1.1 2011/01/18 05:49:20 finch Exp $");
 
 template<class T>
-map<string,ND::TDbiTableProxy*>  TDbiResultSetHandle<T>::fgNameToProxy;
+map<string,CP::TDbiTableProxy*>  TDbiResultSetHandle<T>::fgNameToProxy;
 
 template<class T>
-ND::TDbiTableProxy* TDbiResultSetHandle<T>::fgTableProxy = 0;
+CP::TDbiTableProxy* TDbiResultSetHandle<T>::fgTableProxy = 0;
 
 
 //    Definition of all member functions (static or otherwise)
@@ -40,8 +40,8 @@ TDbiResultSetHandle<T>::TDbiResultSetHandle() :
 fAbortTest(TDbi::kDisabled),
 fTableProxy(TDbiResultSetHandle<T>::GetTableProxy()),
 fResult(0),
-fDetType(ND::DbiDetector::kUnknown),
-fSimType(ND::DbiSimFlag::kUnknown )
+fDetType(CP::DbiDetector::kUnknown),
+fSimType(CP::DbiSimFlag::kUnknown )
 {
 //
 //
@@ -94,7 +94,7 @@ fSimType(that.fSimType)
 //.....................................................................
 
 template<class T>
-TDbiResultSetHandle<T>::TDbiResultSetHandle(const ND::TVldContext& vc,
+TDbiResultSetHandle<T>::TDbiResultSetHandle(const CP::TVldContext& vc,
                               TDbi::Task task,
                               TDbi::AbortTest abortTest,
                               Bool_t findFullTimeWindow) :
@@ -144,7 +144,7 @@ fSimType(vc.GetSimFlag())
 
 template<class T>
 TDbiResultSetHandle<T>::TDbiResultSetHandle(const string& tableName,
-                              const ND::TVldContext& vc,
+                              const CP::TVldContext& vc,
                               TDbi::Task task,
                               TDbi::AbortTest abortTest,
                               Bool_t findFullTimeWindow) :
@@ -192,7 +192,7 @@ fSimType(vc.GetSimFlag())
 
 template<class T>
 TDbiResultSetHandle<T>::TDbiResultSetHandle(const string& tableName,
-                              const ND::TDbiSqlContext& context,
+                              const CP::TDbiSqlContext& context,
 			      const TDbi::Task& task,
                               const string& data,
                               const string& fillOpts,
@@ -209,10 +209,10 @@ fSimType(context.GetSimFlag())
 //
 //  Arguments:
 //    tableName    in    Name of table to use.
-//    context      in    The Validity Context (see ND::TDbiSqlContext)
+//    context      in    The Validity Context (see CP::TDbiSqlContext)
 //    task         in    The task of the query. Default: TDbi::kAnyTask,
 //    data         in    Optional SQL extension to secondary query. Default: "".
-//    fillOpts     in    Optional fill options (available to ND::TDbiTableRow)
+//    fillOpts     in    Optional fill options (available to CP::TDbiTableRow)
 //                       Default: "".
 //    abortTest    in    Test which if failed triggers abort.
 //
@@ -246,7 +246,7 @@ fSimType(context.GetSimFlag())
 
 template<class T>
 TDbiResultSetHandle<T>::TDbiResultSetHandle(const string& tableName,
-                              const ND::TDbiValidityRec& vrec,
+                              const CP::TDbiValidityRec& vrec,
                               TDbi::AbortTest abortTest) :
 fAbortTest(abortTest),
 fTableProxy(TDbiResultSetHandle<T>::GetTableProxy(tableName)),
@@ -412,10 +412,10 @@ void TDbiResultSetHandle<T>::Disconnect() {
 //  Program Notes:-
 //  =============
 
-//  The Disconnect message is sent to ND::TDbiResultSet so that ND::TDbiCache
-//  knows when its ND::TDbiResultSet objects are free of clients.
+//  The Disconnect message is sent to CP::TDbiResultSet so that CP::TDbiCache
+//  knows when its CP::TDbiResultSet objects are free of clients.
 
-  if ( fResult && ND::TDbiDatabaseManager::IsActive() ) {
+  if ( fResult && CP::TDbiDatabaseManager::IsActive() ) {
     fResult->Disconnect();
   }
   fResult = 0;
@@ -424,13 +424,13 @@ void TDbiResultSetHandle<T>::Disconnect() {
 //.....................................................................
 
 template<class T>
-const ND::TDbiResultKey* TDbiResultSetHandle<T>::GetKey() const {
+const CP::TDbiResultKey* TDbiResultSetHandle<T>::GetKey() const {
 //
 //
 //  Purpose:  Return associated result key or an empty one if none exists.
 //
 
-  return fResult ? fResult->GetKey() : ND::TDbiResultKey::GetEmptyKey();
+  return fResult ? fResult->GetKey() : CP::TDbiResultKey::GetEmptyKey();
 
 }
 //.....................................................................
@@ -439,7 +439,7 @@ template<class T>
 Int_t TDbiResultSetHandle<T>::GetResultID() const {
 //
 //
-//  Purpose:  Return the ID of the current ND::TDbiResultSet.
+//  Purpose:  Return the ID of the current CP::TDbiResultSet.
 //
   return fResult ? fResult->GetID() : 0;
 
@@ -447,16 +447,16 @@ Int_t TDbiResultSetHandle<T>::GetResultID() const {
 //.....................................................................
 
 template<class T>
-ND::TDbiTableProxy& TDbiResultSetHandle<T>::GetTableProxy() {
+CP::TDbiTableProxy& TDbiResultSetHandle<T>::GetTableProxy() {
 //
 //
 //  Purpose:  Private static function to find default associated
-//            ND::TDbiTableProxy.
+//            CP::TDbiTableProxy.
 //
 //  Arguments: None.
 //
 //
-//  Return:   Associated ND::TDbiTableProxy.
+//  Return:   Associated CP::TDbiTableProxy.
 //
 //  Contact:   N. West
 //
@@ -469,12 +469,12 @@ ND::TDbiTableProxy& TDbiResultSetHandle<T>::GetTableProxy() {
 //  =============
 
 //  This function creates an example Table Row object which
-//  ND::TDbiTableProxy can copy and then use to make futher copies when
+//  CP::TDbiTableProxy can copy and then use to make futher copies when
 //  processing Result Sets.
 
   if ( ! fgTableProxy ) {
     T pet;
-    fgTableProxy = &ND::TDbiDatabaseManager::Instance()
+    fgTableProxy = &CP::TDbiDatabaseManager::Instance()
                                      .GetTableProxy(pet.GetName(),&pet);
   }
   return *fgTableProxy;
@@ -483,16 +483,16 @@ ND::TDbiTableProxy& TDbiResultSetHandle<T>::GetTableProxy() {
 //.....................................................................
 
 template<class T>
-ND::TDbiTableProxy& TDbiResultSetHandle<T>::GetTableProxy(const string& tableName){
+CP::TDbiTableProxy& TDbiResultSetHandle<T>::GetTableProxy(const string& tableName){
 //
 //
 //  Purpose:  Private static function to find an alternative
-//            associated ND::TDbiTableProxy.
+//            associated CP::TDbiTableProxy.
 //
 //  Arguments:
 //    tableName    in    Alternative table name
 //
-//  Return:   Associated ND::TDbiTableProxy.
+//  Return:   Associated CP::TDbiTableProxy.
 //
 //  Contact:   N. West
 //
@@ -505,7 +505,7 @@ ND::TDbiTableProxy& TDbiResultSetHandle<T>::GetTableProxy(const string& tableNam
 //  =============
 
 //  This function creates an example Table Row object which
-//  ND::TDbiTableProxy can copy and then use to make futher copies when
+//  CP::TDbiTableProxy can copy and then use to make futher copies when
 //  processing Result Sets.
 
 
@@ -513,13 +513,13 @@ ND::TDbiTableProxy& TDbiResultSetHandle<T>::GetTableProxy(const string& tableNam
   if ( tableName == "" ) return  TDbiResultSetHandle::GetTableProxy();
 
 // See if we have seen this name before.
-  map<string,ND::TDbiTableProxy*>::const_iterator itr
+  map<string,CP::TDbiTableProxy*>::const_iterator itr
                                         = fgNameToProxy.find(tableName);
   if ( itr != fgNameToProxy.end() ) return *( (*itr).second );
 
 // No, so ask the TDbiRegistry for it and save it for next time.
   T pet;
-  ND::TDbiTableProxy* proxy = &ND::TDbiDatabaseManager::Instance()
+  CP::TDbiTableProxy* proxy = &CP::TDbiDatabaseManager::Instance()
                                      .GetTableProxy(tableName,&pet);
   fgNameToProxy[tableName] = proxy;
   return *proxy;
@@ -551,7 +551,7 @@ UInt_t TDbiResultSetHandle<T>::GetNumRows() const {
 
 //  None.
 
-  return ( fResult && ND::TDbiDatabaseManager::IsActive() )
+  return ( fResult && CP::TDbiDatabaseManager::IsActive() )
           ? fResult->GetNumRows() : 0;
 
 }
@@ -582,7 +582,7 @@ const T* TDbiResultSetHandle<T>::GetRow(UInt_t rowNum) const {
 
 // None.
 
-  return ( fResult && ND::TDbiDatabaseManager::IsActive() ) ?
+  return ( fResult && CP::TDbiDatabaseManager::IsActive() ) ?
       dynamic_cast<const T*>(fResult->GetTableRow(rowNum))
     : 0;
 }
@@ -613,7 +613,7 @@ const T* TDbiResultSetHandle<T>::GetRowByIndex(UInt_t index) const {
 
 //  None.
 
-  return ( fResult && ND::TDbiDatabaseManager::IsActive() ) ?
+  return ( fResult && CP::TDbiDatabaseManager::IsActive() ) ?
       dynamic_cast<const T*>(fResult->GetTableRowByIndex(index))
     : 0;
 }
@@ -621,15 +621,15 @@ const T* TDbiResultSetHandle<T>::GetRowByIndex(UInt_t index) const {
 //.....................................................................
 
 template<class T>
-const ND::TDbiValidityRec* TDbiResultSetHandle<T>::GetValidityRec(
-                              const ND::TDbiTableRow* row) const {
+const CP::TDbiValidityRec* TDbiResultSetHandle<T>::GetValidityRec(
+                              const CP::TDbiTableRow* row) const {
 //
 //
-//  Purpose:  Return associated ND::TDbiValidityRec (if any).
+//  Purpose:  Return associated CP::TDbiValidityRec (if any).
 //
 //  Contact:   N. West
 
-  return ( fResult && ND::TDbiDatabaseManager::IsActive() )
+  return ( fResult && CP::TDbiDatabaseManager::IsActive() )
       ? &(fResult->GetValidityRec(row)) : 0 ;
 
 }
@@ -655,16 +655,16 @@ UInt_t TDbiResultSetHandle<T>::NextQuery(Bool_t forwards) {
 
 
 // Door stops.
-  static ND::TVldTimeStamp startOfTime(0,0);
-  static ND::TVldTimeStamp endOfTime(0x7FFFFFFF,0);
+  static CP::TVldTimeStamp startOfTime(0,0);
+  static CP::TVldTimeStamp endOfTime(0x7FFFFFFF,0);
 
   if ( ! fResult ) return 0;
 
   DbiTrace( "\n\nStarting next query: direction "
                              << ( forwards ?  "forwards" : "backwards" ) << "\n" << "  ");
 
-  const ND::TDbiValidityRec& vrec = fResult->GetValidityRec();
-  const ND::TVldRange& vrnge      = vrec.GetVldRange();
+  const CP::TDbiValidityRec& vrec = fResult->GetValidityRec();
+  const CP::TVldRange& vrnge      = vrec.GetVldRange();
 
   // If we are heading towards the final boundary, just return the same query.
   if (   forwards && vrnge.GetTimeEnd()   == endOfTime )   return fResult->GetNumRows();
@@ -675,7 +675,7 @@ UInt_t TDbiResultSetHandle<T>::NextQuery(Bool_t forwards) {
   // does cross the boundary
   time_t ts = forwards ? vrnge.GetTimeEnd().GetSec()
                        : vrnge.GetTimeStart().GetSec() - 1;
-  ND::TVldContext vc(fDetType,fSimType,ND::TVldTimeStamp(ts,0));
+  CP::TVldContext vc(fDetType,fSimType,CP::TVldTimeStamp(ts,0));
 
   return this->NewQuery(vc,vrec.GetTask(), true);
 
@@ -685,7 +685,7 @@ UInt_t TDbiResultSetHandle<T>::NextQuery(Bool_t forwards) {
 //.....................................................................
 
 template<class T>
-UInt_t TDbiResultSetHandle<T>::NewQuery(ND::TVldContext vc,
+UInt_t TDbiResultSetHandle<T>::NewQuery(CP::TVldContext vc,
                                  TDbi::Task task,
                                  Bool_t findFullTimeWindow) {
 //
@@ -715,7 +715,7 @@ UInt_t TDbiResultSetHandle<T>::NewQuery(ND::TVldContext vc,
 
 //  None.
 
-  if ( ! ND::TDbiDatabaseManager::IsActive() ) {
+  if ( ! CP::TDbiDatabaseManager::IsActive() ) {
     fResult = 0;
     return 0;
   }
@@ -725,17 +725,17 @@ UInt_t TDbiResultSetHandle<T>::NewQuery(ND::TVldContext vc,
   DbiTrace( "\n\nStarting context query: "
                              << vc  << " task " << task << "\n" << "  ");
 
-  ND::TDbiTimerManager::gTimerManager.RecBegin(fTableProxy.GetTableName(), sizeof(T));
+  CP::TDbiTimerManager::gTimerManager.RecBegin(fTableProxy.GetTableName(), sizeof(T));
   Disconnect();
   fResult = fTableProxy.Query(vc,task,findFullTimeWindow);
   fResult->Connect();
-  ND::TDbiTimerManager::gTimerManager.RecEnd(fResult->GetNumRows());
+  CP::TDbiTimerManager::gTimerManager.RecEnd(fResult->GetNumRows());
 
   if ( this->ApplyAbortTest() ) {
     DbiSevere( "FATAL: "
                            << "while applying validity context query for "
 			   << vc.AsString() << " with task " << task << "  ");
-    throw  ND::EQueryFailed();
+    throw  CP::EQueryFailed();
   }
   DbiTrace( "\nCompleted context query: "
                              << vc  << " task " << task
@@ -746,7 +746,7 @@ UInt_t TDbiResultSetHandle<T>::NewQuery(ND::TVldContext vc,
 //.....................................................................
 
 template<class T>
-UInt_t TDbiResultSetHandle<T>::NewQuery(const ND::TDbiSqlContext& context,
+UInt_t TDbiResultSetHandle<T>::NewQuery(const CP::TDbiSqlContext& context,
 			         const TDbi::Task& task,
                                  const string& data,
                                  const string& fillOpts) {
@@ -755,10 +755,10 @@ UInt_t TDbiResultSetHandle<T>::NewQuery(const ND::TDbiSqlContext& context,
 //  Purpose:  Apply new query.
 //
 //  Arguments:
-//    context      in    The Validity Context (see ND::TDbiSqlContext)
+//    context      in    The Validity Context (see CP::TDbiSqlContext)
 //    task         in    The task of the query. Default: 0
 //    data         in    Optional SQL extension to secondary query. Default: "".
-//    fillOpts     in    Optional fill options (available to ND::TDbiTableRow)
+//    fillOpts     in    Optional fill options (available to CP::TDbiTableRow)
 //
 //
 //  Return:    The number of rows retrieved by query.  =0 if error.
@@ -776,7 +776,7 @@ UInt_t TDbiResultSetHandle<T>::NewQuery(const ND::TDbiSqlContext& context,
 
 //  None.
 
-  if ( ! ND::TDbiDatabaseManager::IsActive() ) {
+  if ( ! CP::TDbiDatabaseManager::IsActive() ) {
     fResult = 0;
     return 0;
   }
@@ -787,17 +787,17 @@ UInt_t TDbiResultSetHandle<T>::NewQuery(const ND::TDbiSqlContext& context,
                              << context.GetString()  << " task " << task
                              << " data " << data << " fillOpts " << fillOpts << "\n" <<"  ");
 
-  ND::TDbiTimerManager::gTimerManager.RecBegin(fTableProxy.GetTableName(), sizeof(T));
+  CP::TDbiTimerManager::gTimerManager.RecBegin(fTableProxy.GetTableName(), sizeof(T));
   Disconnect();
   fResult = fTableProxy.Query(context.GetString(),task,data,fillOpts);
   fResult->Connect();
-  ND::TDbiTimerManager::gTimerManager.RecEnd(fResult->GetNumRows());
+  CP::TDbiTimerManager::gTimerManager.RecEnd(fResult->GetNumRows());
   if ( this->ApplyAbortTest() ) {
     DbiSevere( "FATAL: " << "while applying extended context query for "
 			   <<  context.c_str()<< " with task " << task
 			   << " secondary query SQL: " << data
 			   << "  and fill options: " << fillOpts << "  ");
-    throw  ND::EQueryFailed();
+    throw  CP::EQueryFailed();
   }
 
   DbiTrace( "\n\nCompleted extended context query: "
@@ -811,7 +811,7 @@ UInt_t TDbiResultSetHandle<T>::NewQuery(const ND::TDbiSqlContext& context,
 //.....................................................................
 
 template<class T>
-UInt_t TDbiResultSetHandle<T>::NewQuery(const ND::TDbiValidityRec& vrec) {
+UInt_t TDbiResultSetHandle<T>::NewQuery(const CP::TDbiValidityRec& vrec) {
 //
 //
 //  Purpose:  Apply new query.
@@ -835,28 +835,28 @@ UInt_t TDbiResultSetHandle<T>::NewQuery(const ND::TDbiValidityRec& vrec) {
 
 //  None.
 
-  if ( ! ND::TDbiDatabaseManager::IsActive() ) {
+  if ( ! CP::TDbiDatabaseManager::IsActive() ) {
     fResult = 0;
     return 0;
   }
-  DbiTrace( "\n\nStarting ND::TDbiValidityRec query: "
+  DbiTrace( "\n\nStarting CP::TDbiValidityRec query: "
                              << vrec << "\n" << "  ");
 
   this->SetContext(vrec);
-  ND::TDbiTimerManager::gTimerManager.RecBegin(fTableProxy.GetTableName(), sizeof(T));
+  CP::TDbiTimerManager::gTimerManager.RecBegin(fTableProxy.GetTableName(), sizeof(T));
   Disconnect();
 
 // Play safe and don't allow result to be used; it's validity may not
 // have been trimmed by neighbouring records.
   fResult = fTableProxy.Query(vrec,kFALSE);
   fResult->Connect();
-  ND::TDbiTimerManager::gTimerManager.RecEnd(fResult->GetNumRows());
+  CP::TDbiTimerManager::gTimerManager.RecEnd(fResult->GetNumRows());
   if ( this->ApplyAbortTest() ) {
     DbiSevere( "FATAL: " << "while applying validity rec query for "
 			   << vrec << "  ");
-    throw  ND::EQueryFailed();
+    throw  CP::EQueryFailed();
   }
-  DbiTrace( "\n\nCompletedND::TDbiValidityRec query: "
+  DbiTrace( "\n\nCompletedCP::TDbiValidityRec query: "
                              << vrec
                              << " Found:  " << fResult->GetNumRows() << " rows\n"  << "  ");
   return fResult->GetNumRows();
@@ -890,21 +890,21 @@ UInt_t TDbiResultSetHandle<T>::NewQuery(UInt_t seqNo,UInt_t dbNo) {
 
 //  None.
 
-  if ( ! ND::TDbiDatabaseManager::IsActive() ) {
+  if ( ! CP::TDbiDatabaseManager::IsActive() ) {
     fResult = 0;
     return 0;
   }
   DbiTrace( "\n\nStarting SeqNo query: "
                              << seqNo << "\n" << "  ");
-  ND::TDbiTimerManager::gTimerManager.RecBegin(fTableProxy.GetTableName(), sizeof(T));
+  CP::TDbiTimerManager::gTimerManager.RecBegin(fTableProxy.GetTableName(), sizeof(T));
   Disconnect();
   fResult = fTableProxy.Query(seqNo,dbNo);
   fResult->Connect();
-  ND::TDbiTimerManager::gTimerManager.RecEnd(fResult->GetNumRows());
+  CP::TDbiTimerManager::gTimerManager.RecEnd(fResult->GetNumRows());
   if ( this->ApplyAbortTest() ) {
     DbiSevere( "while applying SEQNO query for "
 			   << seqNo << " on database " << dbNo << "  ");
-    throw  ND::EQueryFailed();
+    throw  CP::EQueryFailed();
   }
   this->SetContext(fResult->GetValidityRec());
   DbiTrace( "\n\nCompleted SeqNo query: "
@@ -929,13 +929,13 @@ Bool_t TDbiResultSetHandle<T>::ResultsFromDb() const {
 //.....................................................................
 
 template<class T>
-void TDbiResultSetHandle<T>::SetContext(const ND::TDbiValidityRec& vrec) {
+void TDbiResultSetHandle<T>::SetContext(const CP::TDbiValidityRec& vrec) {
 //
 //
 //  Purpose:  Attempt to construct context detector type and sim flag
 //
 //  Arguments:
-//    vrec         in    ND::TDbiValidityRec from which to construct context
+//    vrec         in    CP::TDbiValidityRec from which to construct context
 //
 //
 //  Contact:   N. West
@@ -946,41 +946,41 @@ void TDbiResultSetHandle<T>::SetContext(const ND::TDbiValidityRec& vrec) {
 
 //  Queries that step to an adjacent validity range need a detector
 //  type and simulation flag from which to construct a context. However
-//  queries can be made using a ND::TDbiValidityRec and then only a ND::TVldRange
+//  queries can be made using a CP::TDbiValidityRec and then only a CP::TVldRange
 //  is known so all we can do is choose representative values from
 //  its detector and simulation masks.
 
-  const ND::TVldRange& vrng = vrec.GetVldRange();
+  const CP::TVldRange& vrng = vrec.GetVldRange();
   Int_t detMask        = vrng.GetDetectorMask();
   Int_t simMask        = vrng.GetSimMask();
 
-  fDetType = ND::DbiDetector::kUnknown;
-  if      ( detMask & ND::DbiDetector::kFar )      fDetType = ND::DbiDetector::kFar;
-  else if ( detMask & ND::DbiDetector::kNear)      fDetType = ND::DbiDetector::kNear;
-  else if ( detMask & ND::DbiDetector::kCalDet)    fDetType = ND::DbiDetector::kCalDet;
-  else if ( detMask & ND::DbiDetector::kCalib)     fDetType = ND::DbiDetector::kCalib;
-  else if ( detMask & ND::DbiDetector::kTestStand) fDetType = ND::DbiDetector::kTestStand;
-  else if ( detMask & ND::DbiDetector::kMapper)    fDetType = ND::DbiDetector::kMapper;
+  fDetType = CP::DbiDetector::kUnknown;
+  if      ( detMask & CP::DbiDetector::kFar )      fDetType = CP::DbiDetector::kFar;
+  else if ( detMask & CP::DbiDetector::kNear)      fDetType = CP::DbiDetector::kNear;
+  else if ( detMask & CP::DbiDetector::kCalDet)    fDetType = CP::DbiDetector::kCalDet;
+  else if ( detMask & CP::DbiDetector::kCalib)     fDetType = CP::DbiDetector::kCalib;
+  else if ( detMask & CP::DbiDetector::kTestStand) fDetType = CP::DbiDetector::kTestStand;
+  else if ( detMask & CP::DbiDetector::kMapper)    fDetType = CP::DbiDetector::kMapper;
 
-  fSimType = ND::DbiSimFlag::kUnknown;
-  if      ( simMask & ND::DbiSimFlag::kData)        fSimType = ND::DbiSimFlag::kData;
-  else if ( simMask & ND::DbiSimFlag::kMC)          fSimType = ND::DbiSimFlag::kMC;
-  else if ( simMask & ND::DbiSimFlag::kReroot)      fSimType = ND::DbiSimFlag::kReroot;
-  else if ( simMask & ND::DbiSimFlag::kDaqFakeData) fSimType = ND::DbiSimFlag::kDaqFakeData;
+  fSimType = CP::DbiSimFlag::kUnknown;
+  if      ( simMask & CP::DbiSimFlag::kData)        fSimType = CP::DbiSimFlag::kData;
+  else if ( simMask & CP::DbiSimFlag::kMC)          fSimType = CP::DbiSimFlag::kMC;
+  else if ( simMask & CP::DbiSimFlag::kReroot)      fSimType = CP::DbiSimFlag::kReroot;
+  else if ( simMask & CP::DbiSimFlag::kDaqFakeData) fSimType = CP::DbiSimFlag::kDaqFakeData;
 
 }
 
 //.....................................................................
 
 template<class T>
-ND::TDbiTableProxy& TDbiResultSetHandle<T>::TableProxy() const  {
+CP::TDbiTableProxy& TDbiResultSetHandle<T>::TableProxy() const  {
 //
 //
-//  Purpose:  Return associated ND::TDbiTableProxy (if any).
+//  Purpose:  Return associated CP::TDbiTableProxy (if any).
 //
 //  Contact:   N. West
 
-  assert( ND::TDbiDatabaseManager::IsActive() );
+  assert( CP::TDbiDatabaseManager::IsActive() );
   return fTableProxy;
 }
 

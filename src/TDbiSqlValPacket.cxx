@@ -31,7 +31,7 @@ using std::setprecision;
 #include "UtilString.hxx"
 #include "TVldRange.hxx"
 
-ClassImp(ND::TDbiSqlValPacket)
+ClassImp(CP::TDbiSqlValPacket)
 
 #ifdef IRIX6
 // SGI barfs at generating an operator != for this enum if it
@@ -57,7 +57,7 @@ static bool compStringPtrs(const string* str1, const string* str2 ) {
 
 //.....................................................................
 /// Default constructor.
-ND::TDbiSqlValPacket::TDbiSqlValPacket() :
+CP::TDbiSqlValPacket::TDbiSqlValPacket() :
 fNumErrors(0),
 fSeqNo(0),
 fNumStmts(0)
@@ -67,7 +67,7 @@ fNumStmts(0)
 //  Purpose:  Default ctor.
 
 
-  DbiTrace( "Creating ND::TDbiSqlValPacket" << "  ");
+  DbiTrace( "Creating CP::TDbiSqlValPacket" << "  ");
 }
 
 //.....................................................................
@@ -85,9 +85,9 @@ fNumStmts(0)
 ///  Specification:-
 ///  =============
 ///
-///  o  Create ND::TDbiSqlValPacket and fill from input stream by calling Fill .
+///  o  Create CP::TDbiSqlValPacket and fill from input stream by calling Fill .
 ///\endverbatim
-ND::TDbiSqlValPacket::TDbiSqlValPacket(std::ifstream& is) :
+CP::TDbiSqlValPacket::TDbiSqlValPacket(std::ifstream& is) :
 fNumErrors(0),
 fSeqNo(0),
 fNumStmts(0)
@@ -100,7 +100,7 @@ fNumStmts(0)
 //  None.
 
 
-  DbiTrace( "Creating ND::TDbiSqlValPacket" << "  ");
+  DbiTrace( "Creating CP::TDbiSqlValPacket" << "  ");
 
   Fill(is);
 
@@ -108,10 +108,10 @@ fNumStmts(0)
 //.....................................................................
 ///\verbatim
 ///
-///  Purpose:  Constructor from a ND::TDbiValidityRec.
+///  Purpose:  Constructor from a CP::TDbiValidityRec.
 ///
 ///  Arguments:
-///      vrec  in   ND::TDbiValidityRec from which to create packet.     .
+///      vrec  in   CP::TDbiValidityRec from which to create packet.     .
 ///
 ///  Return:   n/a.
 ///
@@ -120,16 +120,16 @@ fNumStmts(0)
 ///  Specification:-
 ///  =============
 ///
-///  o  Create ND::TDbiSqlValPacket from ND::TDbiValidityRec and associated data.
+///  o  Create CP::TDbiSqlValPacket from CP::TDbiValidityRec and associated data.
 ///
 ///
 ///  Program Notes:-
 ///  =============
 ///
-///  This member function uses ND::TDbiConfigSet as a generic concrete
-///  ND::TDbiTableRow that can be used to create SQL for any type of table.
+///  This member function uses CP::TDbiConfigSet as a generic concrete
+///  CP::TDbiTableRow that can be used to create SQL for any type of table.
 ///\endverbatim
-ND::TDbiSqlValPacket::TDbiSqlValPacket(const ND::TDbiValidityRec& vrec) :
+CP::TDbiSqlValPacket::TDbiSqlValPacket(const CP::TDbiValidityRec& vrec) :
 fNumErrors(0),
 fSeqNo(vrec.GetSeqNo()),
 fNumStmts(0),
@@ -138,19 +138,19 @@ fCreationDate(vrec.GetCreationDate())
 {
 
 
-  DbiTrace( "Creating ND::TDbiSqlValPacket" << "  ");
+  DbiTrace( "Creating CP::TDbiSqlValPacket" << "  ");
 
-  const ND::TDbiTableProxy& tableProxy = *vrec.GetTableProxy();
+  const CP::TDbiTableProxy& tableProxy = *vrec.GetTableProxy();
   Int_t seqNo  = vrec.GetSeqNo();
   UInt_t dbNo  = vrec.GetDbNo();
 
-  // Create the SQL for the ND::TDbiValidityRec itself.
+  // Create the SQL for the CP::TDbiValidityRec itself.
   this->AddRow(tableProxy,0,vrec);
 
   // Create the SQL for the rows.
 
-  const ND::TDbiDBProxy& dbProxy = tableProxy.GetDBProxy();
-  ND::TDbiInRowStream* rset = dbProxy.QuerySeqNo(seqNo,dbNo);
+  const CP::TDbiDBProxy& dbProxy = tableProxy.GetDBProxy();
+  CP::TDbiInRowStream* rset = dbProxy.QuerySeqNo(seqNo,dbNo);
 
 
   for(; ! rset->IsExhausted(); rset->FetchRow()) {
@@ -164,7 +164,7 @@ fCreationDate(vrec.GetCreationDate())
 
 //.....................................................................
 
-ND::TDbiSqlValPacket::~TDbiSqlValPacket() {
+CP::TDbiSqlValPacket::~TDbiSqlValPacket() {
 //
 //
 //  Purpose: Destructor
@@ -179,7 +179,7 @@ ND::TDbiSqlValPacket::~TDbiSqlValPacket() {
 //  Specification:-
 //  =============
 //
-//  o  Destroy ND::TDbiSqlValPacket.
+//  o  Destroy CP::TDbiSqlValPacket.
 
 
 //  Program Notes:-
@@ -188,7 +188,7 @@ ND::TDbiSqlValPacket::~TDbiSqlValPacket() {
 //  None.
 
 
-  DbiTrace( "Destroying ND::TDbiSqlValPacket" << "  ");
+  DbiTrace( "Destroying CP::TDbiSqlValPacket" << "  ");
 
   Clear();
 
@@ -196,9 +196,9 @@ ND::TDbiSqlValPacket::~TDbiSqlValPacket() {
 
 //.....................................................................
 /// Add data row tblProxy vrec row to this object.
-Bool_t ND::TDbiSqlValPacket::AddDataRow(const ND::TDbiTableProxy& tblProxy,
-                                   const ND::TDbiValidityRec* vrec,
-                                   const ND::TDbiTableRow& row){
+Bool_t CP::TDbiSqlValPacket::AddDataRow(const CP::TDbiTableProxy& tblProxy,
+                                   const CP::TDbiValidityRec* vrec,
+                                   const CP::TDbiTableRow& row){
 //
 //
 //  Purpose: Add data row.
@@ -216,7 +216,7 @@ Bool_t ND::TDbiSqlValPacket::AddDataRow(const ND::TDbiTableProxy& tblProxy,
 
 //.....................................................................
 /// add row to sql statements
-void ND::TDbiSqlValPacket::AddRow(const string & row){
+void CP::TDbiSqlValPacket::AddRow(const string & row){
 //
 //
 //  Purpose: Add row.
@@ -236,9 +236,9 @@ void ND::TDbiSqlValPacket::AddRow(const string & row){
 
 //.....................................................................
 
-Bool_t ND::TDbiSqlValPacket::AddRow(const ND::TDbiTableProxy& tblProxy,
-                               const ND::TDbiValidityRec* vrec,
-                               const ND::TDbiTableRow& row){
+Bool_t CP::TDbiSqlValPacket::AddRow(const CP::TDbiTableProxy& tblProxy,
+                               const CP::TDbiValidityRec* vrec,
+                               const CP::TDbiTableRow& row){
 //
 //
 //  Purpose: Add row.
@@ -246,8 +246,8 @@ Bool_t ND::TDbiSqlValPacket::AddRow(const ND::TDbiTableProxy& tblProxy,
 
 
   bool isVld = this->GetNumSqlStmts() == 0;
-  const ND::TDbiTableMetaData& meta = isVld ? tblProxy.GetMetaValid() : tblProxy.GetMetaData();
-  ND::TDbiOutRowStream outRow(&meta);
+  const CP::TDbiTableMetaData& meta = isVld ? tblProxy.GetMetaValid() : tblProxy.GetMetaData();
+  CP::TDbiOutRowStream outRow(&meta);
 
 // Store dummy SEQNO and ROW_COUNTER for data rows.
   if ( ! isVld ) {
@@ -273,11 +273,11 @@ Bool_t ND::TDbiSqlValPacket::AddRow(const ND::TDbiTableProxy& tblProxy,
 }
 //.....................................................................
 ///\verbatim
-///  Purpose:  Compare to another ND::TDbiSqlValPacket
+///  Purpose:  Compare to another CP::TDbiSqlValPacket
 ///
 ///  Arguments:
-///    that         in    The other ND::TDbiSqlValPacket to be compared.
-///    log          in    If true list differences to MSG("ND::TDbi",kInfo)
+///    that         in    The other CP::TDbiSqlValPacket to be compared.
+///    log          in    If true list differences to MSG("CP::TDbi",kInfo)
 ///    thisName     in    Optional name for this packet (default: this)
 ///    thatName     in    Optional name for that packet (default: that)
 ///
@@ -288,8 +288,8 @@ Bool_t ND::TDbiSqlValPacket::AddRow(const ND::TDbiTableProxy& tblProxy,
 ///
 ///  Contact:   N. West
 ///\endverbatim
-ND::TDbiSqlValPacket::CompResult_t ND::TDbiSqlValPacket::Compare(
-                                const ND::TDbiSqlValPacket& that,
+CP::TDbiSqlValPacket::CompResult_t CP::TDbiSqlValPacket::Compare(
+                                const CP::TDbiSqlValPacket& that,
                                 Bool_t log,
                                 const Char_t* thisName,
                                 const Char_t* thatName ) const {
@@ -337,9 +337,9 @@ ND::TDbiSqlValPacket::CompResult_t ND::TDbiSqlValPacket::Compare(
 ///
 ///  o If SQL to create tables is available, use it to create
 ///    the main and auxiliary tables and refresh the corresponding
-///    ND::TDbiTableProxy.
+///    CP::TDbiTableProxy.
 ///\endverbatim
-Bool_t ND::TDbiSqlValPacket::CreateTable(UInt_t dbNo) const {
+Bool_t CP::TDbiSqlValPacket::CreateTable(UInt_t dbNo) const {
 
 //  Program Notes:-
 //  =============
@@ -348,8 +348,8 @@ Bool_t ND::TDbiSqlValPacket::CreateTable(UInt_t dbNo) const {
 
   if ( ! CanBeStored() ) return kFALSE;
 
-  // Locate required ND::TDbiStatement.
-  auto_ptr<ND::TDbiStatement> stmtDb(ND::TDbiDatabaseManager::Instance()
+  // Locate required CP::TDbiStatement.
+  auto_ptr<CP::TDbiStatement> stmtDb(CP::TDbiDatabaseManager::Instance()
                                .GetCascader()
                                .CreateStatement(dbNo));
   if ( ! stmtDb.get() ) {
@@ -368,7 +368,7 @@ Bool_t ND::TDbiSqlValPacket::CreateTable(UInt_t dbNo) const {
   stmtDb->ExecuteUpdate(fSqlMySqlMetaMain.c_str());
   if ( stmtDb->PrintExceptions() ) return kFALSE;
 
-  ND::TDbiDatabaseManager::Instance().RefreshMetaData(this->GetTableName());
+  CP::TDbiDatabaseManager::Instance().RefreshMetaData(this->GetTableName());
 
   return kTRUE;
 
@@ -394,7 +394,7 @@ Bool_t ND::TDbiSqlValPacket::CreateTable(UInt_t dbNo) const {
 ///    the table name and SeqNos match.  Count and discard any data that
 ///    looks bad.
 
-Bool_t ND::TDbiSqlValPacket::Fill(std::ifstream& is) {
+Bool_t CP::TDbiSqlValPacket::Fill(std::ifstream& is) {
 
 //  Program Notes:-
 //  =============
@@ -543,7 +543,7 @@ Bool_t ND::TDbiSqlValPacket::Fill(std::ifstream& is) {
 }
 //.....................................................................
 /// Return a selected statment
-string ND::TDbiSqlValPacket::GetStmt(UInt_t stmtNo) const {
+string CP::TDbiSqlValPacket::GetStmt(UInt_t stmtNo) const {
 //
 //
 //  Purpose:  Return a selected statment
@@ -570,7 +570,7 @@ string ND::TDbiSqlValPacket::GetStmt(UInt_t stmtNo) const {
 ///
 ///  Contact:   N. West
 ///\endverbatim
-std::vector<std::string> ND::TDbiSqlValPacket::GetStmtValues(UInt_t stmtNo) const {
+std::vector<std::string> CP::TDbiSqlValPacket::GetStmtValues(UInt_t stmtNo) const {
 
 
   std::vector<std::string> vec;
@@ -583,7 +583,7 @@ std::vector<std::string> ND::TDbiSqlValPacket::GetStmtValues(UInt_t stmtNo) cons
   std::string::size_type pos = str.find('(');
   ++pos;
   std::string::size_type n = str.find(')') - pos;
-  ND::UtilString::StringTok(vec,str.substr(pos,n),",");
+  CP::UtilString::StringTok(vec,str.substr(pos,n),",");
 
   return vec;
 
@@ -592,11 +592,11 @@ std::vector<std::string> ND::TDbiSqlValPacket::GetStmtValues(UInt_t stmtNo) cons
 //.....................................................................
 
 ///\verbatim
-///  Purpose:  Test for equality to another ND::TDbiSqlValPacket
+///  Purpose:  Test for equality to another CP::TDbiSqlValPacket
 ///
 ///  Arguments:
-///    that         in    The other ND::TDbiSqlValPacket to be compared.
-///    log          in    If true list differences to MSG("ND::TDbi",kInfo)
+///    that         in    The other CP::TDbiSqlValPacket to be compared.
+///    log          in    If true list differences to MSG("CP::TDbi",kInfo)
 ///    thisName     in    Optional name for this packet (default: this)
 ///    thatName     in    Optional name for that packet (default: that)
 ///
@@ -607,7 +607,7 @@ std::vector<std::string> ND::TDbiSqlValPacket::GetStmtValues(UInt_t stmtNo) cons
 ///  Specification:-
 ///  =============
 ///
-///  o Compare to another ND::TDbiSqlValPacket.
+///  o Compare to another CP::TDbiSqlValPacket.
 ///
 ///  Program Notes:-
 ///  =============
@@ -616,7 +616,7 @@ std::vector<std::string> ND::TDbiSqlValPacket::GetStmtValues(UInt_t stmtNo) cons
 /// local database so has to be excluded from the comparison.
 ///\endverbatim
 
-Bool_t ND::TDbiSqlValPacket::IsEqual(const ND::TDbiSqlValPacket& that,
+Bool_t CP::TDbiSqlValPacket::IsEqual(const CP::TDbiSqlValPacket& that,
                                 Bool_t log,
                                 const Char_t* thisName,
                                 const Char_t* thatName ) const {
@@ -733,12 +733,12 @@ if ( log ) TDbiLog::GetLogStream()<< "Conflict found:"
 
 //.....................................................................
 /// Print the current state
-void ND::TDbiSqlValPacket::Print(Option_t * /* option */) const {
+void CP::TDbiSqlValPacket::Print(Option_t * /* option */) const {
 //
 //
 //  Purpose:  Print the current state.
 
-  DbiInfo(  "ND::TDbiSQLValPacket:"
+  DbiInfo(  "CP::TDbiSQLValPacket:"
     << " table \"" << fTableName << "\" "
     << " SeqNo " << fSeqNo
     << " NumErrors " << fNumErrors
@@ -766,11 +766,11 @@ void ND::TDbiSqlValPacket::Print(Option_t * /* option */) const {
 //.....................................................................
 //
 ///  Purpose:  Recreate and define first row (VLD - the validity record).
-void ND::TDbiSqlValPacket::Recreate(const string& tableName,
-                               const ND::TVldRange& vr,
+void CP::TDbiSqlValPacket::Recreate(const string& tableName,
+                               const CP::TVldRange& vr,
                                Int_t aggNo,
                                TDbi::Task task,             /*  Default: 0 */
-                               ND::TVldTimeStamp creationDate   /*  Default: now */
+                               CP::TVldTimeStamp creationDate   /*  Default: now */
                                ) {
 //
 
@@ -778,7 +778,7 @@ void ND::TDbiSqlValPacket::Recreate(const string& tableName,
 
   this->Clear();
 
-  ND::TDbiDatabaseManager& tablePR = ND::TDbiDatabaseManager::Instance();
+  CP::TDbiDatabaseManager& tablePR = CP::TDbiDatabaseManager::Instance();
   if ( ! tablePR.GetCascader().TableExists(tableName) ) {
        DbiSevere( "Cannot create packet - table " << tableName
 			   << " does not exist." << "  ");
@@ -789,14 +789,14 @@ void ND::TDbiSqlValPacket::Recreate(const string& tableName,
   fTableName = tableName;
 
 
-  // Create a ND::TDbiValidityRec from the supplied data.
-  ND::TDbiValidityRec vrec(vr,task,aggNo,0);
+  // Create a CP::TDbiValidityRec from the supplied data.
+  CP::TDbiValidityRec vrec(vr,task,aggNo,0);
 
-  //  Create a ND::TDbiOutRowStream that can serialise this validity record
-  ND::TDbiConfigSet dummy;     // For validity row any ND::TDbiTableRow will do.
-  const ND::TDbiTableMetaData&  metaValid = tablePR.GetTableProxy(tableName,&dummy)
+  //  Create a CP::TDbiOutRowStream that can serialise this validity record
+  CP::TDbiConfigSet dummy;     // For validity row any CP::TDbiTableRow will do.
+  const CP::TDbiTableMetaData&  metaValid = tablePR.GetTableProxy(tableName,&dummy)
                                               .GetMetaValid();
-  ND::TDbiOutRowStream buff(&metaValid);
+  CP::TDbiOutRowStream buff(&metaValid);
 
   vrec.Store(buff,0);
   this->AddRow(buff.GetCSV());
@@ -822,7 +822,7 @@ void ND::TDbiSqlValPacket::Recreate(const string& tableName,
 ///
 ///  o Reset object, report and count errors.
 ///\endverbatim
-void ND::TDbiSqlValPacket::Report(const char* msg,
+void CP::TDbiSqlValPacket::Report(const char* msg,
                              UInt_t lineNum,
                              const string& line) {
 //
@@ -841,7 +841,7 @@ void ND::TDbiSqlValPacket::Report(const char* msg,
 //.....................................................................
 ///  Purpose:  Clear out back to unfilled status except for fNumErrors.
 
-void ND::TDbiSqlValPacket::Reset() {
+void CP::TDbiSqlValPacket::Reset() {
 //
 //
 //
@@ -855,7 +855,7 @@ void ND::TDbiSqlValPacket::Reset() {
 }
 //.....................................................................
 /// Purpose:  Set creation date.
-void ND::TDbiSqlValPacket::SetCreationDate(ND::TVldTimeStamp ts) {
+void CP::TDbiSqlValPacket::SetCreationDate(CP::TVldTimeStamp ts) {
 //
 //
 //
@@ -876,7 +876,7 @@ void ND::TDbiSqlValPacket::SetCreationDate(ND::TVldTimeStamp ts) {
 }
 //.....................................................................
 /// Set EPOCH
-void ND::TDbiSqlValPacket::SetEpoch(UInt_t epoch) {
+void CP::TDbiSqlValPacket::SetEpoch(UInt_t epoch) {
 //
 //
 //  Purpose:  Set EPOCH
@@ -903,23 +903,23 @@ void ND::TDbiSqlValPacket::SetEpoch(UInt_t epoch) {
 //.....................................................................
 ///  Purpose:  Set up meta-data as SQL table creation statements.
 
-void ND::TDbiSqlValPacket::SetMetaData() const {
+void CP::TDbiSqlValPacket::SetMetaData() const {
 //
 //
 //
-  ND::TDbiDatabaseManager& tbprxreg = ND::TDbiDatabaseManager::Instance();
+  CP::TDbiDatabaseManager& tbprxreg = CP::TDbiDatabaseManager::Instance();
 
   //  Locate the table in the cascade.
-  ND::TDbiCascader& cas = tbprxreg.GetCascader();
+  CP::TDbiCascader& cas = tbprxreg.GetCascader();
   Int_t dbNo = cas.GetTableDbNo(this->GetTableName());
   if ( dbNo < 0 ) return;
 
   //  Any table proxy will do to get the meta-data so use the one for a
-  //  ND::TDbiConfigSet;
-  ND::TDbiConfigSet dummy;
-  const ND::TDbiTableMetaData & metaVld =  tbprxreg.GetTableProxy(this->GetTableName(),&dummy)
+  //  CP::TDbiConfigSet;
+  CP::TDbiConfigSet dummy;
+  const CP::TDbiTableMetaData & metaVld =  tbprxreg.GetTableProxy(this->GetTableName(),&dummy)
                                      .GetMetaValid();
-  const ND::TDbiTableMetaData & metaMain = tbprxreg.GetTableProxy(this->GetTableName(),&dummy)
+  const CP::TDbiTableMetaData & metaMain = tbprxreg.GetTableProxy(this->GetTableName(),&dummy)
                                      .GetMetaData();
   fSqlMySqlMetaVld   = metaVld.Sql();
   fSqlMySqlMetaMain  = metaMain.Sql();
@@ -928,7 +928,7 @@ void ND::TDbiSqlValPacket::SetMetaData() const {
 
 //.....................................................................
 /// Set sequence number
-void ND::TDbiSqlValPacket::SetSeqNo(UInt_t seqno) {
+void CP::TDbiSqlValPacket::SetSeqNo(UInt_t seqno) {
 //
 //
 //  Purpose:  Set Sequence number.
@@ -951,7 +951,7 @@ void ND::TDbiSqlValPacket::SetSeqNo(UInt_t seqno) {
 
 //.....................................................................
 ///  Purpose:  Set Sequence number on supplied row
-void ND::TDbiSqlValPacket::SetSeqNoOnRow(string& row,const string& seqno) {
+void CP::TDbiSqlValPacket::SetSeqNoOnRow(string& row,const string& seqno) {
 //
 //
 
@@ -985,22 +985,22 @@ void ND::TDbiSqlValPacket::SetSeqNoOnRow(string& row,const string& seqno) {
 ///  o Output validity packet to specified database modifying
 ///    InsertDate to be current date.
 ///\endverbatim
-Bool_t ND::TDbiSqlValPacket::Store(UInt_t dbNo, Bool_t replace) const {
+Bool_t CP::TDbiSqlValPacket::Store(UInt_t dbNo, Bool_t replace) const {
 
 
   if ( ! CanBeStored() ) return kFALSE;
 
-  //Just use any old table row object just to get a ND::TDbiDBProxy.
-  ND::TDbiConfigSet pet;
-  ND::TDbiTableProxy& tp =  ND::TDbiDatabaseManager::Instance()
+  //Just use any old table row object just to get a CP::TDbiDBProxy.
+  CP::TDbiConfigSet pet;
+  CP::TDbiTableProxy& tp =  CP::TDbiDatabaseManager::Instance()
                       .GetTableProxy(this->GetTableName(),&pet);
   if ( replace ) {
-    const ND::TDbiDBProxy & proxy = tp.GetDBProxy();
+    const CP::TDbiDBProxy & proxy = tp.GetDBProxy();
     if ( ! proxy.RemoveSeqNo(this->GetSeqNo(),dbNo) ) return kFALSE;
   }
 
-  // Locate required ND::TDbiStatement.
-  auto_ptr<ND::TDbiStatement> stmtDb(ND::TDbiDatabaseManager::Instance()
+  // Locate required CP::TDbiStatement.
+  auto_ptr<CP::TDbiStatement> stmtDb(CP::TDbiDatabaseManager::Instance()
                                .GetCascader()
                                .CreateStatement(dbNo));
   if ( ! stmtDb.get() ) {
@@ -1024,7 +1024,7 @@ Bool_t ND::TDbiSqlValPacket::Store(UInt_t dbNo, Bool_t replace) const {
       string sql = *itr;
       list<string>::size_type locDate = sql.rfind(",\'");
       if ( locDate !=  string::npos ) {
-        ND::TVldTimeStamp now;
+        CP::TVldTimeStamp now;
         sql.replace(locDate+2,19,TDbi::MakeDateTimeString(now));
       }
       stmtDb->ExecuteUpdate(sql.c_str());
@@ -1085,7 +1085,7 @@ Bool_t ND::TDbiSqlValPacket::Store(UInt_t dbNo, Bool_t replace) const {
 ///
 ///  o Export to an iostream.
 ///\endverbatim
-Bool_t ND::TDbiSqlValPacket::Write(std::ofstream& ios,
+Bool_t CP::TDbiSqlValPacket::Write(std::ofstream& ios,
                               Bool_t addMetadata) const {
 
 //  Program Notes:-
@@ -1097,7 +1097,7 @@ Bool_t ND::TDbiSqlValPacket::Write(std::ofstream& ios,
   if ( addMetadata ) {
     if ( fSqlMySqlMetaMain.size() == 0 ) this->SetMetaData();
     if ( fSqlMySqlMetaMain.size() == 0 ) {
-      DbiWarn(  "Cannot write metadata; no associated ND::TDbiTableProxy "
+      DbiWarn(  "Cannot write metadata; no associated CP::TDbiTableProxy "
       << "  ");
     }
     else {

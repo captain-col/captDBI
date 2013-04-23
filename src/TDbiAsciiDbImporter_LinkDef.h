@@ -1,3 +1,3 @@
 #ifdef __CINT__
-#pragma link C++ class ND::TDbiAsciiDbImporter;
+#pragma link C++ class CP::TDbiAsciiDbImporter;
 #endif

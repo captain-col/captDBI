@@ -17,13 +17,13 @@
 
 #include "TDbiRegistryItem.hxx"
 
-ClassImp(ND::TDbiRegistryItem)
+ClassImp(CP::TDbiRegistryItem)
 
-ND::TDbiRegistryItem::TDbiRegistryItem(void)
+CP::TDbiRegistryItem::TDbiRegistryItem(void)
 {
 }
 
-ND::TDbiRegistryItem::~TDbiRegistryItem(void)
+CP::TDbiRegistryItem::~TDbiRegistryItem(void)
 {
 }
 

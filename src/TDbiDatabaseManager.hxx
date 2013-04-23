@@ -5,7 +5,7 @@
  *
  * $Id: TDbiDatabaseManager.hxx,v 1.1 2011/01/18 05:49:19 finch Exp $
  *
- * \class ND::TDbiDatabaseManager
+ * \class CP::TDbiDatabaseManager
  *
  *
  * \brief
@@ -32,16 +32,16 @@
 
 
 
-namespace ND {
+namespace CP {
 class TDbiCascader;
 class TDbiTableProxy;
 class TDbiTableRow;
 class TDbiValidate;
 }
 
-namespace ND {
+namespace CP {
 
-class TDbiDatabaseManager :public ND::TDbiCfgConfigurable
+class TDbiDatabaseManager :public CP::TDbiCfgConfigurable
 {
 
   friend class TDbiValidate;      //Allow TDbiValidate access to dtor and
@@ -98,7 +98,7 @@ private:
 // Disabled (not implemented) copy constructor and asignment.
 
  TDbiDatabaseManager(const TDbiDatabaseManager&);
- ND::TDbiDatabaseManager& operator=(const ND::TDbiDatabaseManager&);
+ CP::TDbiDatabaseManager& operator=(const CP::TDbiDatabaseManager&);
 
 // State testing member functions
  	       void ApplySqlCondition() const;
@@ -137,7 +137,7 @@ ClassDef(TDbiDatabaseManager,0)   // Singleton register TDbiTableProxys.
 
 #ifndef __CINT__
 /// Count the number of #includes for this class
-static struct ND::TDbiDatabaseManager::Cleaner __dbi_cleaner;
+static struct CP::TDbiDatabaseManager::Cleaner __dbi_cleaner;
 #endif
 
 #endif  // TDBITABLEPROXYREGISTRY_H

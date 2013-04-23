@@ -12,11 +12,11 @@
 using std::endl;
 #include "TVldContext.hxx"
 
-ClassImp(ND::TDbiCache)
+ClassImp(CP::TDbiCache)
 
 // Typedefs
 
-  typedef ND::TDbiCache::ResultList_t ResultList_t;
+  typedef CP::TDbiCache::ResultList_t ResultList_t;
   typedef map<Int_t,ResultList_t>::const_iterator ConstCacheItr_t;
   typedef map<Int_t,ResultList_t>::iterator CacheItr_t;
   typedef ResultList_t::const_iterator ConstSubCacheItr_t;
@@ -40,7 +40,7 @@ ClassImp(ND::TDbiCache)
 ///  Purpose:  Constructor
 ///
 ///  Arguments:
-///             in  qp         Owning ND::TDbiTableProxy.
+///             in  qp         Owning CP::TDbiTableProxy.
 ///             in  tableName  Name of associated table
 ///
 ///  Return:    n/a
@@ -58,7 +58,7 @@ ClassImp(ND::TDbiCache)
 ///
 ///  None.
 ///\endverbatim
-ND::TDbiCache::TDbiCache(ND::TDbiTableProxy& qp,const string& tableName) :
+CP::TDbiCache::TDbiCache(CP::TDbiTableProxy& qp,const string& tableName) :
 fTableProxy(qp),
 fTableName(tableName),
 fCurSize(0),
@@ -68,7 +68,7 @@ fNumReused(0)
 {
 
 
-  DbiTrace( "Creating ND::TDbiCache" << "  ");
+  DbiTrace( "Creating CP::TDbiCache" << "  ");
 
 }
 
@@ -87,7 +87,7 @@ fNumReused(0)
 ///  Specification:-
 ///  =============
 ///
-///  o  Destroy cache and all owned ND::TDbiResultSets.
+///  o  Destroy cache and all owned CP::TDbiResultSets.
 ///
 ///
 ///  Program Notes:-
@@ -95,16 +95,16 @@ fNumReused(0)
 ///
 ///  None.
 ///\endverbatim
-ND::TDbiCache::~TDbiCache() {
+CP::TDbiCache::~TDbiCache() {
 
 
 
-  DbiTrace( "Destroying ND::TDbiCache" << "  ");
+  DbiTrace( "Destroying CP::TDbiCache" << "  ");
 
   // Purge the AggNo == -1 cache before deleting.  For extended
-  // context queries it can have ND::TDbiResultSetAggs that are clients of
-  // ND::TDbiResultSetNonAggs in the same cache, so purging will remove clientless
-  // ND::TDbiResultSetAggs which should in turn make their ND::TDbiResultSetNonAggs
+  // context queries it can have CP::TDbiResultSetAggs that are clients of
+  // CP::TDbiResultSetNonAggs in the same cache, so purging will remove clientless
+  // CP::TDbiResultSetAggs which should in turn make their CP::TDbiResultSetNonAggs
   // clientless.
   if ( this->GetSubCache(-1) ) this->Purge(fCache[-1]);
 
@@ -120,10 +120,10 @@ ND::TDbiCache::~TDbiCache() {
 //.....................................................................
 ///\verbatim
 ///
-///  Purpose:  Adopt and own a ND::TDbiResultSet
+///  Purpose:  Adopt and own a CP::TDbiResultSet
 ///
 ///  Arguments:
-///    res          in    The ND::TDbiResiult to be adopted.
+///    res          in    The CP::TDbiResiult to be adopted.
 ///    generateKey  in    If true generate key
 ///
 ///  Return:  None.
@@ -143,7 +143,7 @@ ND::TDbiCache::~TDbiCache() {
 ///  New entries are added to the end of the sub-cache unwanted entries
 ///  are always removed from the beginning so sub-cache is a FIFO.
 ///\endverbatim
-void ND::TDbiCache::Adopt(ND::TDbiResultSet* res,bool generateKey) {
+void CP::TDbiCache::Adopt(CP::TDbiResultSet* res,bool generateKey) {
 
   if ( ! res ) return;
   int aggNo = res->GetValidityRec().GetAggregateNo();
@@ -176,7 +176,7 @@ void ND::TDbiCache::Adopt(ND::TDbiResultSet* res,bool generateKey) {
 ///
 ///  Purpose:  Return sub-cache for aggregate or 0 if none..
 ///\endverbatim
-const ResultList_t* ND::TDbiCache::GetSubCache(Int_t aggNo) const {
+const ResultList_t* CP::TDbiCache::GetSubCache(Int_t aggNo) const {
 
   ConstCacheItr_t itr = fCache.find(aggNo);
   return ( itr == fCache.end() ) ? 0 : &itr->second;
@@ -206,7 +206,7 @@ const ResultList_t* ND::TDbiCache::GetSubCache(Int_t aggNo) const {
 ///  its members may be aggregated and consequently will be
 ///  connected to members in other caches.
 ///\endverbatim
-void ND::TDbiCache::Purge() {
+void CP::TDbiCache::Purge() {
 
 
 
@@ -222,7 +222,7 @@ void ND::TDbiCache::Purge() {
 ///
 ///  Arguments:
 ///    subCache   in/out  The sub-cache to be purged
-///    res        in      Optional ND::TDbiResultSet (default =0)
+///    res        in      Optional CP::TDbiResultSet (default =0)
 ///
 ///  Return:   None.
 ///
@@ -233,20 +233,20 @@ void ND::TDbiCache::Purge() {
 ///
 ///  o Purge surplus sub-cache members i.e. those without clients.
 ///
-///  o If a ND::TDbiResultSet is supplied, only purge entries that have
+///  o If a CP::TDbiResultSet is supplied, only purge entries that have
 ///    expired relative to it or are stale.
 ///
 ///  Program Notes:-
 ///  =============
 ///\endverbatim
-void ND::TDbiCache::Purge(ResultList_t& subCache, const ND::TDbiResultSet* res) {
+void CP::TDbiCache::Purge(ResultList_t& subCache, const CP::TDbiResultSet* res) {
 
 
-//  Passing a ND::TDbiResultSet allows the sub-cache to hold entries
+//  Passing a CP::TDbiResultSet allows the sub-cache to hold entries
 //  for different detector types, simulation masks and tasks.
 
     for ( SubCacheItr_t itr = subCache.begin(); itr != subCache.end(); ) {
-    ND::TDbiResultSet* pRes = *itr;
+    CP::TDbiResultSet* pRes = *itr;
 
      if (      pRes->GetNumClients() == 0
           && (    ! res
@@ -271,11 +271,11 @@ void ND::TDbiCache::Purge(ResultList_t& subCache, const ND::TDbiResultSet* res) 
 //.....................................................................
 ///\verbatim
 ///
-///  Purpose:  Search sub-cache for ND::TDbiResultSet set matching a ND::TDbiValidityRec.
+///  Purpose:  Search sub-cache for CP::TDbiResultSet set matching a CP::TDbiValidityRec.
 ///            with an optional sqlQualifiers string.
-///  Return:   Pointer to matching ND::TDbiResultSet, or = 0 if none.
+///  Return:   Pointer to matching CP::TDbiResultSet, or = 0 if none.
 ///\endverbatim
-const ND::TDbiResultSet* ND::TDbiCache::Search(const ND::TDbiValidityRec& vrec,
+const CP::TDbiResultSet* CP::TDbiCache::Search(const CP::TDbiValidityRec& vrec,
                                   const string& sqlQualifiers) const {
 
 
@@ -294,7 +294,7 @@ const ND::TDbiResultSet* ND::TDbiCache::Search(const ND::TDbiValidityRec& vrec,
   for ( ConstSubCacheItr_t itr = subCache->begin();
         itr != itrEnd;
         ++itr) {
-    ND::TDbiResultSet* res = *itr;
+    CP::TDbiResultSet* res = *itr;
     if ( res->Satisfies(vrec,sqlQualifiers) ) {
       fNumReused += res->GetNumAggregates();
       DbiTrace( "Secondary cache search succeeded.  Result set no. of rows: "
@@ -310,15 +310,15 @@ const ND::TDbiResultSet* ND::TDbiCache::Search(const ND::TDbiValidityRec& vrec,
 //.....................................................................
 ///\verbatim
 ///
-///  Purpose:  Search primary cache for ND::TDbiResultSet set matching a new query.
+///  Purpose:  Search primary cache for CP::TDbiResultSet set matching a new query.
 ///
 ///  Arguments:
 ///    vc           in    Context of new query
 ///    task         in    Task of new query
 ///
-///  Return:   Pointer to matching ND::TDbiResultSet, or = 0 if none.
+///  Return:   Pointer to matching CP::TDbiResultSet, or = 0 if none.
 ///\endverbatim
-const ND::TDbiResultSet* ND::TDbiCache::Search(const ND::TVldContext& vc,
+const CP::TDbiResultSet* CP::TDbiCache::Search(const CP::TVldContext& vc,
                                   const TDbi::Task& task ) const {
 
   DbiTrace( "Primary cache search of table " << fTableName
@@ -332,26 +332,26 @@ const ND::TDbiResultSet* ND::TDbiCache::Search(const ND::TVldContext& vc,
 
   // Loop over all possible SimFlag associations.
 
-  ND::DbiDetector::Detector_t     det(vc.GetDetector());
-  ND::DbiSimFlag::SimFlag_t       sim(vc.GetSimFlag());
-  ND::TVldTimeStamp              ts(vc.GetTimeStamp());
+  CP::DbiDetector::Detector_t     det(vc.GetDetector());
+  CP::DbiSimFlag::SimFlag_t       sim(vc.GetSimFlag());
+  CP::TVldTimeStamp              ts(vc.GetTimeStamp());
 
-  ND::TDbiSimFlagAssociation::SimList_t simList
-                  = ND::TDbiSimFlagAssociation::Instance().Get(sim);
+  CP::TDbiSimFlagAssociation::SimList_t simList
+                  = CP::TDbiSimFlagAssociation::Instance().Get(sim);
 
-  ND::TDbiSimFlagAssociation::SimList_t::iterator listItr    = simList.begin();
-  ND::TDbiSimFlagAssociation::SimList_t::iterator listItrEnd = simList.end();
+  CP::TDbiSimFlagAssociation::SimList_t::iterator listItr    = simList.begin();
+  CP::TDbiSimFlagAssociation::SimList_t::iterator listItrEnd = simList.end();
   while ( listItr !=  listItrEnd ) {
 
-    ND::DbiSimFlag::SimFlag_t simTry = *listItr;
-    ND::TVldContext vcTry(det,simTry,ts);
+    CP::DbiSimFlag::SimFlag_t simTry = *listItr;
+    CP::TVldContext vcTry(det,simTry,ts);
 
     DbiDebug( "  Searching cache with SimFlag: "
-			   << ND::DbiSimFlag::AsString(simTry) << "  ");
+			   << CP::DbiSimFlag::AsString(simTry) << "  ");
     for ( ConstSubCacheItr_t itr = subCache->begin();
           itr != subCache->end();
           ++itr) {
-      ND::TDbiResultSet* res = *itr;
+      CP::TDbiResultSet* res = *itr;
       if ( res->Satisfies(vcTry,task) ) {
         fNumReused += res->GetNumAggregates();
 	DbiTrace( "Primary cache search succeeded. Result set no. of rows: "
@@ -369,14 +369,14 @@ const ND::TDbiResultSet* ND::TDbiCache::Search(const ND::TVldContext& vc,
 //.....................................................................
 ///\verbatim
 ///
-///  Purpose:  Search primary cache for ND::TDbiResultSet set matching a new query.
+///  Purpose:  Search primary cache for CP::TDbiResultSet set matching a new query.
 ///
 ///  Arguments:
 ///    sqlQualifiers  in  The SQL qualifiers (context-sql;data-sql;fill-options)
 ///
-///  Return:   Pointer to matching ND::TDbiResultSet, or = 0 if none.
+///  Return:   Pointer to matching CP::TDbiResultSet, or = 0 if none.
 ///\endverbatim
-const ND::TDbiResultSet* ND::TDbiCache::Search(const string& sqlQualifiers) const {
+const CP::TDbiResultSet* CP::TDbiCache::Search(const string& sqlQualifiers) const {
 
   DbiTrace( "Primary cache search of table " << fTableName
 			 << " for  SQL " << sqlQualifiers << "  ");
@@ -388,7 +388,7 @@ const ND::TDbiResultSet* ND::TDbiCache::Search(const string& sqlQualifiers) cons
   for ( ConstSubCacheItr_t itr = subCache->begin();
         itr != subCache->end();
         ++itr) {
-    ND::TDbiResultSet* res = *itr;
+    CP::TDbiResultSet* res = *itr;
     if ( res->Satisfies(sqlQualifiers) ) {
       fNumReused += res->GetNumAggregates();
       DbiTrace( "Primary cache search succeeded Result set no. of rows: "
@@ -420,13 +420,13 @@ const ND::TDbiResultSet* ND::TDbiCache::Search(const string& sqlQualifiers) cons
 ///  =============
 ///
 ///  This member function can be used to effectively clear the cache.
-///  As existing ND::TDbiResultSet objects currently in the cache may currently
+///  As existing CP::TDbiResultSet objects currently in the cache may currently
 ///  have clients, its not possible simply to delete them, so instead
 ///  this function marks them as stale so they will not be reused and
 ///  will eventually be dropped once all their clients have disconnected.
 ///\endverbatim
 
-void ND::TDbiCache::SetStale() {
+void CP::TDbiCache::SetStale() {
 
   for ( CacheItr_t cacheItr = fCache.begin();
         cacheItr != fCache.end();
@@ -464,7 +464,7 @@ void ND::TDbiCache::SetStale() {
 ///
 ///  None.
 ///\endverbatim
-ostream& ND::TDbiCache::ShowStatistics(ostream& msg) const {
+ostream& CP::TDbiCache::ShowStatistics(ostream& msg) const {
 
   MsgFormat ifmt("%10i");
 
@@ -478,7 +478,7 @@ ostream& ND::TDbiCache::ShowStatistics(ostream& msg) const {
 
 //.....................................................................
 
-ND::TDbiCache:: {
+CP::TDbiCache:: {
 //
 //
 //  Purpose:

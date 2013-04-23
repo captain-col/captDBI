@@ -4,7 +4,7 @@
 /**
  *
  
- * \class ND::TDbiAsciiDbImporter
+ * \class CP::TDbiAsciiDbImporter
  *
  *
  * \brief
@@ -29,14 +29,14 @@
 
 #include "TDbiExceptionLog.hxx"
 
-namespace ND {
+namespace CP {
 class TDbiAsciiTablePreparer;
 }
 class TSQLServer;
 class TString;
 
 
-namespace ND {
+namespace CP {
 class TDbiAsciiDbImporter
 {
 public:

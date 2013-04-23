@@ -1,3 +1,3 @@
 #ifdef __CINT__
-#pragma link C++ class ND::TDbiDatabaseManager;
+#pragma link C++ class CP::TDbiDatabaseManager;
 #endif

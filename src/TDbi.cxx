@@ -1,14 +1,14 @@
 ///////////////////////////////////////////////////////////////////////
 // $Id: TDbi.cxx,v 1.2 2012/06/14 10:55:22 finch Exp $
 //
-// ND::TDbi
+// CP::TDbi
 //
 // N. West 12/2000
 //
-// Purpose: ND::TDbi consists entirely of static data and member functions
+// Purpose: CP::TDbi consists entirely of static data and member functions
 //          used for package interface.
 //
-// General Remarks about ND::TDbi
+// General Remarks about CP::TDbi
 // =========================
 //
 // This primary purposes of this package are:-
@@ -21,8 +21,8 @@
 // ==================
 //
 //  Layered as follows, Higher levels can call those in lower levels
-//  Names on the same layer cannot call each other.  The ND::TDbi prefix
-//  is omitted on all but ND::TDbi itself.
+//  Names on the same layer cannot call each other.  The CP::TDbi prefix
+//  is omitted on all but CP::TDbi itself.
 //
 //  Validate
 //  ConfigStream
@@ -52,9 +52,9 @@
 //  Connection
 //  TableMetaData
 //  RollbackDates FieldType
-//  ND::TDbi String Services
-//  ND::TDbiAsciiDbImporter
-//  ND::TDbiAsciiTablePreparer
+//  CP::TDbi String Services
+//  CP::TDbiAsciiDbImporter
+//  CP::TDbiAsciiTablePreparer
 //  ExceptionLog
 //  Exception
 //
@@ -100,7 +100,7 @@ Int_t TDbi::GetTimeGate(const std::string& tableName) {
 //  VLD records are processed, much shorter and the query results will
 //  expire too soon.  Both increase I/O.
 //
-//  The system provides a default for each table and ND::TDbiValidityRecBuilder
+//  The system provides a default for each table and CP::TDbiValidityRecBuilder
 //  updates it if grossly wrong.
 
   // Set default if looking up table for the first time.
@@ -152,22 +152,22 @@ std::string TDbi::GetVldDescr(const char* tableName,
 
 //.....................................................................
 
-string TDbi::MakeDateTimeString(const ND::TVldTimeStamp& timeStamp) {
+string TDbi::MakeDateTimeString(const CP::TVldTimeStamp& timeStamp) {
 //
 //
-//  Purpose: Convert ND::TVldTimeStamp to SQL DateTime string.
+//  Purpose: Convert CP::TVldTimeStamp to SQL DateTime string.
 //
 //  Arguments:
-//    timeStamp    in    ND::TVldTimeStamp to be converted.
+//    timeStamp    in    CP::TVldTimeStamp to be converted.
 //
-//  Return: SQL DateTime string corresponding to ND::TVldTimeStamp.
+//  Return: SQL DateTime string corresponding to CP::TVldTimeStamp.
 //
 //  Contact:   N. West
 //
 //  Specification:-
 //  =============
 //
-//  o Return SQL DateTime string corresponding to ND::TVldTimeStamp.
+//  o Return SQL DateTime string corresponding to CP::TVldTimeStamp.
 
 //  Program Notes:-
 //  =============
@@ -183,25 +183,25 @@ string TDbi::MakeDateTimeString(const ND::TVldTimeStamp& timeStamp) {
 }
 //.....................................................................
 
-ND::TVldTimeStamp TDbi::MakeTimeStamp(const std::string& sqlDateTime,
+CP::TVldTimeStamp TDbi::MakeTimeStamp(const std::string& sqlDateTime,
                                 Bool_t* ok) {
 //
 //
-//  Purpose:  Convert SQL DateTime string to ND::TVldTimeStamp.
+//  Purpose:  Convert SQL DateTime string to CP::TVldTimeStamp.
 //
 //  Arguments:
 //    sqlDateTime  in   SQL DateTime string to be convered.
 //    ok           in    Optional return flag
 //                       If not supplied, report illegal dates
 //
-//  Return:  ND::TVldTimeStamp corresponding to SQL DateTime string.
+//  Return:  CP::TVldTimeStamp corresponding to SQL DateTime string.
 //
 //  Contact:   N. West
 //
 //  Specification:-
 //  =============
 //
-//  o  Return ND::TVldTimeStamp corresponding to SQL DateTime string.
+//  o  Return CP::TVldTimeStamp corresponding to SQL DateTime string.
 
 //  Program Notes:-
 //  =============
@@ -222,7 +222,7 @@ ND::TVldTimeStamp TDbi::MakeTimeStamp(const std::string& sqlDateTime,
   static string hi = "2038-01-19 03:14:07";
 
   // Set up defaults from 0:0am today.
-  ND::TVldTimeStamp nowTS;
+  CP::TVldTimeStamp nowTS;
   int nowDate = nowTS.GetDate();
   date defaultDate = {nowDate/10000, nowDate/100%100, nowDate%100,0,0,0};
   date input       = defaultDate;
@@ -254,7 +254,7 @@ ND::TVldTimeStamp TDbi::MakeTimeStamp(const std::string& sqlDateTime,
     input = defaultDate;
   }
 
-  return ND::TVldTimeStamp(input.year,input.month,input.day,
+  return CP::TVldTimeStamp(input.year,input.month,input.day,
                       input.hour,input.min,input.sec);
 
 }
@@ -289,7 +289,7 @@ void TDbi::SetLogLevel(int level) {
 
 //  None.
 
- ND::TDbiLog::SetLogLevel((ND::TDbiLog::LogPriority)level);
+ CP::TDbiLog::SetLogLevel((CP::TDbiLog::LogPriority)level);
 
 }
 

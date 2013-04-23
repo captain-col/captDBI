@@ -16,7 +16,7 @@
 
 //......................................................................
 
-void ND::TDbiCfg::TDbiRegistryToString(std::string& x, const TDbiRegistry& r) 
+void CP::TDbiCfg::TDbiRegistryToString(std::string& x, const TDbiRegistry& r) 
 {
 //======================================================================
 // Convert the TDbiRegistry r to a string dump
@@ -52,7 +52,7 @@ void ND::TDbiCfg::TDbiRegistryToString(std::string& x, const TDbiRegistry& r)
 
 //......................................................................
 
-void ND::TDbiCfg::StringToTDbiRegistry(TDbiRegistry& r, const char* s) 
+void CP::TDbiCfg::StringToTDbiRegistry(TDbiRegistry& r, const char* s) 
 {
 //======================================================================
 // Convert the string s to a TDbiRegistry. Format of s is:
@@ -104,16 +104,16 @@ void ND::TDbiCfg::StringToTDbiRegistry(TDbiRegistry& r, const char* s)
       if ( isString ) {
 	r.Set(cKey,cValue);
       }
-      else if (ND::UtilString::IsInt(cValue)) {
+      else if (CP::UtilString::IsInt(cValue)) {
 	int i = atoi(cValue);
 	r.Set(cKey,i);
       }
-      else if (ND::UtilString::IsFloat(cValue)) {
+      else if (CP::UtilString::IsFloat(cValue)) {
 	double d = atof(cValue);
 	r.Set(cKey,d);
       }
-      else if (ND::UtilString::IsBool(cValue)) {
-	bool b = ND::UtilString::atob(cValue);
+      else if (CP::UtilString::IsBool(cValue)) {
+	bool b = CP::UtilString::atob(cValue);
 	r.Set(cKey,b);
       }
       else {

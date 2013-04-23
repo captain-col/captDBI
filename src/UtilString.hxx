@@ -1,5 +1,5 @@
 /**
- * \class ND::UtilString
+ * \class CP::UtilString
  *
  * \ingroup Util
  *
@@ -30,7 +30,7 @@
 #define STRING
 #endif
 #include <sstream>
-namespace ND {
+namespace CP {
 
 namespace UtilString
 {

@@ -10,7 +10,7 @@
  *
  * $Id: TDbiExceptionLog.hxx,v 1.1 2011/01/18 05:49:19 finch Exp $
  *
- * \class ND::TDbiExceptionLog
+ * \class CP::TDbiExceptionLog
  *
  *
  * \brief
@@ -20,7 +20,7 @@
  * <b>Purpose</b>To provide a place to record (in memory) exceptions from the time
  * they arise in the lower levels of the DBI and below until they can be
  * analysed in the upper levels of the DBI and beyond. They are stored in a std::vector 
- * of ND::TDbiException s
+ * of CP::TDbiException s
  *
  * Contact: A.Finch@lancaster.ac.uk
  *
@@ -37,13 +37,13 @@
 
 class TSQLServer;
 class TSQLStatement;
-namespace ND {
+namespace CP {
 class TDbiExceptionLog;
 }
 
-std::ostream& operator<<(std::ostream& s, const ND::TDbiExceptionLog& el);
+std::ostream& operator<<(std::ostream& s, const CP::TDbiExceptionLog& el);
 
-namespace ND {
+namespace CP {
 class TDbiExceptionLog
 
 {
@@ -55,7 +55,7 @@ public:
 // State testing member functions
 
     Bool_t IsEmpty() const { return fEntries.size() == 0; }
-const std::vector<ND::TDbiException>&
+const std::vector<CP::TDbiException>&
            GetEntries() const { return fEntries; }
       void Print() const;
     UInt_t Size() const { return fEntries.size(); }

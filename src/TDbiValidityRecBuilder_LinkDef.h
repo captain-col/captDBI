@@ -1,3 +1,3 @@
 #ifdef __CINT__
-#pragma link C++ class ND::TDbiValidityRecBuilder;
+#pragma link C++ class CP::TDbiValidityRecBuilder;
 #endif

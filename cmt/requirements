@@ -13,41 +13,43 @@ package captDBI
 manager Clark McGrew <clark.mcgrew@stonybrook.edu>
 author captain-sw@simpa.lbl.gov
 
-branches cmt src dict app demo
-
 # Needed packages
+use captainPolicy 
 use captEvent 
+use ROOT v* LCG_Interfaces
 
 # Build methods to include.
-document version version *.cxx ../dict/*.cxx
+document version version *.cxx *.hxx *_LinkDef.h
+
 document register register
-document rootcint rootcint *_LinkDef.h
+macro_append register_dependencies " version "
+
+document rootcint rootcint *.hxx *_LinkDef.h
+macro_append linkdef_dependencies " register "
+
 document doxygen doxygen -group=documentation *.cxx *.hxx   ../doc/*.dox
 
 # The library to be build
-library captDBI *.cxx *.hxx ../dict/*.cxx
+library captDBI *.cxx *.hxx $(bin)dict/*.cxx
+macro_append captDBI_dependencies " linkdef "
 
 # Build information used by packages that use this one.
 macro captDBI_cppflags " -DCAPTDBI_USED "
 macro captDBI_linkopts " -L$(CAPTDBIROOT)/$(captDBI_tag) -lcaptDBI "
-macro captDBI_stamps " $(CAPTDBIROOT)/$(captDBI_tag)/captDBI.stamp"
+macro captDBI_stamps " $(captDBIstamp) $(linkdefstamp)"
 
 # The paths to find this library.
 path_remove LD_LIBRARY_PATH "$(CAPTDBIROOT)"
 path_prepend LD_LIBRARY_PATH "$(CAPTDBIROOT)/$(captDBI_tag)"
 
-# library path for Mac OS X
-path_remove DYLD_LIBRARY_PATH "" \
-            Darwin            "$(CAPTDBIROOT)"
-path_prepend DYLD_LIBRARY_PATH "" \
-             Darwin            "$(CAPTDBIROOT)/$(captDBI_tag)"
-
 path_remove PATH "$(CAPTDBIROOT)"
 path_prepend PATH "$(CAPTDBIROOT)/$(captDBI_tag)"
 
 application demoDBI -group=demo ../demo/*.cxx
+macro_append demoDBI_dependencies " captDBI "
 
 application allocate_seq_no ../app/allocate_seq_no.cxx
+macro_append allocate_seq_no_dependencies " captDBI "
 
 macro install_dir $(CAPTDBIROOT)/$(captDBI_tag)
 document installer installer ../app/database_updater.py 

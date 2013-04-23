@@ -10,7 +10,7 @@
  *
  * $Id: TDbiStatement.hxx,v 1.1 2011/01/18 05:49:20 finch Exp $
  *
- * \class ND::TDbiStatement
+ * \class CP::TDbiStatement
  *
  *
  * \brief <b>Concept</b> A connected reusable statement with accompanying
@@ -36,11 +36,11 @@
 #include "TDbiExceptionLog.hxx"
 #include "TDbiConnection.hxx"
 
-namespace ND {
+namespace CP {
 class TDbiException;
 }
 
-namespace ND {
+namespace CP {
 class TDbiStatement
 {
 

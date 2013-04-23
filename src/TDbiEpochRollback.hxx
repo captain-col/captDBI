@@ -5,7 +5,7 @@
  *
  * $Id: TDbiEpochRollback.hxx,v 1.1 2011/01/18 05:49:19 finch Exp $
  *
- * \class ND::TDbiEpochRollback
+ * \class CP::TDbiEpochRollback
  *
  *
  * \brief
@@ -29,11 +29,11 @@
 #endif
 #endif
 
-namespace ND{
+namespace CP{
 class TDbiRegistry;
 }
 
-namespace ND {
+namespace CP {
 class TDbiEpochRollback
 {
 

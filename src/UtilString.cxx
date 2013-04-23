@@ -18,7 +18,7 @@ using std::string;
 
 //......................................................................
 
-void ND::UtilString::MakePrintable(const char* in,
+void CP::UtilString::MakePrintable(const char* in,
                                std::string& out)
 {
 //======================================================================
@@ -58,7 +58,7 @@ void ND::UtilString::MakePrintable(const char* in,
 
 //......................................................................
 
-void ND::UtilString::StringTok(std::vector<std::string>& ls,
+void CP::UtilString::StringTok(std::vector<std::string>& ls,
 			   const std::string& str,
 			   const std::string& tok)
 {
@@ -93,7 +93,7 @@ void ND::UtilString::StringTok(std::vector<std::string>& ls,
 
 //......................................................................
 
-bool ND::UtilString::IsInt(const char* s)
+bool CP::UtilString::IsInt(const char* s)
 {
 //======================================================================
 // Does the string s represent an integer?
@@ -114,7 +114,7 @@ bool ND::UtilString::IsInt(const char* s)
 
 //......................................................................
 
-bool ND::UtilString::IsFloat(const char* s)
+bool CP::UtilString::IsFloat(const char* s)
 {
 //======================================================================
 // Does the string s represent an integer?
@@ -129,7 +129,7 @@ bool ND::UtilString::IsFloat(const char* s)
 
 //......................................................................
 
-bool ND::UtilString::IsBool(const char* s)
+bool CP::UtilString::IsBool(const char* s)
 {
 //======================================================================
 // Can the string value be interpreted as a bool value?
@@ -141,7 +141,7 @@ bool ND::UtilString::IsBool(const char* s)
 
 //......................................................................
 
-bool ND::UtilString::atob(const char* s)
+bool CP::UtilString::atob(const char* s)
 {
 //======================================================================
 // Convert the text string to its bool equivalent No error checking is
@@ -160,7 +160,7 @@ bool ND::UtilString::atob(const char* s)
 
 //......................................................................
 
-bool ND::UtilString::atob(const char* s, bool& isvalid)
+bool CP::UtilString::atob(const char* s, bool& isvalid)
 {
 //======================================================================
 // Convert the text string to its bool equivalent No error checking is
@@ -190,7 +190,7 @@ bool ND::UtilString::atob(const char* s, bool& isvalid)
 
 //......................................................................
 
-int ND::UtilString::cmp_nocase(const std::string& s1, const std::string& s2) {
+int CP::UtilString::cmp_nocase(const std::string& s1, const std::string& s2) {
 //======================================================================
 // compare two strings without caring about case
 // taken from Stroustrup Special Ed, 20.3.8
@@ -206,7 +206,7 @@ int ND::UtilString::cmp_nocase(const std::string& s1, const std::string& s2) {
 }
 //......................................................................
 
-int ND::UtilString::cmp_wildcard(const std::string& s, const std::string& w) {
+int CP::UtilString::cmp_wildcard(const std::string& s, const std::string& w) {
 //======================================================================
 // compare two strings where second string may end with wildcard *
 //======================================================================
@@ -217,7 +217,7 @@ int ND::UtilString::cmp_wildcard(const std::string& s, const std::string& w) {
 
 //......................................................................
 
-std::string ND::UtilString::ToUpper(const std::string & str) {
+std::string CP::UtilString::ToUpper(const std::string & str) {
 //======================================================================
 // Convert string to upper case.
 //======================================================================
@@ -233,7 +233,7 @@ std::string ND::UtilString::ToUpper(const std::string & str) {
 
 //......................................................................
 
-std::string ND::UtilString::ToLower(const std::string & str) {
+std::string CP::UtilString::ToLower(const std::string & str) {
 //======================================================================
 // Convert string to upper case.
 //======================================================================

@@ -11,7 +11,7 @@
 
 //......................................................................
 
-ND::TDbiCfgDialog::TDbiCfgDialog() :
+CP::TDbiCfgDialog::TDbiCfgDialog() :
   fCurrent(),
   fDefault(),
   fResult()
@@ -19,7 +19,7 @@ ND::TDbiCfgDialog::TDbiCfgDialog() :
 
 //......................................................................
 
-ND::TDbiCfgDialog::TDbiCfgDialog(const TDbiRegistry& cur, const TDbiRegistry& defl) :
+CP::TDbiCfgDialog::TDbiCfgDialog(const TDbiRegistry& cur, const TDbiRegistry& defl) :
   fCurrent(cur),
   fDefault(defl),
   fResult()
@@ -27,14 +27,14 @@ ND::TDbiCfgDialog::TDbiCfgDialog(const TDbiRegistry& cur, const TDbiRegistry& de
 
 //......................................................................
 
-ND::TDbiCfgDialog::~TDbiCfgDialog() { }
+CP::TDbiCfgDialog::~TDbiCfgDialog() { }
 
 //......................................................................
 //======================================================================
 /// Copy the registry r to the set of values to display as current
 /// values
 //======================================================================
-void ND::TDbiCfgDialog::SetCurrent(const TDbiRegistry& r) 
+void CP::TDbiCfgDialog::SetCurrent(const TDbiRegistry& r) 
 {
 
   fCurrent.UnLockValues();
@@ -46,7 +46,7 @@ void ND::TDbiCfgDialog::SetCurrent(const TDbiRegistry& r)
 //======================================================================
 /// Copy the registry r to the set of values to display as default values
 //======================================================================
-void ND::TDbiCfgDialog::SetDefault(const TDbiRegistry& r)
+void CP::TDbiCfgDialog::SetDefault(const TDbiRegistry& r)
 {
 
   fDefault.UnLockValues();
@@ -60,7 +60,7 @@ void ND::TDbiCfgDialog::SetDefault(const TDbiRegistry& r)
 /// registry. Return the registry stuffed with the new values.
 /// Can get one of either char, string, int or double.
 //======================================================================
-ND::TDbiRegistry& ND::TDbiCfgDialog::Query()
+CP::TDbiRegistry& CP::TDbiCfgDialog::Query()
 {
 
   TDbiRegistry::TDbiRegistryKey rk = fCurrent.Key();

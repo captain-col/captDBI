@@ -2,7 +2,7 @@
 /////////////////////////////////////////////////
 // $Id: TDbiCfg.hxx,v 1.1 2011/01/18 05:49:19 finch Exp $
 ///
-/// \class ND::TDbiCfg
+/// \class CP::TDbiCfg
 ///
 /// \brief Some utility functions for working with configurations
 ///
@@ -19,7 +19,7 @@
 # include "TDbiRegistry.hxx"
 #endif
 
-namespace ND {
+namespace CP {
 class TDbiCfg
 {
 public:

@@ -1,4 +1,4 @@
 #include "TResultInputStream.hxx"
 
-ClassImp(ND::TResultInputStream)
+ClassImp(CP::TResultInputStream)
 

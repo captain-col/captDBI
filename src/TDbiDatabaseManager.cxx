@@ -19,14 +19,14 @@
 using std::endl;
 #include "UtilString.hxx"
 
-ClassImp(ND::TDbiDatabaseManager)
+ClassImp(CP::TDbiDatabaseManager)
 
 //   Definition of static data members
 //   *********************************
 
 
-ND::TDbiDatabaseManager* ND::TDbiDatabaseManager::fgInstance       = 0;
-int                    ND::TDbiDatabaseManager::Cleaner::fgCount = 0;
+CP::TDbiDatabaseManager* CP::TDbiDatabaseManager::fgInstance       = 0;
+int                    CP::TDbiDatabaseManager::Cleaner::fgCount = 0;
 
 //    Definition of all member functions (static or otherwise)
 //    *******************************************************
@@ -35,7 +35,7 @@ int                    ND::TDbiDatabaseManager::Cleaner::fgCount = 0;
 
 //.....................................................................
 
-ND::TDbiDatabaseManager::TDbiDatabaseManager() :
+CP::TDbiDatabaseManager::TDbiDatabaseManager() :
 fCascader(0)
 {
 //
@@ -61,13 +61,13 @@ fCascader(0)
 
 // Create cascader for database access.
 
-  fCascader = new ND::TDbiCascader;
+  fCascader = new CP::TDbiCascader;
 
 // Get any environment configuration.
 
   this->SetConfigFromEnvironment();
 
-  DbiTrace( "Creating ND::TDbiDatabaseManager"
+  DbiTrace( "Creating CP::TDbiDatabaseManager"
     << "  ");
 
 
@@ -75,7 +75,7 @@ fCascader(0)
 
 //.....................................................................
 
-ND::TDbiDatabaseManager::~TDbiDatabaseManager() {
+CP::TDbiDatabaseManager::~TDbiDatabaseManager() {
 //
 //
 //  Purpose: Destructor
@@ -90,14 +90,14 @@ ND::TDbiDatabaseManager::~TDbiDatabaseManager() {
 //  Specification:-
 //  =============
 //
-//  o  Destroy all ND::TDbiTableProxies if Shutdown required.
+//  o  Destroy all CP::TDbiTableProxies if Shutdown required.
 
 
 
-  if (  ND::TDbiExceptionLog::GetGELog().Size() ) {
+  if (  CP::TDbiExceptionLog::GetGELog().Size() ) {
      DbiInfo( "Database Global Exception Log contains "
-	  << ND::TDbiExceptionLog::GetGELog().Size() << " entries:-" << "  ");;
-     ND::TDbiExceptionLog::GetGELog().Print();
+	  << CP::TDbiExceptionLog::GetGELog().Size() << " entries:-" << "  ");;
+     CP::TDbiExceptionLog::GetGELog().Print();
   }
 
   int shutdown = 0;
@@ -111,29 +111,29 @@ ND::TDbiDatabaseManager::~TDbiDatabaseManager() {
 
 // Destroy all owned objects.
 
-  for ( std::map<std::string,ND::TDbiTableProxy*>::iterator itr = fTPmap.begin();
+  for ( std::map<std::string,CP::TDbiTableProxy*>::iterator itr = fTPmap.begin();
         itr != fTPmap.end();
         ++itr) {
-    ND::TDbiTableProxy* tp = (*itr).second;
+    CP::TDbiTableProxy* tp = (*itr).second;
     delete tp;
   }
 
   delete fCascader;
   fCascader = 0;
 
-  DbiTrace(  "Destroying ND::TDbiDatabaseManager" << "  ");
+  DbiTrace(  "Destroying CP::TDbiDatabaseManager" << "  ");
 
   DbiInfo( "DatabaseInterface shutdown complete." << "  ");
-  ND::TDbiDatabaseManager::fgInstance = 0;
+  CP::TDbiDatabaseManager::fgInstance = 0;
 
 }
 
 //.....................................................................
 
-void ND::TDbiDatabaseManager::ApplySqlCondition() const {
+void CP::TDbiDatabaseManager::ApplySqlCondition() const {
 //
 //
-//  Purpose: Apply Sql condition to existing ND::TDbiTableProxys.
+//  Purpose: Apply Sql condition to existing CP::TDbiTableProxys.
 //
 //  Contact:   N. West
 //
@@ -141,22 +141,22 @@ void ND::TDbiDatabaseManager::ApplySqlCondition() const {
 //  =============
 //
 //  o Apply global Sql condition, together with any prevailing rollback to
-//    all existing ND::TDbiTableProxys.
+//    all existing CP::TDbiTableProxys.
 
-  std::map<std::string,ND::TDbiTableProxy*>::const_iterator itr = fTPmap.begin();
-  std::map<std::string,ND::TDbiTableProxy*>::const_iterator itrEnd = fTPmap.end();
+  std::map<std::string,CP::TDbiTableProxy*>::const_iterator itr = fTPmap.begin();
+  std::map<std::string,CP::TDbiTableProxy*>::const_iterator itrEnd = fTPmap.end();
   for ( ; itr != itrEnd; ++itr) this->ApplySqlCondition(itr->second);
 }
 
 //.....................................................................
 
-void ND::TDbiDatabaseManager::ApplySqlCondition(ND::TDbiTableProxy* proxy) const {
+void CP::TDbiDatabaseManager::ApplySqlCondition(CP::TDbiTableProxy* proxy) const {
 //
 //
-//  Purpose: Apply Sql condition to specific ND::TDbiTableProxy.
+//  Purpose: Apply Sql condition to specific CP::TDbiTableProxy.
 //
 //  Arguments:
-//    proxy        in    ND::TDbiTableProxy to which condition is to be applied.
+//    proxy        in    CP::TDbiTableProxy to which condition is to be applied.
 //
 //  Contact:   N. West
 //
@@ -182,7 +182,7 @@ void ND::TDbiDatabaseManager::ApplySqlCondition(ND::TDbiTableProxy* proxy) const
 
 //.....................................................................
 
-void ND::TDbiDatabaseManager::ClearRollbacks() {
+void CP::TDbiDatabaseManager::ClearRollbacks() {
 
   fEpochRollback.Clear();
   fRollbackDates.Clear();
@@ -191,7 +191,7 @@ void ND::TDbiDatabaseManager::ClearRollbacks() {
 
 //.....................................................................
 
-void ND::TDbiDatabaseManager::ClearSimFlagAssociation() {
+void CP::TDbiDatabaseManager::ClearSimFlagAssociation() {
 
   fSimFlagAss.Clear();
 }
@@ -202,7 +202,7 @@ void ND::TDbiDatabaseManager::ClearSimFlagAssociation() {
 ///
 ///
 ///    Throws  EBadTDbiRegistryKeys()  if TDbiRegistry contains any unknown keys
-void ND::TDbiDatabaseManager::Config() {
+void CP::TDbiDatabaseManager::Config() {
 //  Contact:   N. West
 //
 //  Specification:-
@@ -228,7 +228,7 @@ void ND::TDbiDatabaseManager::Config() {
   this->ApplySqlCondition();
 
   // If Level 2 cache enabled establish working directory
-  // for ND::TDbiBinaryFile.
+  // for CP::TDbiBinaryFile.
   const char*  dir;
   if ( reg.Get("Level2Cache",dir) ) {
     // Expand any environmental variables.
@@ -245,8 +245,8 @@ void ND::TDbiDatabaseManager::Config() {
       dir = tmp.Data();
     }
 
-    ND::TDbiBinaryFile::SetWorkDir(dir);
-    DbiLog( "ND::TDbiDatabaseManager: Setting L2 Cache to: " << dir << "  ");
+    CP::TDbiBinaryFile::SetWorkDir(dir);
+    DbiLog( "CP::TDbiDatabaseManager: Setting L2 Cache to: " << dir << "  ");
   }
 
   // Check for request to make all cascade connections permanent
@@ -259,14 +259,14 @@ void ND::TDbiDatabaseManager::Config() {
     if ( connectionsPermanent > 0 ) {
       while ( --dbNo >= 0 ) fCascader->SetPermanent(dbNo);
       DbiInfo( "Making all database connections permanent" << "  ");
-      // Inform ND::TDbiServices so that ND::TDbiConnection can check when opening new connections.
-      ND::TDbiServices::fAsciiDBConectionsTemporary = false;
+      // Inform CP::TDbiServices so that CP::TDbiConnection can check when opening new connections.
+      CP::TDbiServices::fAsciiDBConectionsTemporary = false;
     }
     else {
       while ( --dbNo >= 0 ) fCascader->SetPermanent(dbNo,false);
       DbiInfo( "Forcing all connections, including ASCII DB, to be temporary" << "  ");
-      // Inform ND::TDbiServices so that ND::TDbiConnection can check when opening new connections.
-      ND::TDbiServices::fAsciiDBConectionsTemporary = true;
+      // Inform CP::TDbiServices so that CP::TDbiConnection can check when opening new connections.
+      CP::TDbiServices::fAsciiDBConectionsTemporary = true;
     }
   }
 
@@ -276,7 +276,7 @@ void ND::TDbiDatabaseManager::Config() {
   if ( reg.Get("OrderContextQuery",OrderContextQuery) ) {
     reg.RemoveKey("OrderContextQuery");
     if ( OrderContextQuery ) {
-      ND::TDbiServices::fOrderContextQuery = true;
+      CP::TDbiServices::fOrderContextQuery = true;
       DbiInfo( "Forcing ordering of all context queries" << "  ");
     }
   }
@@ -309,26 +309,26 @@ void ND::TDbiDatabaseManager::Config() {
 
 //.....................................................................
 
-ND::TDbiTableProxy& ND::TDbiDatabaseManager::GetTableProxy
+CP::TDbiTableProxy& CP::TDbiDatabaseManager::GetTableProxy
                                     (const std::string& tableNameReq,
-                                     const ND::TDbiTableRow* tableRow) {
+                                     const CP::TDbiTableRow* tableRow) {
 //
 //
-//  Purpose:  Locate, or if necessary create, ND::TDbiTableProxy for
+//  Purpose:  Locate, or if necessary create, CP::TDbiTableProxy for
 //            named table.
 //
 //  Arguments:
 //    tableNameReq in    Name of table requested.
 //    tableRow     in    Example of a Table Row object.
 //
-//  Return:    ND::TDbiTableProxy for table.
+//  Return:    CP::TDbiTableProxy for table.
 //
 //  Contact:   N. West
 //
 //  Specification:-
 //  =============
 //
-//  o Locate, or if necessary create, ND::TDbiTableProxy for named table.
+//  o Locate, or if necessary create, CP::TDbiTableProxy for named table.
 //
 //  o If creating apply prevailing SQL condition.
 
@@ -338,14 +338,14 @@ ND::TDbiTableProxy& ND::TDbiDatabaseManager::GetTableProxy
 //  None.
 
 // Force upper case name.
-  std::string tableName = ND::UtilString::ToUpper(tableNameReq);
+  std::string tableName = CP::UtilString::ToUpper(tableNameReq);
   std::string proxyName = tableName;
 
   proxyName.append("::");
   proxyName.append(tableRow->ClassName());
-  ND::TDbiTableProxy* qpp = fTPmap[proxyName];
+  CP::TDbiTableProxy* qpp = fTPmap[proxyName];
   if ( ! qpp ) {
-    qpp = new ND::TDbiTableProxy(fCascader,tableName,tableRow);
+    qpp = new CP::TDbiTableProxy(fCascader,tableName,tableRow);
     this->ApplySqlCondition(qpp);
     fTPmap[proxyName] = qpp;
   }
@@ -356,21 +356,21 @@ ND::TDbiTableProxy& ND::TDbiDatabaseManager::GetTableProxy
 
 //.....................................................................
 
-ND::TDbiDatabaseManager& ND::TDbiDatabaseManager::Instance() {
+CP::TDbiDatabaseManager& CP::TDbiDatabaseManager::Instance() {
 //
 //
-//  Purpose: Locate, or create, ND::TDbiDatabaseManager singleton.
+//  Purpose: Locate, or create, CP::TDbiDatabaseManager singleton.
 //
 //  Arguments:     None.
 //
-//  Return:    ND::TDbiDatabaseManager singleton.
+//  Return:    CP::TDbiDatabaseManager singleton.
 //
 //  Contact:   N. West
 //
 //  Specification:-
 //  =============
 //
-//  o Locate, or if necessary create, ND::TDbiDatabaseManager singleton.
+//  o Locate, or if necessary create, CP::TDbiDatabaseManager singleton.
 
 //  Program Notes:-
 //  =============
@@ -379,7 +379,7 @@ ND::TDbiDatabaseManager& ND::TDbiDatabaseManager::Instance() {
 
   if ( ! fgInstance ) {
 // Delete is handled by Cleaner class based on #include count
-    fgInstance = new ND::TDbiDatabaseManager();
+    fgInstance = new CP::TDbiDatabaseManager();
   }
   return *fgInstance;
 
@@ -387,7 +387,7 @@ ND::TDbiDatabaseManager& ND::TDbiDatabaseManager::Instance() {
 
 //.....................................................................
 
-void ND::TDbiDatabaseManager::PurgeCaches() {
+void CP::TDbiDatabaseManager::PurgeCaches() {
 //
 //
 //  Purpose: Purge all caches.
@@ -412,10 +412,10 @@ void ND::TDbiDatabaseManager::PurgeCaches() {
 
 // Pruge all caches.
 
-  for ( std::map<std::string,ND::TDbiTableProxy*>::iterator itr = fTPmap.begin();
+  for ( std::map<std::string,CP::TDbiTableProxy*>::iterator itr = fTPmap.begin();
         itr != fTPmap.end();
         ++itr) {
-    ND::TDbiTableProxy* tp = (*itr).second;
+    CP::TDbiTableProxy* tp = (*itr).second;
     tp->GetCache()->Purge();
   }
 
@@ -423,7 +423,7 @@ void ND::TDbiDatabaseManager::PurgeCaches() {
 
 //.....................................................................
 
-void ND::TDbiDatabaseManager::RefreshMetaData(const std::string& tableName) {
+void CP::TDbiDatabaseManager::RefreshMetaData(const std::string& tableName) {
 //
 //
 //  Purpose: Refresh meta data for specied table.
@@ -435,21 +435,21 @@ void ND::TDbiDatabaseManager::RefreshMetaData(const std::string& tableName) {
 //  Program Notes:-
 //  =============
 
-//  This method is currently only used by ND::TDbiSqlValPacket after
+//  This method is currently only used by CP::TDbiSqlValPacket after
 //  it has created a new table in the database.  In such cases
 //  the pre-existing corresponding TDbiTableProxy.hxxas to be refreshed.
 
-  std::map<std::string,ND::TDbiTableProxy*>::iterator itr = fTPmap.begin();
-  std::map<std::string,ND::TDbiTableProxy*>::iterator itrEnd = fTPmap.end();
+  std::map<std::string,CP::TDbiTableProxy*>::iterator itr = fTPmap.begin();
+  std::map<std::string,CP::TDbiTableProxy*>::iterator itrEnd = fTPmap.end();
   for ( ; itr != itrEnd; ++itr) {
-    ND::TDbiTableProxy* table = (*itr).second;
+    CP::TDbiTableProxy* table = (*itr).second;
     if ( table && table->GetTableName() == tableName ) table->RefreshMetaData();
   }
 
 }
 //.....................................................................
 
-void ND::TDbiDatabaseManager::SetConfigFromEnvironment() {
+void CP::TDbiDatabaseManager::SetConfigFromEnvironment() {
 //
 //
 //  Purpose:  Set up configuration from ENV_DBI environmental variable
@@ -462,7 +462,7 @@ void ND::TDbiDatabaseManager::SetConfigFromEnvironment() {
   DbiInfo( "\nConfiguring DatabaseInterface from the environmental "
              << "variable ENV_DBI:-\n  " << strENV_DBI << "  ");
   std::vector<std::string> configRequests;
-  ND::UtilString::StringTok(configRequests, strENV_DBI, ";");
+  CP::UtilString::StringTok(configRequests, strENV_DBI, ";");
 
   for (unsigned entry = 0; entry < configRequests.size(); ++entry )
                   this->Set(configRequests[entry].c_str());
@@ -471,7 +471,7 @@ void ND::TDbiDatabaseManager::SetConfigFromEnvironment() {
 
 //.....................................................................
 
-void ND::TDbiDatabaseManager::SetSqlCondition(const std::string& sql) {
+void CP::TDbiDatabaseManager::SetSqlCondition(const std::string& sql) {
 //
 //
 //  Purpose: Record and apply global SQL condition.
@@ -485,7 +485,7 @@ void ND::TDbiDatabaseManager::SetSqlCondition(const std::string& sql) {
 //  Specification:-
 //  =============
 //
-//  o Record global SQL condition and apply to existing ND::TDbiTableProxys.
+//  o Record global SQL condition and apply to existing CP::TDbiTableProxys.
 
 
 //  Program Notes:-
@@ -504,7 +504,7 @@ void ND::TDbiDatabaseManager::SetSqlCondition(const std::string& sql) {
 
 //.....................................................................
 
-void ND::TDbiDatabaseManager::ShowStatistics() const {
+void CP::TDbiDatabaseManager::ShowStatistics() const {
 //
 //
 //  Purpose:  Show total statistics.
@@ -520,22 +520,22 @@ void ND::TDbiDatabaseManager::ShowStatistics() const {
 
 // Loop over all owned objects.
 
-  for ( std::map<std::string,ND::TDbiTableProxy*>::const_iterator itr = fTPmap.begin();
+  for ( std::map<std::string,CP::TDbiTableProxy*>::const_iterator itr = fTPmap.begin();
         itr != fTPmap.end();
         ++itr) {
-    const ND::TDbiTableProxy* tp = (*itr).second;
+    const CP::TDbiTableProxy* tp = (*itr).second;
     std::string name = (*itr).first;
     if ( name.size() < 40 ) name.append(40-name.size(),' ');
     msg << name;
 //  Only want to look at cache so by-pass constness.
-    const_cast<ND::TDbiTableProxy*>(tp)->GetCache()->ShowStatistics(msg);
+    const_cast<CP::TDbiTableProxy*>(tp)->GetCache()->ShowStatistics(msg);
    msg << endl;
   }
   msg << "\n" << endl;
 
 //  Only want to look at cascader so by-pass constness.
 
-  DbiInfo( const_cast<ND::TDbiDatabaseManager*>(this)->GetCascader());
+  DbiInfo( const_cast<CP::TDbiDatabaseManager*>(this)->GetCascader());
 
 
 }

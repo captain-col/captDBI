@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////
 // $Id: TVldTimeStamp.cxx,v 1.1 2011/01/18 05:49:20 finch Exp $
 //
-// The ND::TVldTimeStamp encapsulates the seconds and ns since EPOCH
+// The CP::TVldTimeStamp encapsulates the seconds and ns since EPOCH
 //
 // This extends (and isolates) struct timespec
 //    struct timespec
@@ -11,7 +11,7 @@
 //       }
 //    time_t seconds is relative to Jan 1, 1970 00:00:00 UTC
 //
-// Due to ROOT/CINT limitations ND::TVldTimeStamp does not explicitly
+// Due to ROOT/CINT limitations CP::TVldTimeStamp does not explicitly
 // hold a timespec struct; attempting to do so means the Streamer
 // must be hand written.  Instead we have chosen to simply contain
 // similar fields within the private area of this class.
@@ -45,12 +45,12 @@ using std::endl;
 
 #include "TString.h"
 
-ClassImp(ND::TVldTimeStamp)
+ClassImp(CP::TVldTimeStamp)
 
 const Int_t kNsPerSec = 1000000000;
 
 //_____________________________________________________________________________
-std::ostream& operator<<(std::ostream& os, const ND::TVldTimeStamp& ts)
+std::ostream& operator<<(std::ostream& os, const CP::TVldTimeStamp& ts)
 {
    if (os.good()) {
       if (os.tie()) os.tie()->flush(); // instead of opfx
@@ -61,19 +61,19 @@ std::ostream& operator<<(std::ostream& os, const ND::TVldTimeStamp& ts)
    return os;
 }
 
-ND::TVldTimeStamp ND::TVldTimeStamp::GetBOT()
+CP::TVldTimeStamp CP::TVldTimeStamp::GetBOT()
 {
-    return ND::TVldTimeStamp((time_t)0,0);
+    return CP::TVldTimeStamp((time_t)0,0);
 }
 
-ND::TVldTimeStamp ND::TVldTimeStamp::GetEOT()
+CP::TVldTimeStamp CP::TVldTimeStamp::GetEOT()
 {
-    return ND::TVldTimeStamp((time_t)INT_MAX,0);
+    return CP::TVldTimeStamp((time_t)INT_MAX,0);
 }
 
-ND::TVldTimeStamp ND::TVldTimeStamp::GetNBOT()
+CP::TVldTimeStamp CP::TVldTimeStamp::GetNBOT()
 {
-    return ND::TVldTimeStamp((time_t)INT_MIN,0);
+    return CP::TVldTimeStamp((time_t)INT_MIN,0);
 }
 
 
@@ -82,43 +82,43 @@ ND::TVldTimeStamp ND::TVldTimeStamp::GetNBOT()
 // become problematic
 
 // default ctor sets it value to current time (as best possible)
-ND::TVldTimeStamp::TVldTimeStamp() : fSec(0), fNanoSec(0) { Set(); }
-ND::TVldTimeStamp::~TVldTimeStamp() { ; }
+CP::TVldTimeStamp::TVldTimeStamp() : fSec(0), fNanoSec(0) { Set(); }
+CP::TVldTimeStamp::~TVldTimeStamp() { ; }
 
 //_____________________________________________________________________________
-ND::TVldTimeStamp::TVldTimeStamp(UInt_t year, UInt_t month,
+CP::TVldTimeStamp::TVldTimeStamp(UInt_t year, UInt_t month,
                            UInt_t day,  UInt_t hour,
                            UInt_t min,  UInt_t sec,
                            UInt_t nsec,
                            Bool_t isUTC, Int_t secOffset)
   : fSec(0), fNanoSec(0)
 {
-   // Create a ND::TVldTimeStamp and set it to the specified year, month,
+   // Create a CP::TVldTimeStamp and set it to the specified year, month,
    // day, time, hour, minute, second and nanosec.
    // If !isUTC then it is assumed to be the standard local time zone.
    //
    // If local time is PST then one can use
-   //    ND::TVldTimeStamp(year,month,day,hour,min,sec,nsec,kFALSE,0);
+   //    CP::TVldTimeStamp(year,month,day,hour,min,sec,nsec,kFALSE,0);
    // or
    //    Int_t secOffset = 8*60*60;
-   //    ND::TVldTimeStamp(year,month,day,hour,min,sec,nsec,kTRUE,8*60*60);
+   //    CP::TVldTimeStamp(year,month,day,hour,min,sec,nsec,kTRUE,8*60*60);
 
    Set(year, month, day, hour, min, sec, nsec, isUTC, secOffset);
 }
 
 //_____________________________________________________________________________
-ND::TVldTimeStamp::TVldTimeStamp(UInt_t date, UInt_t time, UInt_t nsec,
+CP::TVldTimeStamp::TVldTimeStamp(UInt_t date, UInt_t time, UInt_t nsec,
                            Bool_t isUTC, Int_t secOffset)
   : fSec(0), fNanoSec(0)
 {
-   // Create a ND::TVldTimeStamp and set it to the specified date, time, nanosec.
+   // Create a CP::TVldTimeStamp and set it to the specified date, time, nanosec.
    // If !isUTC then it is assumed to be the standard local time zone.
 
    Set(date, time, nsec, isUTC, secOffset);
 }
 
 //_____________________________________________________________________________
-const char *ND::TVldTimeStamp::AsString(Option_t *option) const
+const char *CP::TVldTimeStamp::AsString(Option_t *option) const
 {
    // Return the date & time as a string.
    //
@@ -215,7 +215,7 @@ const char *ND::TVldTimeStamp::AsString(Option_t *option) const
 }
 
 //_____________________________________________________________________________
-void ND::TVldTimeStamp::Copy(ND::TVldTimeStamp &ts) const
+void CP::TVldTimeStamp::Copy(CP::TVldTimeStamp &ts) const
 {
    // Copy this to ts.
 
@@ -225,7 +225,7 @@ void ND::TVldTimeStamp::Copy(ND::TVldTimeStamp &ts) const
 }
 
 //_____________________________________________________________________________
-Int_t ND::TVldTimeStamp::GetDate(Bool_t inUTC, Int_t secOffset,
+Int_t CP::TVldTimeStamp::GetDate(Bool_t inUTC, Int_t secOffset,
                             UInt_t* year, UInt_t* month, UInt_t* day) const
 {
    // Return date in form of 19971224 (i.e. 24/12/1997),
@@ -243,7 +243,7 @@ Int_t ND::TVldTimeStamp::GetDate(Bool_t inUTC, Int_t secOffset,
 }
 
 //_____________________________________________________________________________
-Int_t ND::TVldTimeStamp::GetTime(Bool_t inUTC, Int_t secOffset,
+Int_t CP::TVldTimeStamp::GetTime(Bool_t inUTC, Int_t secOffset,
                             UInt_t* hour, UInt_t* min, UInt_t* sec) const
 {
    // Return time in form of 123623 (i.e. 12:36:23),
@@ -261,7 +261,7 @@ Int_t ND::TVldTimeStamp::GetTime(Bool_t inUTC, Int_t secOffset,
 }
 
 //_____________________________________________________________________________
-Int_t ND::TVldTimeStamp::GetZoneOffset()
+Int_t CP::TVldTimeStamp::GetZoneOffset()
 {
    // Static method returning local (current) time zone offset from UTC.
    // This is the difference in seconds between UTC and local standard time.
@@ -283,7 +283,7 @@ Int_t ND::TVldTimeStamp::GetZoneOffset()
 }
 
 //_____________________________________________________________________________
-void ND::TVldTimeStamp::Add(const ND::TVldTimeStamp &offset)
+void CP::TVldTimeStamp::Add(const CP::TVldTimeStamp &offset)
 {
    // Add "offset" as a delta time.
 
@@ -293,7 +293,7 @@ void ND::TVldTimeStamp::Add(const ND::TVldTimeStamp &offset)
 
 }
 
-void ND::TVldTimeStamp::Add(Double_t seconds)
+void CP::TVldTimeStamp::Add(Double_t seconds)
 {
   // Add 'seconds' as a delta time
 
@@ -305,7 +305,7 @@ void ND::TVldTimeStamp::Add(Double_t seconds)
 }
 
 //_____________________________________________________________________________
-void ND::TVldTimeStamp::Print(Option_t *option) const
+void CP::TVldTimeStamp::Print(Option_t *option) const
 {
    // Print date and time.
 
@@ -314,7 +314,7 @@ void ND::TVldTimeStamp::Print(Option_t *option) const
 }
 
 //_____________________________________________________________________________
-void ND::TVldTimeStamp::Set()
+void CP::TVldTimeStamp::Set()
 {
    // Set Date/Time to current time as reported by the system.
    // no accounting for nanoseconds with std ANSI functions,
@@ -364,7 +364,7 @@ void ND::TVldTimeStamp::Set()
 }
 
 //_____________________________________________________________________________
-void ND::TVldTimeStamp::Set(Int_t year, Int_t month, Int_t day,
+void CP::TVldTimeStamp::Set(Int_t year, Int_t month, Int_t day,
                        Int_t hour, Int_t min, Int_t sec,
                        Int_t nsec, Bool_t isUTC, Int_t secOffset)
 {
@@ -404,7 +404,7 @@ void ND::TVldTimeStamp::Set(Int_t year, Int_t month, Int_t day,
    // which also normalizes the tm struct as a byproduct
    time_t utc_sec = (isUTC) ? MktimeFromUTC(&tmstruct) : mktime(&tmstruct);
 
-   //   ND::TVldTimeStamp::Dump_tm_struct(tmstruct);
+   //   CP::TVldTimeStamp::Dump_tm_struct(tmstruct);
 
    if (utc_sec == bad_time_t)
       DbiInfo(  "VldTimeStamp::Set mktime returned -1" << "  ");
@@ -416,7 +416,7 @@ void ND::TVldTimeStamp::Set(Int_t year, Int_t month, Int_t day,
 }
 
 //_____________________________________________________________________________
-void ND::TVldTimeStamp::Set(Int_t date, Int_t time, Int_t nsec,
+void CP::TVldTimeStamp::Set(Int_t date, Int_t time, Int_t nsec,
                        Bool_t isUTC, Int_t secOffset)
 {
    // Set date/time from integers of the form [yy]YYMMDD and HHMMSS,
@@ -457,7 +457,7 @@ void ND::TVldTimeStamp::Set(Int_t date, Int_t time, Int_t nsec,
 }
 
 //_____________________________________________________________________________
-void ND::TVldTimeStamp::NormalizeNanoSec()
+void CP::TVldTimeStamp::NormalizeNanoSec()
 {
    // Ensure that the fNanoSec field is in range [0,99999999].
 
@@ -473,7 +473,7 @@ void ND::TVldTimeStamp::NormalizeNanoSec()
    }
 }
 //_____________________________________________________________________________
-time_t ND::TVldTimeStamp::MktimeFromUTC(tm_t *tmstruct)
+time_t CP::TVldTimeStamp::MktimeFromUTC(tm_t *tmstruct)
 {
    // Equivalent of standard routine "mktime" but
    // using the assumption that tm struct is filled with UTC, not local, time.
@@ -490,7 +490,7 @@ time_t ND::TVldTimeStamp::MktimeFromUTC(tm_t *tmstruct)
    const Int_t daysLeap[] = {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
    Int_t year = tmstruct->tm_year + 1900;
-   Bool_t isleap = ND::TVldTimeStamp::IsLeapYear(year);
+   Bool_t isleap = CP::TVldTimeStamp::IsLeapYear(year);
 
    const Int_t *daysInMonth = days;
    if (isleap) daysInMonth = daysLeap;
@@ -531,7 +531,7 @@ time_t ND::TVldTimeStamp::MktimeFromUTC(tm_t *tmstruct)
 }
 
 //_____________________________________________________________________________
-Bool_t ND::TVldTimeStamp::IsLeapYear(Int_t year)
+Bool_t CP::TVldTimeStamp::IsLeapYear(Int_t year)
 {
    // Is the given year a leap year.
 
@@ -565,7 +565,7 @@ Bool_t ND::TVldTimeStamp::IsLeapYear(Int_t year)
 }
 
 //_____________________________________________________________________________
-void ND::TVldTimeStamp::DumpTMStruct(const tm_t &tmstruct)
+void CP::TVldTimeStamp::DumpTMStruct(const tm_t &tmstruct)
 {
    // Print out the "tm" structure:
    // tmstruct.tm_year = year;    // years since 1900

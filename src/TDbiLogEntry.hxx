@@ -5,7 +5,7 @@
  *
  * $Id: TDbiLogEntry.hxx,v 1.1 2011/01/18 05:49:20 finch Exp $
  *
- * \class ND::TDbiLogEntry
+ * \class CP::TDbiLogEntry
  *
  *
  * \brief
@@ -36,7 +36,7 @@ using std::string;
 #include "TDbiResultSetHandle.hxx"    //Needed for LinkDef
 //#include "TDbiWriter.hxx"    //Needed for LinkDef
 
-namespace ND {
+namespace CP {
 class TDbiLogEntry;
 class TDbiOutRowStream;
 class TDbiInRowStream;
@@ -44,9 +44,9 @@ class TDbiTableProxy;
 class TDbiValidityRec;
 }
 
-std::ostream& operator<<(std::ostream& s, const ND::TDbiLogEntry& logEntry);
+std::ostream& operator<<(std::ostream& s, const CP::TDbiLogEntry& logEntry);
 
-namespace ND {
+namespace CP {
 class TDbiLogEntry : public TDbiTableRow
 {
 
@@ -57,8 +57,8 @@ public:
 // Constructors and destructors.
   TDbiLogEntry(const string& tableName = "",
               const string& reason = "",
-	      Int_t detMask = ND::DbiDetector::FullMask(),
-	      Int_t simMask = ND::DbiSimFlag::FullMask(),
+	      Int_t detMask = CP::DbiDetector::FullMask(),
+	      Int_t simMask = CP::DbiSimFlag::FullMask(),
               TDbi::Task task = 0,
               Int_t logSeqNoMin = 0,
               Int_t logSeqNoMax = 0,
@@ -85,7 +85,7 @@ public:
  const string& GetHostName() const { return fHostName; }
  const string& GetServerName() const { return fServerName; }
  const string& GetReason() const { return fReason; }
-  ND::TVldTimeStamp GetUpdateTime() const { return fUpdateTime; }
+  CP::TVldTimeStamp GetUpdateTime() const { return fUpdateTime; }
 
 	Bool_t HasReason() const { return fReason.size() > 0; }
 
@@ -94,12 +94,12 @@ public:
 	  void SetDetectorMask(Int_t detMask) { fLogDetMask = detMask; }
 	  void SetSimMask(Int_t simMask) { fLogSimMask = simMask; }
           void SetTask(TDbi::Task task) { fLogTask = task; }
-          void SetUpdateTime(const ND::TVldTimeStamp& updateTime) {
+          void SetUpdateTime(const CP::TVldTimeStamp& updateTime) {
                                          fUpdateTime = updateTime; }
           void Recreate (const string& tableName = "",
                          const string& reason = "",
-            	         Int_t detMask = ND::DbiDetector::FullMask(),
-	                 Int_t simMask = ND::DbiSimFlag::FullMask(),
+            	         Int_t detMask = CP::DbiDetector::FullMask(),
+	                 Int_t simMask = CP::DbiSimFlag::FullMask(),
                          TDbi::Task task = 0,
                          Int_t logSeqNoMin = 0,
                          Int_t logSeqNoMax = 0,
@@ -148,7 +148,7 @@ private:
   Int_t fLogNumSeqNo;
 
 /// Time of update.
-  ND::TVldTimeStamp fUpdateTime;
+  CP::TVldTimeStamp fUpdateTime;
 
 /// User performing update.
   string fUserName;

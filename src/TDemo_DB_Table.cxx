@@ -2,41 +2,41 @@
 #include "TResultInputStream.hxx"
 #include "TDbiLog.hxx"
 
-ClassImp(ND::TDemo_DB_Table);
+ClassImp(CP::TDemo_DB_Table);
 
 
 
-//  Instantiate associated ND::TResultSetHandle and ND::TDbiResultSetHandle classes.
+//  Instantiate associated CP::TResultSetHandle and CP::TDbiResultSetHandle classes.
 //  *****************************************************************
 
 // The TableRow subclass' *_.cxx must request the instantiation of the
-// templated ND::TResultSetHandle class it as the supplied class.  However
-// ND::TResultSetHandle inherits from the backend ND::TDbiResultSetHandle so an
+// templated CP::TResultSetHandle class it as the supplied class.  However
+// CP::TResultSetHandle inherits from the backend CP::TDbiResultSetHandle so an
 // instatiation of it is also required.
 
 #include "TResultSetHandle.cxx"
-template class  ND::TResultSetHandle<ND::TDemo_DB_Table>;
-template class  ND::TDbiResultSetHandle<ND::TDemo_DB_Table>;
+template class  CP::TResultSetHandle<CP::TDemo_DB_Table>;
+template class  CP::TDbiResultSetHandle<CP::TDemo_DB_Table>;
 
 
 //_____________________________________________________________________________
 
-ND::TDemo_DB_Table::TDemo_DB_Table()  {
+CP::TDemo_DB_Table::TDemo_DB_Table()  {
 
    // Default constructor
 
-    DbiTrace("ND::TDemo_DB_Table: Default ctor at:" << (void*) this);
+    DbiTrace("CP::TDemo_DB_Table: Default ctor at:" << (void*) this);
 
 }
 
 
 //_____________________________________________________________________________
 
-ND::TDemo_DB_Table::TDemo_DB_Table(const ND::TDemo_DB_Table& from) {
+CP::TDemo_DB_Table::TDemo_DB_Table(const CP::TDemo_DB_Table& from) {
 
    // Copy constructor
 
-    DbiTrace("ND::TDemo_DB_Table: Copy ctor at:" << (void*) this);
+    DbiTrace("CP::TDemo_DB_Table: Copy ctor at:" << (void*) this);
 
     *this = from;
 
@@ -44,17 +44,17 @@ ND::TDemo_DB_Table::TDemo_DB_Table(const ND::TDemo_DB_Table& from) {
 
 //_____________________________________________________________________________
 
-ND::TDemo_DB_Table::~TDemo_DB_Table()  {
+CP::TDemo_DB_Table::~TDemo_DB_Table()  {
 
    // Destructor
 
-    DbiTrace("ND::TDemo_DB_Table: dtor at:" << (void*) this);
+    DbiTrace("CP::TDemo_DB_Table: dtor at:" << (void*) this);
 
 }
 
 //_____________________________________________________________________________
 
-void ND::TDemo_DB_Table::Fill(ND::TResultInputStream& ris) {
+void CP::TDemo_DB_Table::Fill(CP::TResultInputStream& ris) {
 
 /// This method is used to fill a row.  A ResultInputStream is an object
 /// with operator >> methods for most basic types.
@@ -77,7 +77,7 @@ void ND::TDemo_DB_Table::Fill(ND::TResultInputStream& ris) {
 
 //_____________________________________________________________________________
 
-void ND::TDemo_DB_Table::Print(const Option_t*) const {
+void CP::TDemo_DB_Table::Print(const Option_t*) const {
 
   // Programming note: The arg isn't used but is there so as to avoid compiler
   // warnings about hidden method TObject::Print(const Option_t*).

@@ -9,7 +9,7 @@
 /**
  *
  *
- * \class ND::TDbiCascader
+ * \class CP::TDbiCascader
  *
  *
  * \brief
@@ -44,18 +44,18 @@ using std::ifstream;
 
 #include "TDbiConnection.hxx"
 #include "TDbiStatement.hxx"
-namespace ND {
+namespace CP {
 class TDbiCascader;
-ostream& operator<<(ostream& os, const ND::TDbiCascader& cascader) ;
+ostream& operator<<(ostream& os, const CP::TDbiCascader& cascader) ;
 }
 class TSQL_Statement;
 
-namespace ND {
+namespace CP {
 class TDbiCascader
 {
 
   friend class TDbiDatabaseManager;  //Only it can create
-  friend ostream& operator<<(ostream& s, const ND::TDbiCascader& cascader);
+  friend ostream& operator<<(ostream& s, const CP::TDbiCascader& cascader);
 
 public:
 

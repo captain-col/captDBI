@@ -6,7 +6,7 @@
  *
  * $Id: TDbiDBProxy.hxx,v 1.1 2011/01/18 05:49:19 finch Exp $
  *
- * \class ND::TDbiDBProxy
+ * \class CP::TDbiDBProxy
  *
  *
  * \brief
@@ -39,21 +39,21 @@ using std::string;
 
 #include "TDbi.hxx"
 
-namespace ND {
+namespace CP {
 class TDbiCascader;
 class TDbiInRowStream;
 class TDbiTableMetaData;
 class TDbiTableProxy;
 class TDbiValidityRec;
 }
-namespace ND {
+namespace CP {
 class TVldContext;
 };
-namespace ND {
+namespace CP {
 class TVldTimeStamp;
 };
 
-namespace ND {
+namespace CP {
 class TDbiDBProxy
 {
 
@@ -80,13 +80,13 @@ const TDbiTableProxy* GetTableProxy() const { return fTableProxy; }
               Bool_t TableExists(Int_t selectDbNo=-1) const;
 
 // Query (input) member functions
-           void FindTimeBoundaries(const ND::TVldContext& vc,
+           void FindTimeBoundaries(const CP::TVldContext& vc,
                                    const TDbi::Task& task,
                                    UInt_t dbNo,
                                    const TDbiValidityRec& lowestPriorityVrec,
 				   Bool_t resolveByCreationDate,
-                                   ND::TVldTimeStamp& start,
-                                   ND::TVldTimeStamp& end) const;
+                                   CP::TVldTimeStamp& start,
+                                   CP::TVldTimeStamp& end) const;
   TDbiInRowStream* QueryAllValidities(UInt_t dbNo,UInt_t seqNo=0) const;
   TDbiInRowStream* QuerySeqNo(UInt_t seqNo,UInt_t dbNo) const;
 #ifndef __CINT__
@@ -96,7 +96,7 @@ const TDbiTableProxy* GetTableProxy() const { return fTableProxy; }
                             const string& sqlData = "",
                             const string& fillOpts = "") const;
 #endif
-  TDbiInRowStream* QueryValidity(const ND::TVldContext& vc,
+  TDbiInRowStream* QueryValidity(const CP::TVldContext& vc,
                               const TDbi::Task& task,
                               UInt_t dbNo) const;
   TDbiInRowStream* QueryValidity(const string& context,
@@ -106,7 +106,7 @@ const TDbiTableProxy* GetTableProxy() const { return fTableProxy; }
                               UInt_t dbNo) const;
 
 // Store (output) member functions
-         Bool_t ReplaceInsertDate(const ND::TVldTimeStamp& ts,
+         Bool_t ReplaceInsertDate(const CP::TVldTimeStamp& ts,
                                   UInt_t SeqNo,
                                   UInt_t dbNo) const;
          Bool_t RemoveSeqNo(UInt_t seqNo,
@@ -124,7 +124,7 @@ private:
 // Disabled (not implemented) copy constructor and asignment.
 
  TDbiDBProxy(const TDbiDBProxy&);
- ND::TDbiDBProxy& operator=(const ND::TDbiDBProxy&);
+ CP::TDbiDBProxy& operator=(const CP::TDbiDBProxy&);
 
 // Data members
 

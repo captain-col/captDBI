@@ -21,7 +21,7 @@
 using std::endl;
 using std::ostringstream;
 
-ClassImp(ND::TDbiFieldType)
+ClassImp(CP::TDbiFieldType)
 
 //   Definition of static data members
 //   *********************************
@@ -34,7 +34,7 @@ ClassImp(ND::TDbiFieldType)
 
 //.....................................................................
 
-ND::TDbiFieldType::TDbiFieldType(Int_t type /* = TDbi::kInt */)
+CP::TDbiFieldType::TDbiFieldType(Int_t type /* = TDbi::kInt */)
 {
 //
 //
@@ -50,7 +50,7 @@ ND::TDbiFieldType::TDbiFieldType(Int_t type /* = TDbi::kInt */)
 }
 //.....................................................................
 
-ND::TDbiFieldType::TDbiFieldType(Int_t type,
+CP::TDbiFieldType::TDbiFieldType(Int_t type,
                            Int_t size,
                            const char* typeName) {
 
@@ -110,14 +110,14 @@ ND::TDbiFieldType::TDbiFieldType(Int_t type,
 
   // Anything else is bad news!
 
-     DbiSevere(  "Unable to form SQL ND::TDbiFieldType from: " << type << "  ");
+     DbiSevere(  "Unable to form SQL CP::TDbiFieldType from: " << type << "  ");
   this->Init(TDbi::kUnknown);
 
 }
 
 //.....................................................................
 
-ND::TDbiFieldType::TDbiFieldType(const ND::TDbiFieldType& from)
+CP::TDbiFieldType::TDbiFieldType(const CP::TDbiFieldType& from)
 {
 //
 //
@@ -134,7 +134,7 @@ ND::TDbiFieldType::TDbiFieldType(const ND::TDbiFieldType& from)
 
 //.....................................................................
 
-ND::TDbiFieldType::TDbiFieldType(const string& sql,
+CP::TDbiFieldType::TDbiFieldType(const string& sql,
                            Int_t size )
 {
 //
@@ -189,7 +189,7 @@ ND::TDbiFieldType::TDbiFieldType(const string& sql,
 
 //.....................................................................
 
-ND::TDbiFieldType::~TDbiFieldType() {
+CP::TDbiFieldType::~TDbiFieldType() {
 //
 //
 //  Purpose: Destructor
@@ -218,7 +218,7 @@ ND::TDbiFieldType::~TDbiFieldType() {
 
 //.....................................................................
 
-string ND::TDbiFieldType::AsString() const {
+string CP::TDbiFieldType::AsString() const {
 //
 //
 //  Purpose:  Return field type as a string.
@@ -262,7 +262,7 @@ string ND::TDbiFieldType::AsString() const {
 }
 //.....................................................................
 
-string ND::TDbiFieldType::AsSQLString() const {
+string CP::TDbiFieldType::AsSQLString() const {
 //
 //
 //  Purpose:  Return field type as a string suitable for MySQL column.
@@ -314,7 +314,7 @@ string ND::TDbiFieldType::AsSQLString() const {
 //.....................................................................
 
 
-void ND::TDbiFieldType::Init(Int_t type  /* Type as defined by TDbi::DataTypes */,
+void CP::TDbiFieldType::Init(Int_t type  /* Type as defined by TDbi::DataTypes */,
                         Int_t size  /* Size in bytes (default: -1 - take size from type)*/ ) {
 //
 //
@@ -425,7 +425,7 @@ void ND::TDbiFieldType::Init(Int_t type  /* Type as defined by TDbi::DataTypes *
       break;
 
     default :
-         DbiSevere(  "Unable to form Root ND::TDbiFieldType from: " << type << "  ");
+         DbiSevere(  "Unable to form Root CP::TDbiFieldType from: " << type << "  ");
       fType      = TDbi::kUnknown;
       fConcept   = TDbi::kUnknown;
       fSize      = 0;
@@ -439,14 +439,14 @@ void ND::TDbiFieldType::Init(Int_t type  /* Type as defined by TDbi::DataTypes *
 
 //.....................................................................
 
-Bool_t ND::TDbiFieldType::IsCompatible(const ND::TDbiFieldType& other) const {
+Bool_t CP::TDbiFieldType::IsCompatible(const CP::TDbiFieldType& other) const {
 //
 //
 //  Purpose: Return kTRUE if this is compatible with or can accept
 //           the other type.
 //
 //  Arguments:
-//    other        in    The ND::TDbiFieldType to be compared
+//    other        in    The CP::TDbiFieldType to be compared
 //
 //  Return: kTRUE if the this type can accept other type.
 //
@@ -489,7 +489,7 @@ return kFALSE;
 
 //.....................................................................
 
-string ND::TDbiFieldType::UndefinedValue() const {
+string CP::TDbiFieldType::UndefinedValue() const {
 //
 //
 //  Purpose:  Return value to be used when unknown.

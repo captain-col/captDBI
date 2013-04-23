@@ -3,7 +3,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////////
 ///
-/// \class ND::TDbiCfgPromptConfigurable
+/// \class CP::TDbiCfgPromptConfigurable
 ///
 /// \brief A nice base class to use with configurable objects.
 /// 
@@ -56,11 +56,11 @@
 #include <string>
 #include "TDbiRegistry.hxx"
 
-namespace ND {
+namespace CP {
 class TDbiCfgDialog;
 } 
 
-namespace ND {
+namespace CP {
 class TDbiCfgPromptConfigurable
 {
  public:
@@ -85,7 +85,7 @@ class TDbiCfgPromptConfigurable
   void Set(const char* key, int val);
   void Set(const char* key, const TDbiRegistry& val);
   void Set(const char* setstring);  // like modules.
-  void Set(ND::TDbiCfgDialog* d=0);
+  void Set(CP::TDbiCfgDialog* d=0);
   
 
   // This is the one that does all the work:

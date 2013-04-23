@@ -5,7 +5,7 @@
  *
  * $Id: TDbiConfigSet.hxx,v 1.1 2011/01/18 05:49:19 finch Exp $
  *
- * \class ND::TDbiConfigSet
+ * \class CP::TDbiConfigSet
  *
  *
  * \brief
@@ -33,14 +33,14 @@ using std::vector;
 #include "TDbiFieldType.hxx"
 #include <iosfwd>
 
-namespace ND {
+namespace CP {
 class TDbiConfigSet;
 class TDbiValidityRec;
 }
 
-std::ostream& operator<<(std::ostream& s, const ND::TDbiConfigSet& cfSet);
+std::ostream& operator<<(std::ostream& s, const CP::TDbiConfigSet& cfSet);
 
-namespace ND {
+namespace CP {
 class TDbiConfigSet : public TDbiTableRow
 {
 

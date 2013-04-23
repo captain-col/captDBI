@@ -4,7 +4,7 @@
 /**
  *
  *
- * \class ND::TDbiTableProxy
+ * \class CP::TDbiTableProxy
  *
  *
  * \brief
@@ -31,7 +31,7 @@ using std::string;
 #include "TVldContext.hxx"
 #include "TVldTimeStamp.hxx"
 
-namespace ND {
+namespace CP {
 class TDbiCache;
 class TDbiCascader;
 class TDbiResultSet;
@@ -41,7 +41,7 @@ class TDbiValidityRec;
 class TDbiValidityRecBuilder;
 }
 
-namespace ND {
+namespace CP {
 class TDbiTableProxy
 {
 
@@ -86,7 +86,7 @@ const TDbiTableMetaData& GetMetaValid() const { return fMetaValid; }
 ///
 ///  See if there is one already in the cache for universal aggregate no.
 /// \endverbatim
-       const TDbiResultSet* Query(const ND::TVldContext& vc,
+       const TDbiResultSet* Query(const CP::TVldContext& vc,
                               const TDbi::Task& task,
                               Bool_t findFullTimeWindow = true);
 ///
@@ -94,10 +94,10 @@ const TDbiTableMetaData& GetMetaValid() const { return fMetaValid; }
 ///  Purpose:  Apply extended context query to database table and return result.
 ///
 ///  Arguments:
-///    context      in    The Validity Context (see ND::TDbiSqlContext)
+///    context      in    The Validity Context (see CP::TDbiSqlContext)
 ///    task         in    The task of the query.
 ///    data         in    Optional SQL extension to secondary query.
-///    fillOpts     in    Optional fill options (available to ND::TDbiTableRow)
+///    fillOpts     in    Optional fill options (available to CP::TDbiTableRow)
 ///
 ///  Return:    Query result (never zero even if query fails).
 ///
@@ -195,7 +195,7 @@ const TDbiTableMetaData& GetMetaValid() const { return fMetaValid; }
 ///
 ///\endverbatim
  
-           ND::TVldTimeStamp QueryOverlayCreationDate(const TDbiValidityRec& vrec,
+           CP::TVldTimeStamp QueryOverlayCreationDate(const TDbiValidityRec& vrec,
 					         UInt_t dbNo);
 ///
 ///
@@ -204,7 +204,7 @@ const TDbiTableMetaData& GetMetaValid() const { return fMetaValid; }
  	           void RefreshMetaData();
 ///\verbatim
 ///
-///  Purpose:  Apply Sql condition to its ND::TDbiDBProxy.
+///  Purpose:  Apply Sql condition to its CP::TDbiDBProxy.
 ///
 ///  Arguments:
 ///   sql           in    SQL condition string (excluding where).
@@ -216,7 +216,7 @@ const TDbiTableMetaData& GetMetaValid() const { return fMetaValid; }
 ///  Specification:-
 ///  =============
 ///
-///  o Apply Sql condition to its ND::TDbiDBProxy.
+///  o Apply Sql condition to its CP::TDbiDBProxy.
 ///
 ///  Program Notes:-
 ///  =============
@@ -261,7 +261,7 @@ private:
 // Disabled (not implemented) copy constructor and asignment.
 
  TDbiTableProxy(const TDbiTableProxy&);
- ND::TDbiTableProxy& operator=(const ND::TDbiTableProxy&);
+ CP::TDbiTableProxy& operator=(const CP::TDbiTableProxy&);
 
 
 /// Level 2 (disk) cache management.

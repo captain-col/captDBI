@@ -1,3 +1,3 @@
 #ifdef __CINT__
-#pragma link C++ class ND::TDbiCfgPromptConfigurable;
+#pragma link C++ class CP::TDbiCfgPromptConfigurable;
 #endif

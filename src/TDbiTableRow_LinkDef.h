@@ -1,3 +1,3 @@
 #ifdef __CINT__
-#pragma link C++ class ND::TDbiTableRow;
+#pragma link C++ class CP::TDbiTableRow;
 #endif

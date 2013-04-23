@@ -389,7 +389,7 @@ The API to get a set of DEMO_DB_TABLE rows for a given "context" (in
 our case this is an event date and time), is conceptually very simple:
 you pass the context in and the interface returns a set of rows.  Each
 row is an object of class that inherits from the base class
-ND::TTableRow. In our case it is ND::TDemo_DB_Table.  As you can see
+CP::TTableRow. In our case it is CP::TDemo_DB_Table.  As you can see
 it has a set of getters to provide access to all its data members.
 It could in principle be more sophisticated and provide calibration
 services as well or instead of these getters.  It just depends how
@@ -399,32 +399,32 @@ Your first job is to get a context, and for that you need an TND280Event:-
 
 \code
 
-  ND::TND280Event event;
+  CP::TND280Event event;
 
   context = event.GetContext()
 \endcode
 
-Then to get all ND::TDemo_DB_Table rows associated with the context
+Then to get all CP::TDemo_DB_Table rows associated with the context
 you use the statement:-
 
 \code
-  ND::TResultSetHandle<ND::TDemo_DB_Table> rs(context);
+  CP::TResultSetHandle<CP::TDemo_DB_Table> rs(context);
 \endcode
 
 which constructs a TResultSetHandle that has access to a vector of
 TDemo_DB_Tables.  The process starts by determining the table name by
 converting the class name to upper case and removing the prefix
-"ND::T" which in this case results in DEMO_DB_TABLE.  Then it looks
+"CP::T" which in this case results in DEMO_DB_TABLE.  Then it looks
 for the best SEQNO (or collection of SEQNOs in the case of aggregated
 data) in DEMO_DB_TABLEVLD and then reads in all rows of DEMO_DB_TABLE
-that have those SEQNOs and for each creates and fills a ND::TTableRow.
+that have those SEQNOs and for each creates and fills a CP::TTableRow.
 
 Being a constructor, it cannot "fail" but can return an empty set.
 You can use the methods:-
 
 \code
   Int_t GetNumRows() const;
-  const ND::TDemo_DB_Table* GetRow(irow) const;
+  const CP::TDemo_DB_Table* GetRow(irow) const;
 \endcode
 
 to loop over all rows, for example in the demo code you will see:-
@@ -445,7 +445,7 @@ from 0 to positive integer n) and for our case that index is obviously
 channel ID.  The method is:-
 
 \code
-  const ND::TDemo_DB_Table GetRowByIndex(index) const;
+  const CP::TDemo_DB_Table GetRowByIndex(index) const;
 \endcode
 
 and again there is a (contrived) example in demo.cxx:-
@@ -455,15 +455,15 @@ and again there is a (contrived) example in demo.cxx:-
 
 ...
 
-  const ND::TDemo_DB_Table* required_row = rs.GetRowByIndex(required_id);
+  const CP::TDemo_DB_Table* required_row = rs.GetRowByIndex(required_id);
   if ( required_row ) {
-    DbiLog("  required row " << ND::TTfbChannelId(required_id).AsString());
+    DbiLog("  required row " << CP::TTfbChannelId(required_id).AsString());
     required_row->Print();
   }
-  else DbiLog("  cannot find required row" << ND::TTfbChannelId(required_id).AsString());
+  else DbiLog("  cannot find required row" << CP::TTfbChannelId(required_id).AsString());
 \endcode
 
-Once you have access to an individual ND::TDemo_DB_Table you can use
+Once you have access to an individual CP::TDemo_DB_Table you can use
 its getters to access the row's data.
 
 \subsection  oaOffDBIOwnership Result Set Ownership Model
@@ -662,7 +662,7 @@ Users should save this SQL output to a file, and set the environment variable
 ENV_TSQL_TMP_TBLS to point to it.
 
 When programs using the \ref oaOffDBIDataRetrieval are run, the constructor of 
-ND::TDbiCascader checks for the presence of this environment 
+CP::TDbiCascader checks for the presence of this environment 
 variable.  If set, it reads SQL statements out of the file and executes them 
 on the first database in the cascade supporting Temporary Tables.
 
@@ -904,19 +904,19 @@ Nick West's consultation document</a>
 The code has undergone major internal changes since v1r5. The immediate effect of these changes is that all existing code which uses
 DbiResultPtr has to make the following change in all corresponding LinkDef files:
 <pre>
-sed -i 's/#pragma link C++ class DbiResultPtr</#pragma link C++ class ND::TDbiResultSetHandle</g' *LinkDef.h
+sed -i 's/#pragma link C++ class DbiResultPtr</#pragma link C++ class CP::TDbiResultSetHandle</g' *LinkDef.h
 </pre>
 
-The reason for this change is that the class DbiResultPtr has been renamed as ND::TDbiResultSetHandle. There is
+The reason for this change is that the class DbiResultPtr has been renamed as CP::TDbiResultSetHandle. There is
 a define
 <pre>
- DbiResultPtr ND::TDbiResultSetHandle
+ DbiResultPtr CP::TDbiResultSetHandle
 </pre> in TResultSetHandle.cxx which mean most code does not need changing, however this is not seen by rootcint
 when it builds the dictionary files. In the long term I would like people to replace all occurences of
-DbiResultPtr with ND::TDbiResultSetHandle in their source code so that at some point this define can be removed.
+DbiResultPtr with CP::TDbiResultSetHandle in their source code so that at some point this define can be removed.
 
 All code which previously resided in the MinosDBI package is now included in oaOfflineDatabase and conforms to ND280
-naming conventions. In addition it uses \ref ND::TDbiLog for error reporting and uses ND::EoaCore via the OA_EXCEPTION macro to throw
+naming conventions. In addition it uses \ref CP::TDbiLog for error reporting and uses CP::EoaCore via the OA_EXCEPTION macro to throw
 exceptions. 
 
 
@@ -924,19 +924,19 @@ exceptions.
 \page  TDemo_DB_Table_LinkDef  TDemo_DB_Table_LinkDef.h
 <pre>
 #ifdef __CINT__
-#pragma link C++ class ND::TDemo_DB_Table+;
+#pragma link C++ class CP::TDemo_DB_Table+;
 
 // The TableRow subclass' *_LinkDef.h must request a dictionary for
-// the templated ND::TResultSetHandle instantiated on it.  However that
-// class inherits from the backend ND::TDbiResultSetHandle so that dictionary is
+// the templated CP::TResultSetHandle instantiated on it.  However that
+// class inherits from the backend CP::TDbiResultSetHandle so that dictionary is
 #ifndef USE_NEW_DBI_API 
-#pragma link C++ class ND::TDbiResultSetHandle<ND::TDemo_DB_Table>+;
+#pragma link C++ class CP::TDbiResultSetHandle<CP::TDemo_DB_Table>+;
 #else
-#pragma link C++ class ND::TDbiResultSetHandle<ND::TDemo_DB_Table>+;
+#pragma link C++ class CP::TDbiResultSetHandle<CP::TDemo_DB_Table>+;
 #endif
 // also required.
 
-#pragma link C++ class ND::TResultSetHandle<ND::TDemo_DB_Table>+;
+#pragma link C++ class CP::TResultSetHandle<CP::TDemo_DB_Table>+;
 
 #endif
 </pre>

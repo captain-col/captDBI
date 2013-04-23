@@ -1,3 +1,3 @@
 #ifdef __CINT__
-#pragma link C++ class ND::TDbiResultSetNonAgg;
+#pragma link C++ class CP::TDbiResultSetNonAgg;
 #endif

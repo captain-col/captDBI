@@ -28,7 +28,7 @@ using std::ostringstream;
 
 
 
-ClassImp(ND::TDbiCascader)
+ClassImp(CP::TDbiCascader)
 
 //   Definition of static data members
 //   *********************************
@@ -48,8 +48,8 @@ ClassImp(ND::TDbiCascader)
 ///
 ///  Return:    n/a
 ///
-///  Throws:  ND::ENoEnvironment(); if there is no environment defined
-///               throw ND::EBadDatabase(); if any other error occured
+///  Throws:  CP::ENoEnvironment(); if there is no environment defined
+///               throw CP::EBadDatabase(); if any other error occured
 ///  Contact:   N. West, S. Claret
 ///
 ///  Specification:-
@@ -76,12 +76,12 @@ ClassImp(ND::TDbiCascader)
 ///
 /// The _UPDATE versions take priority.
 ///\endverbatim
-ND::TDbiCascader::TDbiCascader(bool beQuiet):
+CP::TDbiCascader::TDbiCascader(bool beQuiet):
 fTempCon(-1), fGlobalSeqNoDbNo(-1)
 {
 
 
-  DbiTrace( "Creating ND::TDbiCascader" << "  ");
+  DbiTrace( "Creating CP::TDbiCascader" << "  ");
 
 // Extract args from  ENV_TSQL environmental variables
   const char*      strUser = gSystem->Getenv("ENV_TSQL_UPDATE_USER");
@@ -113,14 +113,14 @@ fTempCon(-1), fGlobalSeqNoDbNo(-1)
         << "   Please check your settings of ENV_TSQL_USER,"
                 << " ENV_TSQL_PSWD and ENV_TSQL_URL\n" );
 
-    throw ND::ENoEnvironment();
+    throw CP::ENoEnvironment();
    }
   }
 
   std::vector<std::string> users, pswds, urls;
-  ND::UtilString::StringTok(users, userList, ";");
-  ND::UtilString::StringTok(pswds, pswdList, ";");
-  ND::UtilString::StringTok(urls,  urlList,  ";");
+  CP::UtilString::StringTok(users, userList, ";");
+  CP::UtilString::StringTok(pswds, pswdList, ";");
+  CP::UtilString::StringTok(urls,  urlList,  ";");
 
   bool fail = false;
 
@@ -132,12 +132,12 @@ fTempCon(-1), fGlobalSeqNoDbNo(-1)
     // Handle empty password designated as '\0' (an empty null terminated character string)
     if ( pswd == "\\0" ) pswd = "";
 
-    ND::TDbiConnection* con;
+    CP::TDbiConnection* con;
     // If we are testing the cascade for validity, just try connecting once, otherwise use defaults.
     if(!beQuiet)
-      con  = new ND::TDbiConnection(url,user,pswd,1);
+      con  = new CP::TDbiConnection(url,user,pswd,1);
     else
-      con  = new ND::TDbiConnection(url,user,pswd);
+      con  = new CP::TDbiConnection(url,user,pswd);
 
     fConnections.push_back(con);
     if ( ! con->Open() ) {
@@ -147,7 +147,7 @@ fTempCon(-1), fGlobalSeqNoDbNo(-1)
 
 //  Attempt to locate first GlobalSeqNo/GLOBALSEQNO table.
     if ( fGlobalSeqNoDbNo != -1 ) continue;
-    auto_ptr<ND::TDbiStatement>  stmtDb(new ND::TDbiStatement(*con));
+    auto_ptr<CP::TDbiStatement>  stmtDb(new CP::TDbiStatement(*con));
     if ( ! stmtDb.get() ) continue;
     TSQLStatement* stmt = stmtDb->ExecuteQuery("Select * from GLOBALSEQNO where 1=0");
     if ( stmt ) {
@@ -184,21 +184,21 @@ fTempCon(-1), fGlobalSeqNoDbNo(-1)
   
   //  Abort, if there have been any failures.
   if ( fail ) {
-    throw ND::EBadDatabase();
+    throw CP::EBadDatabase();
   }
 
 }
 
 //.....................................................................
 
-ND::TDbiCascader::~TDbiCascader() {
+CP::TDbiCascader::~TDbiCascader() {
 //
 //
 //  Purpose: Destructor
 //
 
 
-  DbiTrace( "Destroying ND::TDbiCascader" << "  ");
+  DbiTrace( "Destroying CP::TDbiCascader" << "  ");
 
   for (Int_t dbNo = this->GetNumDb()-1; dbNo >= 0; --dbNo) delete fConnections[dbNo];
 
@@ -207,7 +207,7 @@ ND::TDbiCascader::~TDbiCascader() {
 //.....................................................................
 ///\verbatim
 ///
-///  Purpose:  Output ND::TDbiCascader status to message stream.
+///  Purpose:  Output CP::TDbiCascader status to message stream.
 ///
 ///  Arguments:
 ///    os           in    ostream to output on
@@ -220,17 +220,17 @@ ND::TDbiCascader::~TDbiCascader() {
 ///  Specification:-
 ///  =============
 ///
-///  o Output ND::TDbiCascader status to ostream.
+///  o Output CP::TDbiCascader status to ostream.
 ///
 ///  Program Notes:-
 ///  =============
 ///
 ///  None.
 ///\endverbatim
-ostream& ND::operator<<(ostream& os, const ND::TDbiCascader& cascader) {
+ostream& CP::operator<<(ostream& os, const CP::TDbiCascader& cascader) {
 
 
-  os << "ND::TDbiCascader Status:- " << endl
+  os << "CP::TDbiCascader Status:- " << endl
      << "Status   URL" << endl << endl;
 
   int maxDb = cascader.GetNumDb();
@@ -242,20 +242,20 @@ ostream& ND::operator<<(ostream& os, const ND::TDbiCascader& cascader) {
   return os;
 
 }
- bool ND::TDbiCascader::canConnect()
+ bool CP::TDbiCascader::canConnect()
 {
-  DbiTrace(" bool ND::TDbiCascader::canConnect() started");
+  DbiTrace(" bool CP::TDbiCascader::canConnect() started");
 
   try
     {
-      ND::TDbiCascader test(false);
+      CP::TDbiCascader test(false);
       //   test.NOOP();
-      DbiTrace(" bool ND::TDbiCascader::canConnect() return true");
+      DbiTrace(" bool CP::TDbiCascader::canConnect() return true");
       return true;
     }
   catch(...)
     {
-      DbiTrace(" bool ND::TDbiCascader::canConnect() return false");
+      DbiTrace(" bool CP::TDbiCascader::canConnect() return false");
       return false;
     }
 }
@@ -286,7 +286,7 @@ ostream& ND::operator<<(ostream& os, const ND::TDbiCascader& cascader) {
 ///  Global entries should not be a problem as the GLOBALSEQNO table isn't wiped
 ///  but it provides protection in case the table is damaged (which has happened!).
 ///\endverbatim
-Int_t ND::TDbiCascader::AllocateSeqNo(const string& tableName,
+Int_t CP::TDbiCascader::AllocateSeqNo(const string& tableName,
                                  Int_t requireGlobal, /* =0 */
                                  Int_t dbNo  /* = 0 */) const {
 
@@ -335,14 +335,14 @@ Int_t ND::TDbiCascader::AllocateSeqNo(const string& tableName,
 ///
 ///  ...
 ///
-///  auto_ptr<ND::TDbiStatement> stmt(cascader.CreateStatement(dbNo));
+///  auto_ptr<CP::TDbiStatement> stmt(cascader.CreateStatement(dbNo));
 ///\endverbatim
-ND::TDbiStatement* ND::TDbiCascader::CreateStatement(UInt_t dbNo) const {
+CP::TDbiStatement* CP::TDbiCascader::CreateStatement(UInt_t dbNo) const {
 
 
   if ( this->GetStatus(dbNo) == kFailed ) return 0;
-  ND::TDbiConnection& conDb = *fConnections[dbNo];
-  ND::TDbiStatement* stmtDb = new ND::TDbiStatement(conDb);
+  CP::TDbiConnection& conDb = *fConnections[dbNo];
+  CP::TDbiStatement* stmtDb = new CP::TDbiStatement(conDb);
   stmtDb->PrintExceptions();
   return stmtDb;
 
@@ -378,13 +378,13 @@ ND::TDbiStatement* ND::TDbiCascader::CreateStatement(UInt_t dbNo) const {
 ///    name in fTemporaryTables.
 ///
 ///\endverbatim
-Int_t ND::TDbiCascader::CreateTemporaryTable(const string& tableNameMc,
+Int_t CP::TDbiCascader::CreateTemporaryTable(const string& tableNameMc,
                                        const string& tableDescr) {
 
 
 //  Check that input args look plausible.
 
-  string tableName = ND::UtilString::ToUpper(tableNameMc);
+  string tableName = CP::UtilString::ToUpper(tableNameMc);
   if (    tableName == ""
        || tableDescr[0] != '('
        || tableDescr[tableDescr.size()-1] != ')' ) {
@@ -399,7 +399,7 @@ Int_t ND::TDbiCascader::CreateTemporaryTable(const string& tableNameMc,
   string sqlMakeTable;
 
   Int_t dbNoAcc       = -1;
-  auto_ptr<ND::TDbiStatement> stmtDb;
+  auto_ptr<CP::TDbiStatement> stmtDb;
   for (UInt_t dbNoTry = 0; dbNoTry < fConnections.size(); ++dbNoTry ) {
     stmtDb.reset(this->CreateStatement(dbNoTry));
     if ( stmtDb.get() ) {
@@ -424,7 +424,7 @@ Int_t ND::TDbiCascader::CreateTemporaryTable(const string& tableNameMc,
   }
 
 // Make connection permanent if not already.
-  ND::TDbiConnection& conDb = *fConnections[dbNoAcc];
+  CP::TDbiConnection& conDb = *fConnections[dbNoAcc];
   if ( conDb.IsTemporary() ) {
     conDb.SetPermanent();
     DbiInfo( "Making connection: " << conDb.GetUrl()
@@ -464,7 +464,7 @@ Int_t ND::TDbiCascader::CreateTemporaryTable(const string& tableNameMc,
 ///  \return dbNo of the database on which the SQL was executed or -1 if there was a problem
 ///
 ///  \author Simon Claret t2kcompute@comp.nd280.org
-int ND::TDbiCascader::ProcessTmpTblsFile(const string& SQLFilePath) {
+int CP::TDbiCascader::ProcessTmpTblsFile(const string& SQLFilePath) {
   int tempConDbNo = GetTempCon();
   
   if (tempConDbNo == -1) {
@@ -515,7 +515,7 @@ int ND::TDbiCascader::ProcessTmpTblsFile(const string& SQLFilePath) {
 ///  \return    fTempCon or -1 if no connection supports temporary tables
 ///
 ///  \author Simon Claret t2kcompute@comp.nd280.org
-int ND::TDbiCascader::GetTempCon() {
+int CP::TDbiCascader::GetTempCon() {
   if (fTempCon == -1) {
     for (unsigned int i=0; i < fConnections.size(); ++i) {
       
@@ -544,7 +544,7 @@ int ND::TDbiCascader::GetTempCon() {
 ///  \return    LINE_APPEARS_VALID  if the line appears to contain a valid SQL statement or LINE_BLANK if the line is blank or LINE_INVALID if the line is invalid
 ///
 ///  \author Simon Claret t2kcompute@comp.nd280.org
-int ND::TDbiCascader::ParseTmpTblsSQLLine(const string& line, string &tableName) {
+int CP::TDbiCascader::ParseTmpTblsSQLLine(const string& line, string &tableName) {
   // state of the lineItr
   std::string::const_iterator lineItr;
   char prevChar = ' ';
@@ -619,7 +619,7 @@ int ND::TDbiCascader::ParseTmpTblsSQLLine(const string& line, string &tableName)
 ///
 ///  \author Simon Claret t2kcompute@comp.nd280.org
 
-bool ND::TDbiCascader::ExecTmpTblsSQLStmt(int tempConDbNo, const string& line, const string& tableName) {
+bool CP::TDbiCascader::ExecTmpTblsSQLStmt(int tempConDbNo, const string& line, const string& tableName) {
   TDbiStatement* stmt = CreateStatement(tempConDbNo);
   bool retVal = false;
   
@@ -649,9 +649,9 @@ bool ND::TDbiCascader::ExecTmpTblsSQLStmt(int tempConDbNo, const string& line, c
 //.....................................................................
 ///
 ///
-///  Purpose:  Return a connection to caller (ND::TDbiCascader retains ownership)
+///  Purpose:  Return a connection to caller (CP::TDbiCascader retains ownership)
 ///
-const ND::TDbiConnection* ND::TDbiCascader::GetConnection(UInt_t dbNo) const{
+const CP::TDbiConnection* CP::TDbiCascader::GetConnection(UInt_t dbNo) const{
 
 
   if ( this->GetStatus(dbNo) == kFailed ) return 0;
@@ -661,9 +661,9 @@ const ND::TDbiConnection* ND::TDbiCascader::GetConnection(UInt_t dbNo) const{
 //.....................................................................
 ///
 ///
-///  Purpose:  Return a connection to caller (ND::TDbiCascader retains ownership)
+///  Purpose:  Return a connection to caller (CP::TDbiCascader retains ownership)
 
-ND::TDbiConnection* ND::TDbiCascader::GetConnection(UInt_t dbNo) {
+CP::TDbiConnection* CP::TDbiCascader::GetConnection(UInt_t dbNo) {
 
 
   if ( this->GetStatus(dbNo) == kFailed ) return 0;
@@ -674,7 +674,7 @@ ND::TDbiConnection* ND::TDbiCascader::GetConnection(UInt_t dbNo) {
 
 //.....................................................................
 ///  Purpose:  Return Database Name for cascade entry number.
-string ND::TDbiCascader::GetDbName(UInt_t dbNo) const {
+string CP::TDbiCascader::GetDbName(UInt_t dbNo) const {
 //
 //
 
@@ -692,7 +692,7 @@ string ND::TDbiCascader::GetDbName(UInt_t dbNo) const {
 ///  Purpose:  Return number of first DB in cascade with name dbName.
 ///
 ///  Return:   Database number corresponding to dbName or -1 if none.
-Int_t ND::TDbiCascader::GetDbNo(const string& dbName) const {
+Int_t CP::TDbiCascader::GetDbNo(const string& dbName) const {
 
 
   for ( unsigned dbNo = 0; dbNo < this->GetNumDb(); ++dbNo) {
@@ -711,7 +711,7 @@ Int_t ND::TDbiCascader::GetDbNo(const string& dbName) const {
 ///
 ///  Arguments:
 ///    dbNo         in    Database number (0..GetNumDb()-1)
-string ND::TDbiCascader::GetStatusAsString(UInt_t dbNo) const {
+string CP::TDbiCascader::GetStatusAsString(UInt_t dbNo) const {
 
 
   Int_t status = GetStatus(dbNo);
@@ -728,7 +728,7 @@ string ND::TDbiCascader::GetStatusAsString(UInt_t dbNo) const {
 ///
 ///  Purpose:  Return cascade number of first database that holds table
 ///            or -1 if none.
-Int_t ND::TDbiCascader::GetTableDbNo(const string& tableName,
+Int_t CP::TDbiCascader::GetTableDbNo(const string& tableName,
                                 Int_t selectDbNo /* -1 */) const {
 
 
@@ -743,7 +743,7 @@ Int_t ND::TDbiCascader::GetTableDbNo(const string& tableName,
 
   for (UInt_t dbNoTry = 0; dbNoTry < fConnections.size(); ++dbNoTry ) {
     if ( selectDbNo >= 0 && (UInt_t) selectDbNo != dbNoTry ) continue;
-    const ND::TDbiConnection* con =  this->GetConnection(dbNoTry);
+    const CP::TDbiConnection* con =  this->GetConnection(dbNoTry);
     if ( con && con->TableExists(tableName) ) return dbNoTry;
   }
 
@@ -764,9 +764,9 @@ Int_t ND::TDbiCascader::GetTableDbNo(const string& tableName,
 ///  Program Notes:-
 ///  =============
 ///
-///  See ND::TDbiConnectionMaintainer for use.
+///  See CP::TDbiConnectionMaintainer for use.
 ///\endverbatim
-void ND::TDbiCascader::HoldConnections() {
+void CP::TDbiCascader::HoldConnections() {
 
 
   for (UInt_t dbNo = 0; dbNo < fConnections.size(); ++dbNo )
@@ -775,7 +775,7 @@ void ND::TDbiCascader::HoldConnections() {
 
 //.....................................................................
 ///  Purpose:  Return kTRUE if tableName is temporary in cascade member dbNo
-Bool_t ND::TDbiCascader::IsTemporaryTable(const string& tableName,
+Bool_t CP::TDbiCascader::IsTemporaryTable(const string& tableName,
                                      Int_t dbNo) const {
 //
 //LL
@@ -797,9 +797,9 @@ Bool_t ND::TDbiCascader::IsTemporaryTable(const string& tableName,
 ///  Purpose:  Ctor: Create a lock on a table accessed via connection.
 ///            (will be released by dtor)
 ///  Arguments:
-///          stmtDB    in  ND::TDbiStatement (given to Lock).
+///          stmtDB    in  CP::TDbiStatement (given to Lock).
 ///\endverbatim
-ND::TDbiCascader::Lock::Lock(ND::TDbiStatement* stmtDB, const string& seqnoTable, const string& dataTable) :
+CP::TDbiCascader::Lock::Lock(CP::TDbiStatement* stmtDB, const string& seqnoTable, const string& dataTable) :
 fStmt(stmtDB),
 fSeqnoTableName(seqnoTable),
 fDataTableName(dataTable),
@@ -817,7 +817,7 @@ fLocked(kFALSE)
 }
 //.....................................................................
 ///  Purpose:  Dtor: Clear lock
-ND::TDbiCascader::Lock::~Lock() {
+CP::TDbiCascader::Lock::~Lock() {
 //
 //
 
@@ -842,7 +842,7 @@ ND::TDbiCascader::Lock::~Lock() {
 ///  No-op if locked otherwise use the LOCK TABLES command.
 ///\endverbatim
 
- void ND::TDbiCascader::Lock::SetLock(Bool_t setting) {
+ void CP::TDbiCascader::Lock::SetLock(Bool_t setting) {
 
 
   if ( setting == fLocked || ! fStmt ) return;
@@ -879,9 +879,9 @@ ND::TDbiCascader::Lock::~Lock() {
 ///  Program Notes:-
 ///  =============
 ///
-///  See ND::TDbiConnectionMaintainer for use.
+///  See CP::TDbiConnectionMaintainer for use.
 ///\endverbatim
-void ND::TDbiCascader::ReleaseConnections() {
+void CP::TDbiCascader::ReleaseConnections() {
 
 
   for (UInt_t dbNo = 0; dbNo < fConnections.size(); ++dbNo )
@@ -908,17 +908,17 @@ void ND::TDbiCascader::ReleaseConnections() {
 ///
 ///  Requests for local SEQNOs may result in the creation of a LOCALSEQNO table.
 ///\endverbatim
-Int_t ND::TDbiCascader::ReserveNextSeqNo(const string& tableName,
+Int_t CP::TDbiCascader::ReserveNextSeqNo(const string& tableName,
                                     Bool_t isGlobal,
                                     UInt_t dbNo) const {
 
-  ND::TDbiString sql;
+  CP::TDbiString sql;
 
   string seqnoTableName = isGlobal ? "GLOBALSEQNO" : "LOCALSEQNO";
   bool seqnoTableNameExists = this->TableExists(seqnoTableName,dbNo);
   bool tableNameExists      = this->TableExists(tableName,dbNo);
 
-  auto_ptr<ND::TDbiStatement> stmtDb(this->CreateStatement(dbNo) );
+  auto_ptr<CP::TDbiStatement> stmtDb(this->CreateStatement(dbNo) );
   if ( ! stmtDb.get() ) return 0;
 
   // Check that required SEQNO table exists.
@@ -971,7 +971,7 @@ Int_t ND::TDbiCascader::ReserveNextSeqNo(const string& tableName,
   sql << tableName + "' order by TABLENAME";
   DbiLog( " query: " << sql.c_str() << "  ");
   TSQLStatement* stmt = stmtDb->ExecuteQuery(sql.c_str());
-  stmtDb->PrintExceptions(ND::TDbiLog::DebugLevel );
+  stmtDb->PrintExceptions(CP::TDbiLog::DebugLevel );
   Int_t seqNoDefault = 0;
   if ( stmt && stmt->NextResultRow() ) {
     seqNoDefault = stmt->GetInt(1);
@@ -1053,7 +1053,7 @@ Int_t ND::TDbiCascader::ReserveNextSeqNo(const string& tableName,
 }
 //.....................................................................
 ///  Purpose: Set connection permanent.
-void ND::TDbiCascader::SetPermanent(UInt_t dbNo,
+void CP::TDbiCascader::SetPermanent(UInt_t dbNo,
 			       Bool_t permanent /* = true */ ) {
 //
 //

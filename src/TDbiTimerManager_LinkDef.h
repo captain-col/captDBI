@@ -1,3 +1,3 @@
 #ifdef __CINT__
-#pragma link C++ class ND::TDbiTimerManager;
+#pragma link C++ class CP::TDbiTimerManager;
 #endif

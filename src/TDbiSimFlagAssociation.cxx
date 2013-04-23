@@ -1,8 +1,8 @@
 // $Id: TDbiSimFlagAssociation.cxx,v 1.1 2011/01/18 05:49:20 finch Exp $
 ////////////////////////////////////////////////////////////////////////
-// ND::TDbiSimFlagAssociation                                              //
+// CP::TDbiSimFlagAssociation                                              //
 //                                                                    //
-// Package: ND::TDbi (Database Interface).                                 //
+// Package: CP::TDbi (Database Interface).                                 //
 //                                                                    //
 // N. West 08/2003                                                    //
 //                                                                    //
@@ -31,19 +31,19 @@ using std::endl;
 #include "TDbiRegistry.hxx"
 #include "UtilString.hxx"
 
-ClassImp(ND::TDbiSimFlagAssociation)
+ClassImp(CP::TDbiSimFlagAssociation)
 
 
 //   Definition of static data members
 //   *********************************
 
 
-const ND::TDbiSimFlagAssociation* ND::TDbiSimFlagAssociation::fgInstance = 0;
+const CP::TDbiSimFlagAssociation* CP::TDbiSimFlagAssociation::fgInstance = 0;
 
 // Definition of global functions (alphabetical order)
 // ***************************************************
 
-ostream& operator<<(ostream& s, const ND::TDbiSimFlagAssociation& simFlagAss) {
+ostream& operator<<(ostream& s, const CP::TDbiSimFlagAssociation& simFlagAss) {
   simFlagAss.Print(s);
   return s;
 }
@@ -53,7 +53,7 @@ ostream& operator<<(ostream& s, const ND::TDbiSimFlagAssociation& simFlagAss) {
 
 //.....................................................................
 
-ND::TDbiSimFlagAssociation::TDbiSimFlagAssociation() {
+CP::TDbiSimFlagAssociation::TDbiSimFlagAssociation() {
 //
 //
 //  Purpose:  Default constructor
@@ -62,7 +62,7 @@ ND::TDbiSimFlagAssociation::TDbiSimFlagAssociation() {
 //
 
 
-  DbiTrace( "Creating ND::TDbiSimFlagAssociation" << "  ");
+  DbiTrace( "Creating CP::TDbiSimFlagAssociation" << "  ");
 
   // Connect to global pointer;
   fgInstance = this;
@@ -72,7 +72,7 @@ ND::TDbiSimFlagAssociation::TDbiSimFlagAssociation() {
 
 //.....................................................................
 
-ND::TDbiSimFlagAssociation::~TDbiSimFlagAssociation() {
+CP::TDbiSimFlagAssociation::~TDbiSimFlagAssociation() {
 //
 //
 //  Purpose: Destructor
@@ -81,7 +81,7 @@ ND::TDbiSimFlagAssociation::~TDbiSimFlagAssociation() {
 //
 
 
-  DbiTrace( "Destroying ND::TDbiSimFlagAssociation" << "  ");
+  DbiTrace( "Destroying CP::TDbiSimFlagAssociation" << "  ");
 
   // Disconnect from global pointer;
   if ( fgInstance == this ) fgInstance = 0;
@@ -89,8 +89,8 @@ ND::TDbiSimFlagAssociation::~TDbiSimFlagAssociation() {
 }
 //.....................................................................
 
-ND::TDbiSimFlagAssociation::SimList_t
-     ND::TDbiSimFlagAssociation::Get(const ND::DbiSimFlag::SimFlag_t value)const {
+CP::TDbiSimFlagAssociation::SimList_t
+     CP::TDbiSimFlagAssociation::Get(const CP::DbiSimFlag::SimFlag_t value)const {
 //
 //
 //  Purpose:  Return associated list
@@ -107,7 +107,7 @@ ND::TDbiSimFlagAssociation::SimList_t
 
 //.....................................................................
 
-const ND::TDbiSimFlagAssociation& ND::TDbiSimFlagAssociation::Instance() {
+const CP::TDbiSimFlagAssociation& CP::TDbiSimFlagAssociation::Instance() {
 //
 //
 //  Purpose:  Get access to the one and only instance.
@@ -116,20 +116,20 @@ const ND::TDbiSimFlagAssociation& ND::TDbiSimFlagAssociation::Instance() {
 //  Program Notes:-
 //  =============
 
-//  If necessary, creates a ND::TDbiSimFlagAssociation, but once
+//  If necessary, creates a CP::TDbiSimFlagAssociation, but once
 //  TDbiDatabaseManager.hxxas been created, it's owned version
 //  will supersede it and orginal will be lost (leak).
-//  In practice this should never happen; ND::TDbiDatabaseManager is
+//  In practice this should never happen; CP::TDbiDatabaseManager is
 //  the first significant object to be created.
 
-  if ( ! fgInstance ) new ND::TDbiSimFlagAssociation;
+  if ( ! fgInstance ) new CP::TDbiSimFlagAssociation;
   // The act of creation will set fgInstance.
   return *fgInstance;
 
 }
 //.....................................................................
 
-void ND::TDbiSimFlagAssociation::Print(ostream& s)const {
+void CP::TDbiSimFlagAssociation::Print(ostream& s)const {
 //
 //
 //  Purpose:  Print self.
@@ -143,8 +143,8 @@ void ND::TDbiSimFlagAssociation::Print(ostream& s)const {
     SimMap_t::const_iterator mapItrEnd = fAssociations.end();
     while ( mapItr != mapItrEnd ) {
 
-      ND::DbiSimFlag::SimFlag_t value = mapItr->first;
-      string name = ND::DbiSimFlag::AsString(value);
+      CP::DbiSimFlag::SimFlag_t value = mapItr->first;
+      string name = CP::DbiSimFlag::AsString(value);
       ostringstream buff;
       buff << name << "(" << value << ")";
       name = buff.str();
@@ -155,8 +155,8 @@ void ND::TDbiSimFlagAssociation::Print(ostream& s)const {
       SimList_t::const_iterator listItr    = l.begin();
       SimList_t::const_iterator listItrEnd = l.end();
       while ( listItr != listItrEnd ) {
-        ND::DbiSimFlag::SimFlag_t v = *listItr;
-        string n = ND::DbiSimFlag::AsString(v);
+        CP::DbiSimFlag::SimFlag_t v = *listItr;
+        string n = CP::DbiSimFlag::AsString(v);
         s << n << "(" << v << ")";
 	++listItr;
         if ( listItr != listItrEnd ) s << ", ";
@@ -170,7 +170,7 @@ void ND::TDbiSimFlagAssociation::Print(ostream& s)const {
 
 //.....................................................................
 
-void ND::TDbiSimFlagAssociation::Set(TDbiRegistry& reg) {
+void CP::TDbiSimFlagAssociation::Set(TDbiRegistry& reg) {
 //
 //
 //  Purpose:  Extract SimFlag association lists from TDbiRegistry.
@@ -198,19 +198,19 @@ void ND::TDbiSimFlagAssociation::Set(TDbiRegistry& reg) {
 
       // Found a SimFlagAssociation key, extract its value.
       string Name = key+19;
-      ND::DbiSimFlag::SimFlag_t value = ND::DbiSimFlag::StringToEnum(Name.c_str());
+      CP::DbiSimFlag::SimFlag_t value = CP::DbiSimFlag::StringToEnum(Name.c_str());
       const char* listChars = 0;
-      bool ok = reg.Get(key,listChars) && (value != ND::DbiSimFlag::kUnknown);
+      bool ok = reg.Get(key,listChars) && (value != CP::DbiSimFlag::kUnknown);
       // Collect the associated list
       SimList_t lv;
       if ( ok ) {
         vector<string> ls;
-	ND::UtilString::StringTok(ls,listChars,",");
+	CP::UtilString::StringTok(ls,listChars,",");
         vector<string>::iterator itr    = ls.begin();
         vector<string>::iterator itrEnd = ls.end();
         for (; itr != itrEnd; ++itr ) {
-          ND::DbiSimFlag::SimFlag_t v = ND::DbiSimFlag::StringToEnum(itr->c_str());
-          if ( v == ND::DbiSimFlag::kUnknown) ok = false;
+          CP::DbiSimFlag::SimFlag_t v = CP::DbiSimFlag::StringToEnum(itr->c_str());
+          if ( v == CP::DbiSimFlag::kUnknown) ok = false;
           lv.push_back(v);
 	}
       }
@@ -232,7 +232,7 @@ void ND::TDbiSimFlagAssociation::Set(TDbiRegistry& reg) {
 
 //.....................................................................
 
-void ND::TDbiSimFlagAssociation::Show() {
+void CP::TDbiSimFlagAssociation::Show() {
 //
 //
 //  Purpose:
@@ -246,7 +246,7 @@ void ND::TDbiSimFlagAssociation::Show() {
 
 //.....................................................................
 
-ND::TDbiSimFlagAssociation:: {
+CP::TDbiSimFlagAssociation:: {
 //
 //
 //  Purpose:

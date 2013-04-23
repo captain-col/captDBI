@@ -1,5 +1,5 @@
 #ifndef DBIRESULTSETHANDLE_H
-// this will switch users code from using TDbiResultSetHandle to ND::TDbiResultSetHandle
+// this will switch users code from using TDbiResultSetHandle to CP::TDbiResultSetHandle
 #define USE_NEW_DBI_API
 #define DBIRESULTSETHANDLE_H
 
@@ -7,11 +7,11 @@
  *
  * $Id: TDbiResultSetHandle.hxx,v 1.1 2011/01/18 05:49:20 finch Exp $
  *
- * \class ND::TDbiResultSetHandle
+ * \class CP::TDbiResultSetHandle
  *
  *
  * \brief
- * <b>Concept</b>  Templated class ND::of pointers to Result objects.
+ * <b>Concept</b>  Templated class CP::of pointers to Result objects.
  *   ResultHandle objects are lightweight and provide type safe access
  *   to a specific table.
  *
@@ -36,14 +36,14 @@ using std::string;
 #include "TDbiValidityRec.hxx"
 #include "TVldContext.hxx"
 
-namespace ND {
+namespace CP {
 class TDbiResultSet;
 class TDbiResultKey;
 class TDbiSqlContext;
 class TDbiTableProxy;
 }
 
-namespace ND {
+namespace CP {
 template <class T> class TDbiResultSetHandle
 {
 
@@ -52,12 +52,12 @@ public:
 // Constructors and destructors.
            TDbiResultSetHandle();
            TDbiResultSetHandle(const TDbiResultSetHandle& that);
-           TDbiResultSetHandle(const ND::TVldContext& vc,
+           TDbiResultSetHandle(const CP::TVldContext& vc,
                         TDbi::Task task = TDbi::kDefaultTask,
                         TDbi::AbortTest abortTest = TDbi::kTableMissing,
                         Bool_t findFullTimeWindow = true);
            TDbiResultSetHandle(const string& tableName,
-                        const ND::TVldContext& vc,
+                        const CP::TVldContext& vc,
                         TDbi::Task task = TDbi::kDefaultTask,
                         TDbi::AbortTest abortTest = TDbi::kTableMissing,
                         Bool_t findFullTimeWindow = true);
@@ -93,7 +93,7 @@ const TDbiResultSet* GetResult() const { return fResult; }
 
 // State changing member functions
     UInt_t NextQuery(Bool_t forwards = kTRUE);
-    UInt_t NewQuery(ND::TVldContext vc,
+    UInt_t NewQuery(CP::TVldContext vc,
                     TDbi::Task task=0,
                     Bool_t findFullTimeWindow = true);
     UInt_t NewQuery(const TDbiSqlContext& context,
@@ -127,10 +127,10 @@ Bool_t ApplyAbortTest();
 const TDbiResultSet* fResult;
 
 /// from query context.
-  ND::DbiDetector::Detector_t fDetType;
+  CP::DbiDetector::Detector_t fDetType;
 
 /// from query context.
-  ND::DbiSimFlag::SimFlag_t fSimType;
+  CP::DbiSimFlag::SimFlag_t fSimType;
 
 #ifndef __CINT__ //  Hide map from CINT; it complains about missing Streamer() etc.
 static std::map<string,TDbiTableProxy*> fgNameToProxy;

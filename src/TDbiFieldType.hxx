@@ -11,7 +11,7 @@
  *
  * $Id: TDbiFieldType.hxx,v 1.1 2011/01/18 05:49:20 finch Exp $
  *
- * \class ND::TDbiFieldType
+ * \class CP::TDbiFieldType
  *
  *
  * \brief
@@ -31,7 +31,7 @@ using std::string;
 
 #include "TDbi.hxx"
 
-namespace ND {
+namespace CP {
 class TDbiFieldType
 {
 

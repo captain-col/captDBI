@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////
 // $Id: TDbiOutRowStream.cxx,v 1.2 2012/06/14 10:55:22 finch Exp $
 //
-// ND::TDbiOutRowStream
+// CP::TDbiOutRowStream
 
 #include <sstream>
 
@@ -16,7 +16,7 @@ using std::setprecision;
 #include "UtilString.hxx"
 #include "TVldTimeStamp.hxx"
 
-ClassImp(ND::TDbiOutRowStream)
+ClassImp(CP::TDbiOutRowStream)
 
 #define OUT(t,v)                         \
   if ( ! StoreDefaultIfInvalid(t) ) {    \
@@ -30,7 +30,7 @@ ClassImp(ND::TDbiOutRowStream)
 // For BIGINT (size 8) make an exception.  It's used only as
 // an alternative to unsigned int so can written without conversion.
 #define OUT2(t,v)                         \
-  const ND::TDbiFieldType& fType = this->ColFieldType(this->CurColNum());             \
+  const CP::TDbiFieldType& fType = this->ColFieldType(this->CurColNum());             \
   if ( fType.IsSigned() && fType.GetSize() != 8 ) {                              \
     Int_t v_signed = (Int_t) v;                                                  \
     if ( fType.GetType() == TDbi::kTiny  && v & 0x80   ) v_signed |= 0xffffff00;  \
@@ -51,8 +51,8 @@ ClassImp(ND::TDbiOutRowStream)
 
 //.....................................................................
 
-ND::TDbiOutRowStream::TDbiOutRowStream(const ND::TDbiTableMetaData* metaData) :
-ND::TDbiRowStream(metaData),
+CP::TDbiOutRowStream::TDbiOutRowStream(const CP::TDbiTableMetaData* metaData) :
+CP::TDbiRowStream(metaData),
 fBadData(kFALSE)
 {
 //
@@ -63,56 +63,56 @@ fBadData(kFALSE)
 //     metaData in  Meta data for table to be written to..
 
 
-  DbiTrace( "Creating ND::TDbiOutRowStream" << "  ");
+  DbiTrace( "Creating CP::TDbiOutRowStream" << "  ");
 
 }
 
 
 //.....................................................................
 
-ND::TDbiOutRowStream::~TDbiOutRowStream() {
+CP::TDbiOutRowStream::~TDbiOutRowStream() {
 //
 //
 //  Purpose: Destructor
 
 
-  DbiTrace( "Destroying ND::TDbiOutRowStream" << "  ");
+  DbiTrace( "Destroying CP::TDbiOutRowStream" << "  ");
 
 }
 
 //.....................................................................
 
-ND::TDbiOutRowStream& ND::TDbiOutRowStream::operator<<(Bool_t src) {
+CP::TDbiOutRowStream& CP::TDbiOutRowStream::operator<<(Bool_t src) {
                                      OUT(TDbi::kBool,src);  return *this;}
 
-ND::TDbiOutRowStream& ND::TDbiOutRowStream::operator<<(Char_t src) {
+CP::TDbiOutRowStream& CP::TDbiOutRowStream::operator<<(Char_t src) {
                                      OUT(TDbi::kChar,src);  return *this;}
 
-ND::TDbiOutRowStream& ND::TDbiOutRowStream::operator<<(const Char_t* src) {
+CP::TDbiOutRowStream& CP::TDbiOutRowStream::operator<<(const Char_t* src) {
                                      OUT(TDbi::kString,src);  return *this;}
 
-ND::TDbiOutRowStream& ND::TDbiOutRowStream::operator<<(Short_t src) {
+CP::TDbiOutRowStream& CP::TDbiOutRowStream::operator<<(Short_t src) {
                                      OUT(TDbi::kShort,src);  return *this;}
 
-ND::TDbiOutRowStream& ND::TDbiOutRowStream::operator<<(UShort_t src) {
+CP::TDbiOutRowStream& CP::TDbiOutRowStream::operator<<(UShort_t src) {
                                      OUT2(TDbi::kUShort,src); return *this;}
 
-ND::TDbiOutRowStream& ND::TDbiOutRowStream::operator<<(Int_t src) {
+CP::TDbiOutRowStream& CP::TDbiOutRowStream::operator<<(Int_t src) {
                                      OUT(TDbi::kInt,src);  return *this;}
 
-ND::TDbiOutRowStream& ND::TDbiOutRowStream::operator<<(UInt_t src) {
+CP::TDbiOutRowStream& CP::TDbiOutRowStream::operator<<(UInt_t src) {
                                      OUT2(TDbi::kUInt,src);  return *this;}
 
-ND::TDbiOutRowStream& ND::TDbiOutRowStream::operator<<(Float_t src) {
+CP::TDbiOutRowStream& CP::TDbiOutRowStream::operator<<(Float_t src) {
                                      OUT(TDbi::kFloat,src); return *this;}
 
-ND::TDbiOutRowStream& ND::TDbiOutRowStream::operator<<(Double_t src) {
+CP::TDbiOutRowStream& CP::TDbiOutRowStream::operator<<(Double_t src) {
                                      OUT(TDbi::kDouble,src);  return *this;}
 
-ND::TDbiOutRowStream& ND::TDbiOutRowStream::operator<<(const string& src) {
+CP::TDbiOutRowStream& CP::TDbiOutRowStream::operator<<(const string& src) {
                                     OUT(TDbi::kString,src); return *this;}
 
-ND::TDbiOutRowStream& ND::TDbiOutRowStream::operator<<(const ND::TVldTimeStamp& src) {
+CP::TDbiOutRowStream& CP::TDbiOutRowStream::operator<<(const CP::TVldTimeStamp& src) {
   if ( ! StoreDefaultIfInvalid(TDbi::kDate) )
                           Store(TDbi::MakeDateTimeString(src).c_str());
   return *this;
@@ -123,7 +123,7 @@ ND::TDbiOutRowStream& ND::TDbiOutRowStream::operator<<(const ND::TVldTimeStamp& 
 
 //.....................................................................
 
-Bool_t ND::TDbiOutRowStream::StoreDefaultIfInvalid(TDbi::DataTypes type) {
+Bool_t CP::TDbiOutRowStream::StoreDefaultIfInvalid(TDbi::DataTypes type) {
 //
 //
 //  Purpose:  Store default value if illegal type supplied.
@@ -147,8 +147,8 @@ Bool_t ND::TDbiOutRowStream::StoreDefaultIfInvalid(TDbi::DataTypes type) {
 
 //  None.
 
-  ND::TDbiFieldType typeSupplied(type);
-  ND::TDbiFieldType typeRequired(CurColFieldType());
+  CP::TDbiFieldType typeSupplied(type);
+  CP::TDbiFieldType typeRequired(CurColFieldType());
   if ( typeSupplied.IsCompatible(typeRequired) ) return kFALSE;
 
   string udef = typeRequired.UndefinedValue();
@@ -166,7 +166,7 @@ Bool_t ND::TDbiOutRowStream::StoreDefaultIfInvalid(TDbi::DataTypes type) {
 }
 //.....................................................................
 
-void ND::TDbiOutRowStream::Store(const string& str)  {
+void CP::TDbiOutRowStream::Store(const string& str)  {
 //
 //
 //  Purpose: Store string value as comma separated values but exclude SeqNo.
@@ -203,7 +203,7 @@ void ND::TDbiOutRowStream::Store(const string& str)  {
   if ( concept != TDbi::kString ) fCSV += str;
 //  When exporting strings, take care of special characters.
   else {
-    ND::UtilString::MakePrintable(str.c_str(),fCSV);
+    CP::UtilString::MakePrintable(str.c_str(),fCSV);
   }
   fCSV += delim;
   IncrementCurCol();

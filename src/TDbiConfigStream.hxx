@@ -5,7 +5,7 @@
  *
  * $Id: TDbiConfigStream.hxx,v 1.1 2011/01/18 05:49:19 finch Exp $
  *
- * \class ND::TDbiConfigStream
+ * \class CP::TDbiConfigStream
  *
  *
  * \brief
@@ -27,42 +27,42 @@
 #include "TDbiRegistry.hxx"
 #include "TVldContext.hxx"
 
-namespace ND {
+namespace CP {
 class TDbiConfigStream;
 class TDbiFieldType;
 }
-namespace ND{
+namespace CP{
 class TDbiRegistry;
 }
 #include <iosfwd>
 
-ostream& operator<<(ostream& s, const ND::TDbiConfigStream& cfStream);
+ostream& operator<<(ostream& s, const CP::TDbiConfigStream& cfStream);
 
-namespace ND {
+namespace CP {
 class TDbiConfigStream
 {
 
 
 public:
 
-static      ND::TVldContext fgDefaultContext;
+static      CP::TVldContext fgDefaultContext;
 
 // Constructors and destructors.
            TDbiConfigStream();
            TDbiConfigStream(const std::string& SoftwName,
                            const std::string& ConfigName="default",
-                           ND::TVldContext vc = TDbiConfigStream::fgDefaultContext,
+                           CP::TVldContext vc = TDbiConfigStream::fgDefaultContext,
                            TDbi::Task task=0,
                            const std::string& tableName="SOFTWARE_CONFIGURATION");
   virtual ~TDbiConfigStream();
 
 // State testing member functions
-  const ND::TDbiConfigStream& operator>>(TDbiRegistry* reg);
+  const CP::TDbiConfigStream& operator>>(TDbiRegistry* reg);
   const TDbiConfigSet* GetConfigSet() const { return fCFSet; }
 
 // State changing member functions
 
-  ND::TDbiConfigStream& operator<<(const TDbiRegistry* reg);
+  CP::TDbiConfigStream& operator<<(const TDbiRegistry* reg);
                Bool_t IsEmpty() { return fCFSet == 0; }
       TDbiValidityRec& GetValidityRec() { return fVRec; }
                Bool_t Write(UInt_t dbNo = 0,
@@ -81,10 +81,10 @@ private:
                  fCFSet;
 
   /// Pointer to ConfigSet table
-  ND::TDbiResultSetHandle<TDbiConfigSet>
+  CP::TDbiResultSetHandle<TDbiConfigSet>
                  fCFSetTable;
 
-  /// Local ND::TDbiConfigSet (empty until/unless filled using operator <<).
+  /// Local CP::TDbiConfigSet (empty until/unless filled using operator <<).
     TDbiConfigSet fCFSetModified;
 
   /// Associated validity rec (used when writing back to the database).

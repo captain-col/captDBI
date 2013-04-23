@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////
 // $Id: TDbiEpochRollback.cxx,v 1.2 2012/06/14 10:55:22 finch Exp $
 //
-// ND::TDbiEpochRollback
+// CP::TDbiEpochRollback
 
 #include <cstring>
 #include <sstream>
@@ -17,7 +17,7 @@ using std::endl;
 #include "UtilString.hxx"
 #include "TVldTimeStamp.hxx"
 
-ClassImp(ND::TDbiEpochRollback)
+ClassImp(CP::TDbiEpochRollback)
 
 //   Definition of static data members
 //   *********************************
@@ -29,7 +29,7 @@ ClassImp(ND::TDbiEpochRollback)
 
 //.....................................................................
 
-ND::TDbiEpochRollback::TDbiEpochRollback()
+CP::TDbiEpochRollback::TDbiEpochRollback()
 {
 //
 //
@@ -40,7 +40,7 @@ ND::TDbiEpochRollback::TDbiEpochRollback()
 //  Specification:-
 //  =============
 //
-//  o Create ND::TDbiEpochRollback.
+//  o Create CP::TDbiEpochRollback.
 
 
 //  Program Notes:-
@@ -49,11 +49,11 @@ ND::TDbiEpochRollback::TDbiEpochRollback()
 //  None.
 
 
-    DbiTrace( "Creating ND::TDbiEpochRollback" << "  ");
+    DbiTrace( "Creating CP::TDbiEpochRollback" << "  ");
 }
 //.....................................................................
 
-ND::TDbiEpochRollback::~TDbiEpochRollback() {
+CP::TDbiEpochRollback::~TDbiEpochRollback() {
 //
 //
 //  Contact:   N. West
@@ -61,16 +61,16 @@ ND::TDbiEpochRollback::~TDbiEpochRollback() {
 //  Specification:-
 //  =============
 //
-//  o  Destroy ND::TDbiEpochRollback.
+//  o  Destroy CP::TDbiEpochRollback.
 
 
 
-  DbiTrace( "Destroying ND::TDbiEpochRollback" << "  ");
+  DbiTrace( "Destroying CP::TDbiEpochRollback" << "  ");
 
 }
 //.....................................................................
 
-const std::string& ND::TDbiEpochRollback::GetEpochCondition(const std::string& tableName) const {
+const std::string& CP::TDbiEpochRollback::GetEpochCondition(const std::string& tableName) const {
 //
 //
 //  Purpose:  Return epoch rollback condition  associated with named table.
@@ -92,7 +92,7 @@ const std::string& ND::TDbiEpochRollback::GetEpochCondition(const std::string& t
   name_map_t::const_reverse_iterator itrEnd = fTableToEpoch.rend();
 
   for (; itr != itrEnd; ++itr) {
-    if ( ! ND::UtilString::cmp_wildcard(tableName,itr->first) ) {
+    if ( ! CP::UtilString::cmp_wildcard(tableName,itr->first) ) {
     	std::ostringstream condition_stream;
     	condition_stream << "EPOCH <= ";
     	condition_stream << itr->second;
@@ -105,7 +105,7 @@ const std::string& ND::TDbiEpochRollback::GetEpochCondition(const std::string& t
 
 //.....................................................................
 
-void ND::TDbiEpochRollback::Set(TDbiRegistry& reg) {
+void CP::TDbiEpochRollback::Set(TDbiRegistry& reg) {
 //
 //
 //  Purpose:  Extract epoch Rollback from TDbiRegistry.
@@ -152,7 +152,7 @@ void ND::TDbiEpochRollback::Set(TDbiRegistry& reg) {
 }
 //.....................................................................
 
-void ND::TDbiEpochRollback::Show() const {
+void CP::TDbiEpochRollback::Show() const {
 //
 //
 //  Purpose:  Print out the current EpochRollback status.

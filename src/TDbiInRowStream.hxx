@@ -9,7 +9,7 @@
 /**
  *
  *
- * \class ND::TDbiInRowStream
+ * \class CP::TDbiInRowStream
  *
  *
  * \brief
@@ -33,18 +33,18 @@
 #include "TDbi.hxx"
 #include "TDbiRowStream.hxx"
 
-namespace ND {
+namespace CP {
 class TDbiString;
 class TDbiStatement;
 class TDbiTableMetaData;
 class TDbiTableProxy;
 }
 class TSQLStatement;
-namespace ND {
+namespace CP {
 class TVldTimeStamp;
 };
 
-namespace ND {
+namespace CP {
 class TDbiInRowStream : public TDbiRowStream
 {
 
@@ -56,10 +56,10 @@ public:
 ///  Purpose:  Default constructor
 ///
 ///  Arguments:
-///     stmtDb     in  ND::TDbiStatement to be used for query.  May be zero.
+///     stmtDb     in  CP::TDbiStatement to be used for query.  May be zero.
 ///     sql        in  The query to be applied to the statement.
 ///     metaData   in  Meta data for query.
-///     tableProxy in  Source ND::TDbiTableProxy.
+///     tableProxy in  Source CP::TDbiTableProxy.
 ///     dbNo       in  Cascade no. of source.
 ///
 ///  Return:    n/a
@@ -95,18 +95,18 @@ const TDbiTableProxy* GetTableProxy() const { return fTableProxy; }
 
 // State changing member functions
 
- ND::TDbiInRowStream& operator>>(Bool_t& dest);
- ND::TDbiInRowStream& operator>>(Char_t& dest);
- ND::TDbiInRowStream& operator>>(Short_t& dest);
- ND::TDbiInRowStream& operator>>(UShort_t& dest);
- ND::TDbiInRowStream& operator>>(Int_t& dest);
- ND::TDbiInRowStream& operator>>(UInt_t& dest);
- ND::TDbiInRowStream& operator>>(Long_t& dest);
- ND::TDbiInRowStream& operator>>(ULong_t& dest);
- ND::TDbiInRowStream& operator>>(Float_t& dest);
- ND::TDbiInRowStream& operator>>(Double_t& dest);
- ND::TDbiInRowStream& operator>>(string& dest);
- ND::TDbiInRowStream& operator>>(ND::TVldTimeStamp& dest);
+ CP::TDbiInRowStream& operator>>(Bool_t& dest);
+ CP::TDbiInRowStream& operator>>(Char_t& dest);
+ CP::TDbiInRowStream& operator>>(Short_t& dest);
+ CP::TDbiInRowStream& operator>>(UShort_t& dest);
+ CP::TDbiInRowStream& operator>>(Int_t& dest);
+ CP::TDbiInRowStream& operator>>(UInt_t& dest);
+ CP::TDbiInRowStream& operator>>(Long_t& dest);
+ CP::TDbiInRowStream& operator>>(ULong_t& dest);
+ CP::TDbiInRowStream& operator>>(Float_t& dest);
+ CP::TDbiInRowStream& operator>>(Double_t& dest);
+ CP::TDbiInRowStream& operator>>(string& dest);
+ CP::TDbiInRowStream& operator>>(CP::TVldTimeStamp& dest);
 
   Bool_t FetchRow();
 

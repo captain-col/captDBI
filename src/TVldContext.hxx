@@ -1,5 +1,5 @@
 /**
- * \class ND::TVldContext
+ * \class CP::TVldContext
  *
  * \ingroup Validity
  *
@@ -32,7 +32,7 @@
 // make the TVldContext cout'able
 #include <iosfwd>
 
-namespace ND {
+namespace CP {
 class TVldContext;
 
 class TVldContext : public TObject {
@@ -40,10 +40,10 @@ class TVldContext : public TObject {
  public:
 
    TVldContext();                        // necessary for streamer io
-   TVldContext(const ND::TEventContext& context);
-   TVldContext(const ND::DbiDetector::Detector_t &detector,
-              const ND::DbiSimFlag::SimFlag_t mcflag,
-              const ND::TVldTimeStamp &time);
+   TVldContext(const CP::TEventContext& context);
+   TVldContext(const CP::DbiDetector::Detector_t &detector,
+              const CP::DbiSimFlag::SimFlag_t mcflag,
+              const CP::TVldTimeStamp &time);
    virtual ~TVldContext();
 
    /// Return a formatted string of the contents of this object
@@ -51,9 +51,9 @@ class TVldContext : public TObject {
    /// statically allocated string.
    const char* AsString(Option_t *option = "") const;
 
-   ND::DbiDetector::Detector_t     GetDetector()  const { return fDetector;}
-   ND::DbiSimFlag::SimFlag_t       GetSimFlag()   const { return fSimFlag;}
-   ND::TVldTimeStamp             GetTimeStamp() const { return fTimeStamp;}
+   CP::DbiDetector::Detector_t     GetDetector()  const { return fDetector;}
+   CP::DbiSimFlag::SimFlag_t       GetSimFlag()   const { return fSimFlag;}
+   CP::TVldTimeStamp             GetTimeStamp() const { return fTimeStamp;}
 
    /// Return true if this was initialized by default ctor
    /// we can only test detector type and simflag
@@ -76,22 +76,22 @@ class TVldContext : public TObject {
    //   TVldContext& operator=(const TObject &rhs);
    //   TVldContext& operator=(const TVldContext &tf);
 
-   ND::DbiDetector::Detector_t       fDetector;
-   ND::DbiSimFlag::SimFlag_t         fSimFlag;
-   ND::TVldTimeStamp               fTimeStamp;
+   CP::DbiDetector::Detector_t       fDetector;
+   CP::DbiSimFlag::SimFlag_t         fSimFlag;
+   CP::TVldTimeStamp               fTimeStamp;
 
  private:
 
-   ClassDef(ND::TVldContext,2)  // ND::TVldTimeStamp+Detector+SimFlag
+   ClassDef(CP::TVldContext,2)  // CP::TVldTimeStamp+Detector+SimFlag
 
 };
-}; std::ostream& operator<<(std::ostream& os, const ND::TVldContext& vldts);
+}; std::ostream& operator<<(std::ostream& os, const CP::TVldContext& vldts);
 
 #ifndef __CINT__
 //=============================================================================
 // Implementation details -- inlines need to be hidden from CINT
 //=============================================================================
-inline Bool_t ND::operator< (const ND::TVldContext &lhs, const ND::TVldContext &rhs)
+inline Bool_t CP::operator< (const CP::TVldContext &lhs, const CP::TVldContext &rhs)
 { 
    // sorting is a little tricky with three fields
    // this sorts first by time then detector then simflag
@@ -106,7 +106,7 @@ inline Bool_t ND::operator< (const ND::TVldContext &lhs, const ND::TVldContext &
    return false;
 }
 
-inline Bool_t ND::operator==(const ND::TVldContext &lhs, const ND::TVldContext &rhs)
+inline Bool_t CP::operator==(const CP::TVldContext &lhs, const CP::TVldContext &rhs)
 { 
    // equal if all components match
    return 
@@ -115,7 +115,7 @@ inline Bool_t ND::operator==(const ND::TVldContext &lhs, const ND::TVldContext &
      lhs.fTimeStamp == rhs.fTimeStamp;
 }
 
-inline Bool_t ND::operator!=(const ND::TVldContext &lhs, const ND::TVldContext &rhs)
+inline Bool_t CP::operator!=(const CP::TVldContext &lhs, const CP::TVldContext &rhs)
 { 
    // not equal if any component doesn't match
    return 
@@ -124,29 +124,29 @@ inline Bool_t ND::operator!=(const ND::TVldContext &lhs, const ND::TVldContext &
      lhs.fTimeStamp != rhs.fTimeStamp;
 }
 
-inline Bool_t ND::operator<=(const ND::TVldContext &lhs, const ND::TVldContext &rhs)
+inline Bool_t CP::operator<=(const CP::TVldContext &lhs, const CP::TVldContext &rhs)
 {
   return (lhs<rhs) || (lhs==rhs);
 }
 
-inline Bool_t ND::operator>(const ND::TVldContext &lhs, const ND::TVldContext &rhs)
+inline Bool_t CP::operator>(const CP::TVldContext &lhs, const CP::TVldContext &rhs)
 {
   return !(lhs<rhs) && !(lhs==rhs);
 }
 
-inline Bool_t ND::operator>=(const ND::TVldContext &lhs, const ND::TVldContext &rhs)
+inline Bool_t CP::operator>=(const CP::TVldContext &lhs, const CP::TVldContext &rhs)
 {
   return !(lhs<rhs);
 }
 
-inline ND::TVldContext::TVldContext() 
-  :  fDetector(ND::DbiDetector::kUnknown), 
-     fSimFlag(ND::DbiSimFlag::kUnknown), 
+inline CP::TVldContext::TVldContext() 
+  :  fDetector(CP::DbiDetector::kUnknown), 
+     fSimFlag(CP::DbiSimFlag::kUnknown), 
      fTimeStamp() {
    // Default constructor (unknown detector, simflag, timestamp=now)
 }
 
-inline ND::TVldContext::~TVldContext() { ; }
+inline CP::TVldContext::~TVldContext() { ; }
 
 #endif /* __CINT__ */
 #endif // VLDCONTEXT_H

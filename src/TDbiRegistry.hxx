@@ -2,7 +2,7 @@
  *
  *
  *
- * \class ND::TDbiRegistry
+ * \class CP::TDbiRegistry
  *
  *
  * \brief Type safe heterogenous collection of key value pairs. 
@@ -29,7 +29,7 @@ class type_info;
 
 #include "TDbiRegistryItemXxx.hxx"    //Needed for LinkDef
 
-namespace ND {
+namespace CP {
 class TDbiRegistry : public TNamed
 {
 public:
@@ -145,7 +145,7 @@ public:
     /// prints warning message.  Use above Get() methods for a safer
     /// access method.
     double      GetDouble(const char* key) const;
-     /// Access an ND::TDbiRegistry value.  Returns value if key lookup succeeds, else
+     /// Access an CP::TDbiRegistry value.  Returns value if key lookup succeeds, else
     /// prints warning message.  Use above Get() methods for a safer
     /// access method.
     TDbiRegistry    GetTDbiRegistry(const char* key) const;
@@ -189,11 +189,11 @@ private:
 #endif
     bool fDirty;
 
-    ClassDef(ND::TDbiRegistry,1)
+    ClassDef(CP::TDbiRegistry,1)
 };                              // end of class TDbiRegistry
 }
 
-inline std::ostream& operator<<(std::ostream& os, const ND::TDbiRegistry& r) { return r.PrintStream(os); }
+inline std::ostream& operator<<(std::ostream& os, const CP::TDbiRegistry& r) { return r.PrintStream(os); }
 
 
 #include "TDbiRegistryItemXxx.hxx"

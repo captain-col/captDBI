@@ -1,3 +1,3 @@
 #ifdef __CINT__
-#pragma link C++ class ND::TDbiRowStream;
+#pragma link C++ class CP::TDbiRowStream;
 #endif

@@ -4,7 +4,7 @@
 /**
  *
  *
- * \class ND::TDbiSqlValPacket
+ * \class CP::TDbiSqlValPacket
  *
  *
  * \brief
@@ -36,15 +36,15 @@ using std::string;
 #include "TDbiTableProxy.hxx"
 #include "TVldTimeStamp.hxx"
 
-namespace ND {
+namespace CP {
 class TDbiTableRow;
 class TDbiValidityRec;
 }
-namespace ND {
+namespace CP {
 class TVldRange;
 };
 
-namespace ND {
+namespace CP {
 class TDbiSqlValPacket
 {
 
@@ -77,7 +77,7 @@ public:
         UInt_t GetNumErrors() const { return fNumErrors; }
         UInt_t GetNumSqlStmts() const { return fNumStmts; }
         UInt_t GetSeqNo() const { return fSeqNo; }
-  ND::TVldTimeStamp GetCreationDate() const { return fCreationDate; }
+  CP::TVldTimeStamp GetCreationDate() const { return fCreationDate; }
 	string GetStmt(UInt_t stmtNo) const;
 	std::vector<string> GetStmtValues(UInt_t stmtNo) const;
  const string& GetTableName() const{ return fTableName; }
@@ -94,10 +94,10 @@ public:
 
 //  Reconstruct.	
           void Recreate(const string& tableName,
-                        const ND::TVldRange& vr,
+                        const CP::TVldRange& vr,
                         Int_t aggNo,
                         TDbi::Task task = 0,
-                        ND::TVldTimeStamp creationDate = ND::TVldTimeStamp());
+                        CP::TVldTimeStamp creationDate = CP::TVldTimeStamp());
         Bool_t AddDataRow(const TDbiTableProxy& tblProxy,
                           const TDbiValidityRec* vrec,
                           const TDbiTableRow& row);
@@ -105,7 +105,7 @@ public:
 //  State changing member functions
 	  void Clear() { this->Reset(); fNumErrors = 0; }
           void SetEpoch(UInt_t epoch);
-          void SetCreationDate(ND::TVldTimeStamp ts);
+          void SetCreationDate(CP::TVldTimeStamp ts);
           void SetSeqNo(UInt_t seqno);
           void Reset();  //Doesn't clear fNumErrors.
 
@@ -151,7 +151,7 @@ private:
   string fTableName;
 
 /// Creation date, or object creation date if unfilled.
-  ND::TVldTimeStamp fCreationDate;
+  CP::TVldTimeStamp fCreationDate;
 
  ClassDef(TDbiSqlValPacket,0)           // SQL to generate Validity Packet.
 

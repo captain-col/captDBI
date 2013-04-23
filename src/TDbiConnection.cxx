@@ -26,7 +26,7 @@ using std::ostringstream;
 
 #include <TDbiLog.hxx>
 
-ClassImp(ND::TDbiConnection)
+ClassImp(CP::TDbiConnection)
 
 
 //   Definition of static data members
@@ -39,8 +39,8 @@ ClassImp(ND::TDbiConnection)
 //    -  ordered: ctors, dtor, operators then in alphabetical order.
 
 //.....................................................................
-//      Throws ND::EBadConnection() if can not make connection
-ND::TDbiConnection::TDbiConnection(const std::string& url      /* = "" */,
+//      Throws CP::EBadConnection() if can not make connection
+CP::TDbiConnection::TDbiConnection(const std::string& url      /* = "" */,
                              const std::string& user     /* = "" */,
                              const std::string& password /* = "" */,
 			     int maxConnects) :
@@ -59,7 +59,7 @@ fServer(0)
 
   fMaxConnectionAttempts = maxConnects;
 
-  DbiTrace( "Creating ND::TDbiConnection" << "  ");
+  DbiTrace( "Creating CP::TDbiConnection" << "  ");
 
   if ( this->Open() ) {
     DbiInfo(  "Successfully opened connection to: " << this->GetUrl() << "  ");
@@ -107,7 +107,7 @@ fServer(0)
     }
     if ( ! fUrlValidated ) {
       DbiSevere( "FATAL: " << "Aborting due to above errors" << "  ");
-      throw ND::EBadConnection();
+      throw CP::EBadConnection();
     }
    fDbName = fUrl.GetFile();
   
@@ -116,13 +116,13 @@ fServer(0)
 
 //.....................................................................
 
-ND::TDbiConnection::~TDbiConnection() {
+CP::TDbiConnection::~TDbiConnection() {
 //
 //
 //  Purpose: Destructor
 
 
-  DbiTrace( "Destroying ND::TDbiConnection" << "  ");
+  DbiTrace( "Destroying CP::TDbiConnection" << "  ");
   this->Close(true);
 
 }
@@ -133,7 +133,7 @@ ND::TDbiConnection::~TDbiConnection() {
 ///
 ///  Return:  true if connection now closed.
 ///\endverbatim
-Bool_t ND::TDbiConnection::Close(Bool_t force /* = false */ ) {
+Bool_t CP::TDbiConnection::Close(Bool_t force /* = false */ ) {
 
   this->ClearExceptionLog();
   if ( this->IsClosed() ) return true;
@@ -162,7 +162,7 @@ Bool_t ND::TDbiConnection::Close(Bool_t force /* = false */ ) {
 ///
 ///  Purpose:  Close idle connection. Idle means there are no active connections to this database.
 
-void ND::TDbiConnection::CloseIdleConnection() {
+void CP::TDbiConnection::CloseIdleConnection() {
 
   if ( fIsTemporary &&  fNumConnectedStatements == 0 ) this->Close();
 
@@ -177,7 +177,7 @@ void ND::TDbiConnection::CloseIdleConnection() {
 ///  Return:    Statement - Caller must take ownership.
 ///             will be 0 if failure.
 ///\endverbatim
-TSQLStatement* ND::TDbiConnection::CreatePreparedStatement(const std::string& sql) {
+TSQLStatement* CP::TDbiConnection::CreatePreparedStatement(const std::string& sql) {
 
   TSQLStatement* stmt = 0;
   if ( ! this->Open() ) return stmt;
@@ -197,21 +197,21 @@ TSQLStatement* ND::TDbiConnection::CreatePreparedStatement(const std::string& sq
 ///  Return:    Server ( = 0 if connection not open).
 ///
 ///  WARNING:  The server returned remains is being borrowed from the
-///            ND::TDbiConnection and remains under its ownership and must
+///            CP::TDbiConnection and remains under its ownership and must
 ///            not be deleted.  However the caller must invoke the
-///            Connect() method on this ND::TDbiConnection before borrowing
+///            Connect() method on this CP::TDbiConnection before borrowing
 ///            it and must invoke the DisConnect() when it has finished
-///            using it to ensure the ND::TDbiConnection does not close it
+///            using it to ensure the CP::TDbiConnection does not close it
 ///            prematurely i.e.:-
 ///
-///            void Demo(ND::TDbiConnection* con) {
+///            void Demo(CP::TDbiConnection* con) {
 ///              con->Connect();
 ///              TSQLServer* server = con->GetServer();
 ///              // Do stuff
 ///              con->DisConnect();
 ///            }
 ///\endverbatim
-TSQLServer* ND::TDbiConnection::GetServer() {
+TSQLServer* CP::TDbiConnection::GetServer() {
 
 
   if ( ! this->Open() ) return 0;
@@ -226,12 +226,12 @@ TSQLServer* ND::TDbiConnection::GetServer() {
 ///       value or make a copy of it before any subsequent call to this
 ///       function.
 ///\endverbatim
-const std::string& ND::TDbiConnection::GetUrl() const {
+const std::string& CP::TDbiConnection::GetUrl() const {
 
   
 
   static std::string url;
-  url = const_cast<ND::TDbiConnection*>(this)->fUrl.GetUrl();
+  url = const_cast<CP::TDbiConnection*>(this)->fUrl.GetUrl();
   return url;
 
 }
@@ -241,7 +241,7 @@ const std::string& ND::TDbiConnection::GetUrl() const {
 ///  Purpose:  Open connection if necessary.
 ///
 
-Bool_t ND::TDbiConnection::Open() {
+Bool_t CP::TDbiConnection::Open() {
 
   this->ClearExceptionLog();
   if ( ! this->IsClosed() ) return true;
@@ -284,8 +284,8 @@ Bool_t ND::TDbiConnection::Open() {
       TString ascii_file = fUrl.GetAnchor();
       if ( ascii_file.IsNull() ) return true;
       gSystem->Setenv("DBI_CATALOGUE_PATH",gSystem->DirName(fUrl.GetAnchor()));
-      ND::TDbiAsciiDbImporter importer(ascii_file,fServer);
-      const ND::TDbiExceptionLog& el(importer.GetExceptionLog());
+      CP::TDbiAsciiDbImporter importer(ascii_file,fServer);
+      const CP::TDbiExceptionLog& el(importer.GetExceptionLog());
       if ( ! el.IsEmpty() ) {
         DbiSevere( "Failed to populate ASCII database from " << fUrl.GetUrl() << "\n"
 			       << el << "  ");
@@ -293,7 +293,7 @@ Bool_t ND::TDbiConnection::Open() {
         fServer = 0;
         return false;
       }
-      fIsTemporary = ND::TDbiServices::AsciiDBConectionsTemporary();
+      fIsTemporary = CP::TDbiServices::AsciiDBConectionsTemporary();
       // Add imported tables names.
       const std::list<std::string> tableNames(importer.GetImportedTableNames());
       std::list<std::string>::const_iterator itr(tableNames.begin()), itrEnd(tableNames.end());
@@ -321,7 +321,7 @@ Bool_t ND::TDbiConnection::Open() {
 ///
 ///  Return:    kTRUE if warnings have occurred
 ///\endverbatim
-Bool_t ND::TDbiConnection::PrintExceptionLog(Int_t level) const {
+Bool_t CP::TDbiConnection::PrintExceptionLog(Int_t level) const {
 
   switch(level)
   {
@@ -346,7 +346,7 @@ Bool_t ND::TDbiConnection::PrintExceptionLog(Int_t level) const {
 ///
 ///  Purpose:  Record an exception that has occurred while a client was using its TSQLServer.
 
-void  ND::TDbiConnection::RecordException() {
+void  CP::TDbiConnection::RecordException() {
 
   fExceptionLog.AddEntry(*fServer);
 
@@ -358,7 +358,7 @@ void  ND::TDbiConnection::RecordException() {
 ///
 ///  Note: If tableName is null refresh list from the database.
 ///\enbdverbatim
-void  ND::TDbiConnection::SetTableExists(const std::string& tableName) {
+void  CP::TDbiConnection::SetTableExists(const std::string& tableName) {
 
   if ( tableName == "" ) {
     TSQLStatement* stmt =  CreatePreparedStatement("show tables");
@@ -385,7 +385,7 @@ void  ND::TDbiConnection::SetTableExists(const std::string& tableName) {
 
 //.....................................................................
 ///  Purpose: Check to see table exists in connected database.
-Bool_t  ND::TDbiConnection::TableExists(const std::string& tableName) const {
+Bool_t  CP::TDbiConnection::TableExists(const std::string& tableName) const {
 //
 
   std::string test("'");
@@ -412,7 +412,7 @@ Bool_t  ND::TDbiConnection::TableExists(const std::string& tableName) const {
 ///
 ///  \author Simon Claret t2kcompute@comp.nd280.org
 
-bool ND::TDbiConnection::SupportsTmpTbls() {  
+bool CP::TDbiConnection::SupportsTmpTbls() {  
   bool retVal = false;
   TSQLStatement* stmt = CreatePreparedStatement("CREATE TEMPORARY TABLE TEST_TDbiConnection_SupportsTmpTbls ( id integer );");
   

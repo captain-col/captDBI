@@ -4,11 +4,11 @@
 /**
  *
  *
- * \class ND::TDbiResultSetNonAgg
+ * \class CP::TDbiResultSetNonAgg
  *
  *
  * \brief 
- * <b>Concept</b>  ResultNonAgg is a concrete sub-class ND::of TDbiResultSet
+ * <b>Concept</b>  ResultNonAgg is a concrete sub-class CP::of TDbiResultSet
  *   that represents a single database query for a non-aggregated table.
  *
  * <b>Purpose</b> See TDbiResultSet.
@@ -28,13 +28,13 @@ using std::vector;
 
 #include "TDbiResultSet.hxx"
 
-namespace ND {
+namespace CP {
 class TDbiBinaryFile;
 class TDbiInRowStream;
 class TDbiTableRow;
 }
 
-namespace ND {
+namespace CP {
 class TDbiResultSetNonAgg : public TDbiResultSet
 
 {

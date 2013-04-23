@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////
 // $Id: TDbiRollbackDates.cxx,v 1.1 2011/01/18 05:49:20 finch Exp $
 //
-// ND::TDbiRollbackDates
+// CP::TDbiRollbackDates
 
 #include <cstring>
 
@@ -16,7 +16,7 @@ using std::endl;
 #include "UtilString.hxx"
 #include "TVldTimeStamp.hxx"
 
-ClassImp(ND::TDbiRollbackDates)
+ClassImp(CP::TDbiRollbackDates)
 
 //   Definition of static data members
 //   *********************************
@@ -28,7 +28,7 @@ ClassImp(ND::TDbiRollbackDates)
 
 //.....................................................................
 
-ND::TDbiRollbackDates::TDbiRollbackDates()
+CP::TDbiRollbackDates::TDbiRollbackDates()
 {
 //
 //
@@ -39,7 +39,7 @@ ND::TDbiRollbackDates::TDbiRollbackDates()
 //  Specification:-
 //  =============
 //
-//  o Create ND::TDbiRollbackDates.
+//  o Create CP::TDbiRollbackDates.
 
 
 //  Program Notes:-
@@ -48,11 +48,11 @@ ND::TDbiRollbackDates::TDbiRollbackDates()
 //  None.
 
 
-    DbiTrace( "Creating ND::TDbiRollbackDates" << "  ");
+    DbiTrace( "Creating CP::TDbiRollbackDates" << "  ");
 }
 //.....................................................................
 
-ND::TDbiRollbackDates::~TDbiRollbackDates() {
+CP::TDbiRollbackDates::~TDbiRollbackDates() {
 //
 //
 //  Contact:   N. West
@@ -60,16 +60,16 @@ ND::TDbiRollbackDates::~TDbiRollbackDates() {
 //  Specification:-
 //  =============
 //
-//  o  Destroy ND::TDbiRollbackDates.
+//  o  Destroy CP::TDbiRollbackDates.
 
 
 
-  DbiTrace( "Destroying ND::TDbiRollbackDates" << "  ");
+  DbiTrace( "Destroying CP::TDbiRollbackDates" << "  ");
 
 }
 //.....................................................................
 
-const std::string& ND::TDbiRollbackDates::GetDate(const std::string& tableName) const {
+const std::string& CP::TDbiRollbackDates::GetDate(const std::string& tableName) const {
 //
 //
 //  Purpose:  Return rollback date associated with named table.
@@ -87,13 +87,13 @@ const std::string& ND::TDbiRollbackDates::GetDate(const std::string& tableName) 
   name_map_t::const_reverse_iterator itr    = fTableToDate.rbegin();
   name_map_t::const_reverse_iterator itrEnd = fTableToDate.rend();
   for (; itr != itrEnd; ++itr)
-    if ( ! ND::UtilString::cmp_wildcard(tableName,itr->first)
+    if ( ! CP::UtilString::cmp_wildcard(tableName,itr->first)
        ) return itr->second;
   return date;
 }
 //.....................................................................
 
-const std::string& ND::TDbiRollbackDates::GetType(const std::string& tableName) const {
+const std::string& CP::TDbiRollbackDates::GetType(const std::string& tableName) const {
 //
 //
 //  Purpose:  Return rollback time type associated with named table.
@@ -111,13 +111,13 @@ const std::string& ND::TDbiRollbackDates::GetType(const std::string& tableName) 
   name_map_t::const_reverse_iterator itr    = fTableToType.rbegin();
   name_map_t::const_reverse_iterator itrEnd = fTableToType.rend();
   for (; itr != itrEnd; ++itr)
-    if ( ! ND::UtilString::cmp_wildcard(tableName,itr->first)
+    if ( ! CP::UtilString::cmp_wildcard(tableName,itr->first)
        ) return itr->second;
   return type;
 }
 //.....................................................................
 
-void ND::TDbiRollbackDates::Set(TDbiRegistry& reg) {
+void CP::TDbiRollbackDates::Set(TDbiRegistry& reg) {
 //
 //
 //  Purpose:  Extract Rollback dates from TDbiRegistry.
@@ -199,7 +199,7 @@ void ND::TDbiRollbackDates::Set(TDbiRegistry& reg) {
 }
 //.....................................................................
 
-void ND::TDbiRollbackDates::Show() const {
+void CP::TDbiRollbackDates::Show() const {
 //
 //
 //  Purpose:  Print out the current Rollback date status.
@@ -240,7 +240,7 @@ void ND::TDbiRollbackDates::Show() const {
 
 //.....................................................................
 
-ND::TDbiRollbackDates:: {
+CP::TDbiRollbackDates:: {
 //
 //
 //  Purpose:

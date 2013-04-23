@@ -1,9 +1,9 @@
 ////////////////////////////////////////////////////////////////////////////
 // $Id: TVldContext.cxx,v 1.1 2011/01/18 05:49:20 finch Exp $
 //
-// ND::TVldContext
+// CP::TVldContext
 //
-// ND::TVldContext is tag for identifying the required "context" when
+// CP::TVldContext is tag for identifying the required "context" when
 // interfacing with the DBI
 //
 // Author:  R. Hatcher 2000.05.03
@@ -17,10 +17,10 @@
 using std::endl;
 //CVSID("$Id: TVldContext.cxx,v 1.1 2011/01/18 05:49:20 finch Exp $");
 
-ClassImp(ND::TVldContext)
+ClassImp(CP::TVldContext)
 
 //_____________________________________________________________________________
-std::ostream& operator<<(std::ostream& os, const ND::TVldContext& vldc)
+std::ostream& operator<<(std::ostream& os, const CP::TVldContext& vldc)
 {
    if (os.good()) {
       if (os.tie()) os.tie()->flush(); // instead of opfx
@@ -32,25 +32,25 @@ std::ostream& operator<<(std::ostream& os, const ND::TVldContext& vldc)
 }
 
 //_____________________________________________________________________________
-ND::TVldContext::TVldContext(const ND::TEventContext& context)
-  : fDetector(ND::DbiDetector::kNear), fSimFlag(ND::DbiSimFlag::kData), fTimeStamp(context.GetTimeStamp(),0)
+CP::TVldContext::TVldContext(const CP::TEventContext& context)
+  : fDetector(CP::DbiDetector::kNear), fSimFlag(CP::DbiSimFlag::kData), fTimeStamp(context.GetTimeStamp(),0)
 {
    // constructor from T2K context
-   if(context.GetPartition() & ND::TEventContext::kMCData)
-      fSimFlag = ND::DbiSimFlag::kMC;
+   if(context.GetPartition() & CP::TEventContext::kMCData)
+      fSimFlag = CP::DbiSimFlag::kMC;
 }
 
 //_____________________________________________________________________________
-ND::TVldContext::TVldContext(const ND::DbiDetector::Detector_t &detector,
-                       const ND::DbiSimFlag::SimFlag_t mcFlag,
-                       const ND::TVldTimeStamp &tstamp)
+CP::TVldContext::TVldContext(const CP::DbiDetector::Detector_t &detector,
+                       const CP::DbiSimFlag::SimFlag_t mcFlag,
+                       const CP::TVldTimeStamp &tstamp)
    : fDetector(detector), fSimFlag(mcFlag), fTimeStamp(tstamp)
 {
    // normal constructor
 }
 
 //_____________________________________________________________________________
-const char* ND::TVldContext::AsString(Option_t *option) const
+const char* CP::TVldContext::AsString(Option_t *option) const
 {
    // Return a formatted string of the contents of this object
    // User should copy result because it points to a
@@ -62,14 +62,14 @@ const char* ND::TVldContext::AsString(Option_t *option) const
    case 'c':
    case 'C':
      sprintf(newstring,"{%c%c %s}",
-             ND::DbiDetector::AsString(GetDetector())[0],
-             ND::DbiSimFlag::AsString(GetSimFlag())[0],
+             CP::DbiDetector::AsString(GetDetector())[0],
+             CP::DbiSimFlag::AsString(GetSimFlag())[0],
              fTimeStamp.AsString("c"));
      break;
    default:
      sprintf(newstring,"{%6.6s|%6.6s|%s}",
-             ND::DbiDetector::AsString(GetDetector()),
-             ND::DbiSimFlag::AsString(GetSimFlag()),
+             CP::DbiDetector::AsString(GetDetector()),
+             CP::DbiSimFlag::AsString(GetSimFlag()),
              fTimeStamp.AsString("c"));
    }
 
@@ -77,7 +77,7 @@ const char* ND::TVldContext::AsString(Option_t *option) const
 }
 
 //_____________________________________________________________________________
-void ND::TVldContext::Print(Option_t *option) const
+void CP::TVldContext::Print(Option_t *option) const
 {
    // Print this object
 
@@ -86,11 +86,11 @@ void ND::TVldContext::Print(Option_t *option) const
 }
 
 //_____________________________________________________________________________
-Bool_t ND::TVldContext::IsNull() const
+Bool_t CP::TVldContext::IsNull() const
 {
    // Return true if this was initialized by default ctor
    // we can only test detector type and simflag
-   return fDetector==ND::DbiDetector::kUnknown && fSimFlag == ND::DbiSimFlag::kUnknown;
+   return fDetector==CP::DbiDetector::kUnknown && fSimFlag == CP::DbiSimFlag::kUnknown;
 
 }
 

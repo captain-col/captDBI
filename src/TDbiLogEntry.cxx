@@ -21,7 +21,7 @@
 using std::endl;
 
 
-ClassImp(ND::TDbiLogEntry)
+ClassImp(CP::TDbiLogEntry)
 
 
 //   Definition of static data members
@@ -32,10 +32,10 @@ ClassImp(ND::TDbiLogEntry)
 //  ********************************************************
 
 #include "TDbiResultSetHandle.tpl"
-template class  ND::TDbiResultSetHandle<ND::TDbiLogEntry>;
+template class  CP::TDbiResultSetHandle<CP::TDbiLogEntry>;
 
 #include "TDbiWriter.tpl"
-template class  ND::TDbiWriter<ND::TDbiLogEntry>;
+template class  CP::TDbiWriter<CP::TDbiLogEntry>;
 
 //    Definition of all member functions (static or otherwise)
 //    *******************************************************
@@ -44,7 +44,7 @@ template class  ND::TDbiWriter<ND::TDbiLogEntry>;
 
 //.....................................................................
 
-ND::TDbiLogEntry::TDbiLogEntry(const string& tableName, /* = "" */
+CP::TDbiLogEntry::TDbiLogEntry(const string& tableName, /* = "" */
                          const string& reason,    /* = "" */
 	                 Int_t detMask,           /* = full mask */
 	                 Int_t simMask,           /* = full mask */
@@ -86,7 +86,7 @@ fHostName(gSystem->HostName())
 }
 //.....................................................................
 
-ND::TDbiLogEntry::~TDbiLogEntry() {
+CP::TDbiLogEntry::~TDbiLogEntry() {
 //
 //
 //  Purpose:  Destructor
@@ -95,7 +95,7 @@ ND::TDbiLogEntry::~TDbiLogEntry() {
 }
 //.....................................................................
 
-std::ostream& operator<<(ostream& s, const ND::TDbiLogEntry& logEntry) {
+std::ostream& operator<<(ostream& s, const CP::TDbiLogEntry& logEntry) {
 //
 //
 //  Purpose:  Output Log Entry to message stream.
@@ -118,7 +118,7 @@ std::ostream& operator<<(ostream& s, const ND::TDbiLogEntry& logEntry) {
 
 //  None.
 
-  s << "ND::TDbiLogEntry: Table  " << logEntry.GetLogTableName();
+  s << "CP::TDbiLogEntry: Table  " << logEntry.GetLogTableName();
   if ( logEntry.GetLogSeqNoMin() ==  logEntry.GetLogSeqNoMax() )
     s << " SEQNO: " << logEntry.GetLogSeqNoMin();
   else
@@ -141,8 +141,8 @@ std::ostream& operator<<(ostream& s, const ND::TDbiLogEntry& logEntry) {
 
 //.....................................................................
 
-void ND::TDbiLogEntry::Fill(ND::TDbiInRowStream& rs,
-		       const ND::TDbiValidityRec* vrec) {
+void CP::TDbiLogEntry::Fill(CP::TDbiInRowStream& rs,
+		       const CP::TDbiValidityRec* vrec) {
 //
 //
 //  Purpose:  Fill oject from Result Set
@@ -167,7 +167,7 @@ void ND::TDbiLogEntry::Fill(ND::TDbiInRowStream& rs,
 
 //.....................................................................
 
-void ND::TDbiLogEntry::Recreate(const string& tableName, /* = "" */
+void CP::TDbiLogEntry::Recreate(const string& tableName, /* = "" */
                            const string& reason,    /* = "" */
 	                   Int_t detMask,           /* = full mask */
 	                   Int_t simMask,           /* = full mask */
@@ -182,8 +182,8 @@ void ND::TDbiLogEntry::Recreate(const string& tableName, /* = "" */
 
   if (    fSeqNo > 0
        && ( tableName    == ""                       || tableName   == fLogTableName )
-       && ( detMask      == ND::DbiDetector::FullMask()     || detMask     == fLogDetMask )
-       && ( simMask      == ND::DbiSimFlag::FullMask()      || simMask     == fLogSimMask )
+       && ( detMask      == CP::DbiDetector::FullMask()     || detMask     == fLogDetMask )
+       && ( simMask      == CP::DbiSimFlag::FullMask()      || simMask     == fLogSimMask )
        && ( task         == 0                        || task        == fLogTask )
        && ( logSeqNoMin  == 0                        || logSeqNoMin ==  fLogSeqNoMin)
        && ( logSeqNoMax  == 0                        || logSeqNoMax == fLogSeqNoMax )
@@ -209,7 +209,7 @@ void ND::TDbiLogEntry::Recreate(const string& tableName, /* = "" */
 
 //.....................................................................
 
-void ND::TDbiLogEntry::SetReason(const string& reason) {
+void CP::TDbiLogEntry::SetReason(const string& reason) {
 //
 //
 //  Purpose: Set reason.
@@ -252,20 +252,20 @@ void ND::TDbiLogEntry::SetReason(const string& reason) {
 
 //.....................................................................
 
-void ND::TDbiLogEntry::SetServerName() {
+void CP::TDbiLogEntry::SetServerName() {
 //
 //
 //  Purpose: Set DB Server name from cascade number.
 
-  string urlStr = ND::TDbiDatabaseManager::Instance().GetCascader().GetURL(fDbNo);
+  string urlStr = CP::TDbiDatabaseManager::Instance().GetCascader().GetURL(fDbNo);
   TUrl url(urlStr.c_str());
   fServerName = url.GetHost();
 
 }
 //.....................................................................
 
-void ND::TDbiLogEntry::Store(ND::TDbiOutRowStream& ors,
-                         const ND::TDbiValidityRec* /* vrec */) const {
+void CP::TDbiLogEntry::Store(CP::TDbiOutRowStream& ors,
+                         const CP::TDbiValidityRec* /* vrec */) const {
 //
 //
 //  Purpose:  Stream object to output row stream
@@ -283,7 +283,7 @@ void ND::TDbiLogEntry::Store(ND::TDbiOutRowStream& ors,
 
 //.....................................................................
 
-Bool_t ND::TDbiLogEntry::Write(UInt_t dbNo,
+Bool_t CP::TDbiLogEntry::Write(UInt_t dbNo,
                           Int_t logSeqNo)     /* =0 */ {
 //
 //
@@ -313,7 +313,7 @@ Bool_t ND::TDbiLogEntry::Write(UInt_t dbNo,
   }
 
   fDbNo = dbNo;
-  ND::TDbiTableProxy& tblProxy = ND::TDbiDatabaseManager::Instance()
+  CP::TDbiTableProxy& tblProxy = CP::TDbiDatabaseManager::Instance()
                             .GetTableProxy("DBILOGENTRY",this);
   bool replace = true;
 
@@ -328,12 +328,12 @@ Bool_t ND::TDbiLogEntry::Write(UInt_t dbNo,
     fSeqNo = seqNo;
   }
 
-  // Construct a ND::TDbiValidityRec.
-  ND::TVldRange     vr(fLogDetMask,fLogSimMask,fUpdateTime,fUpdateTime,"ND::TDbiLogEntry");
-  ND::TDbiValidityRec vrec(vr,fLogTask,-1,0);
+  // Construct a CP::TDbiValidityRec.
+  CP::TVldRange     vr(fLogDetMask,fLogSimMask,fUpdateTime,fUpdateTime,"CP::TDbiLogEntry");
+  CP::TDbiValidityRec vrec(vr,fLogTask,-1,0);
 
-  // Now build and output ND::TDbiSqlValPacket.
-  ND::TDbiSqlValPacket packet;
+  // Now build and output CP::TDbiSqlValPacket.
+  CP::TDbiSqlValPacket packet;
   packet.Recreate("DBILOGENTRY",
                   vrec.GetVldRange(),
                   -1,
@@ -348,7 +348,7 @@ Bool_t ND::TDbiLogEntry::Write(UInt_t dbNo,
 
 //.....................................................................
 
-ND::TDbiLogEntry:: {
+CP::TDbiLogEntry:: {
 //
 //
 //  Purpose:

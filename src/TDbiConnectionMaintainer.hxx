@@ -5,7 +5,7 @@
  *
  * $Id: TDbiConnectionMaintainer.hxx,v 1.1 2011/01/18 05:49:19 finch Exp $
  *
- * \class ND::TDbiConnectionMaintainer
+ * \class CP::TDbiConnectionMaintainer
  *
  *
  * \brief
@@ -21,11 +21,11 @@
  *
  */
 
-namespace ND {
+namespace CP {
 class TDbiCascader;
 }
 
-namespace ND {
+namespace CP {
 class TDbiConnectionMaintainer
 
 {

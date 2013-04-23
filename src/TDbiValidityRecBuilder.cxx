@@ -13,7 +13,7 @@
 using std::endl;
 #include "TVldContext.hxx"
 
-ClassImp(ND::TDbiValidityRecBuilder)
+ClassImp(CP::TDbiValidityRecBuilder)
 
 //   Definition of static data members
 //   *********************************
@@ -26,8 +26,8 @@ ClassImp(ND::TDbiValidityRecBuilder)
 
 //.....................................................................
 
-ND::TDbiValidityRecBuilder::TDbiValidityRecBuilder(const ND::TDbiDBProxy& proxy,
-                                             const ND::TVldContext& vc,
+CP::TDbiValidityRecBuilder::TDbiValidityRecBuilder(const CP::TDbiDBProxy& proxy,
+                                             const CP::TVldContext& vc,
                                              const TDbi::Task& task,
                                              Int_t selectDbNo     /* Default: -1 */,
                                              Bool_t findFullTimeWindow /* Default: true*/
@@ -55,8 +55,8 @@ fTask(task)
 //  =============
 //
 //  o Create ValidityRecBuilder by applying a validity query to
-//    the database table and building a set of ND::TDbiValidityRec
-//    objects from the resulting ND::TDbiInRowStream.
+//    the database table and building a set of CP::TDbiValidityRec
+//    objects from the resulting CP::TDbiInRowStream.
 //
 // o  Try each member of the cascade in turn until a query succeeds or the
 //    cascade is exhausted.
@@ -71,12 +71,12 @@ fTask(task)
 //  None.
 
 
-  DbiTrace( "Creating ND::TDbiValidityRecBuilder" << "  ");
+  DbiTrace( "Creating CP::TDbiValidityRecBuilder" << "  ");
 
-  ND::DbiDetector::Detector_t     det(vc.GetDetector());
-  ND::DbiSimFlag::SimFlag_t       sim(vc.GetSimFlag());
-  ND::TVldTimeStamp             ts(vc.GetTimeStamp());
-  ND::DbiSimFlag::SimFlag_t       simTry(sim);
+  CP::DbiDetector::Detector_t     det(vc.GetDetector());
+  CP::DbiSimFlag::SimFlag_t       sim(vc.GetSimFlag());
+  CP::TVldTimeStamp             ts(vc.GetTimeStamp());
+  CP::DbiSimFlag::SimFlag_t       simTry(sim);
   const string& tableName = proxy.GetTableName();
   Int_t sumTimeWindows = 0;
   Int_t numTimeWindows = 0;
@@ -90,14 +90,14 @@ fTask(task)
 //  Force aggregate -1 into first slot.
   this->AddNewGap(-1);
 
-  const ND::TVldTimeStamp curVTS = vc.GetTimeStamp();
+  const CP::TVldTimeStamp curVTS = vc.GetTimeStamp();
 
 // Check to see if table exists.
 
   unsigned int numVRecIn = 0;
 
   if ( ! proxy.TableExists() ) {
-       DbiWarn(  "ND::TDbiValidityRecBuilder::Query for table:"
+       DbiWarn(  "CP::TDbiValidityRecBuilder::Query for table:"
          << proxy.GetTableName()
          << ", table does not exist!" << "  ");
   }
@@ -120,36 +120,36 @@ fTask(task)
 
 //    Loop over all associated SimFlags.
 
-      ND::TDbiSimFlagAssociation::SimList_t simList
-                    = ND::TDbiSimFlagAssociation::Instance().Get(sim);
+      CP::TDbiSimFlagAssociation::SimList_t simList
+                    = CP::TDbiSimFlagAssociation::Instance().Get(sim);
 
-      ND::TDbiSimFlagAssociation::SimList_t::iterator listItr    = simList.begin();
-      ND::TDbiSimFlagAssociation::SimList_t::iterator listItrEnd = simList.end();
+      CP::TDbiSimFlagAssociation::SimList_t::iterator listItr    = simList.begin();
+      CP::TDbiSimFlagAssociation::SimList_t::iterator listItrEnd = simList.end();
       while ( listItr !=  listItrEnd && ! foundData ) {
 
         simTry = *listItr;
         ++listItr;
-        ND::TVldContext vcTry(det,simTry,ts);
+        CP::TVldContext vcTry(det,simTry,ts);
 
 //      Apply validity query and build result set.
 
-        ND::TDbiInRowStream* rs = proxy.QueryValidity(vcTry,fTask,dbNo);
+        CP::TDbiInRowStream* rs = proxy.QueryValidity(vcTry,fTask,dbNo);
 
 //      Build a result from the result set and drop result set.
 
-        ND::TDbiValidityRec tr;
-        ND::TDbiResultSetNonAgg result(rs,&tr,0,kFALSE);
+        CP::TDbiValidityRec tr;
+        CP::TDbiResultSetNonAgg result(rs,&tr,0,kFALSE);
         delete rs;
 
-//      Loop over all entries in ND::TDbiResultSet and, for each Aggregate,
+//      Loop over all entries in CP::TDbiResultSet and, for each Aggregate,
 //      find effective validity range of best, or of gap if none.
 
 //      Initialise lowest priority VLD to a gap. It will be used by FindTimeBoundaries.
-	const ND::TDbiValidityRec* lowestPriorityVrec = &fGap;
+	const CP::TDbiValidityRec* lowestPriorityVrec = &fGap;
 
         UInt_t numRows = result.GetNumRows();
         for (UInt_t row = 0; row < numRows; ++row) {
-          const ND::TDbiValidityRec* vr = dynamic_cast<const ND::TDbiValidityRec*>(
+          const CP::TDbiValidityRec* vr = dynamic_cast<const CP::TDbiValidityRec*>(
                                             result.GetTableRow(row));
 
           Int_t aggNo = vr->GetAggregateNo();
@@ -162,7 +162,7 @@ fTask(task)
 //        number by this record and see if we have found valid
 //        data yet.
 
-          ND::TDbiValidityRec& curRec = fVRecs[index];
+          CP::TDbiValidityRec& curRec = fVRecs[index];
           curRec.Trim(curVTS, *vr);
           if ( ! curRec.IsGap() ) {
             foundData = kTRUE;
@@ -179,7 +179,7 @@ fTask(task)
 
 //        Count the number used and sum the time windows
 	  ++numVRecIn;
-          const ND::TVldRange range = vr->GetVldRange();
+          const CP::TVldRange range = vr->GetVldRange();
           Int_t timeInterval =   range.GetTimeEnd().GetSec()
                                - range.GetTimeStart().GetSec();
           if ( timeInterval < 5 ) {
@@ -194,11 +194,11 @@ fTask(task)
 //      for the cascade and sim flag and trim all validity records
 //      and the default (gap) validity record.
         if ( findFullTimeWindow ) {
-          ND::TVldTimeStamp start, end;
+          CP::TVldTimeStamp start, end;
           proxy.FindTimeBoundaries(vcTry,fTask,dbNo,*lowestPriorityVrec,resolveByCreationDate,start,end);
      DbiDebug("Trimming validity records to "
     << start << " .. " << end << "  ");
-          std::vector<ND::TDbiValidityRec>::iterator itr(fVRecs.begin()), itrEnd(fVRecs.end());
+          std::vector<CP::TDbiValidityRec>::iterator itr(fVRecs.begin()), itrEnd(fVRecs.end());
           for( ; itr != itrEnd; ++itr ) itr->AndTimeWindow(start,end);
 	  fGap.AndTimeWindow(start,end);
         }
@@ -211,13 +211,13 @@ fTask(task)
 //  the tables will still have something - the aggno = -1 gap
 
 // If the associated SimFlag is different to the original request make
-// sure that all the ND::TDbiValidityRec are valid for the request.
+// sure that all the CP::TDbiValidityRec are valid for the request.
   if ( sim != simTry ) {
-    DbiLog( "Imposing SimFlag of " << sim << " on ND::TDbiValidityRecs which matched " << simTry << "  ");
+    DbiLog( "Imposing SimFlag of " << sim << " on CP::TDbiValidityRecs which matched " << simTry << "  ");
     for ( unsigned int irec = 0; irec < GetNumValidityRec(); ++irec ) {
-      ND::TDbiValidityRec& vrec = const_cast<ND::TDbiValidityRec&>(GetValidityRec(irec));
-      const ND::TVldRange& vr(vrec.GetVldRange());
-      ND::TVldRange vr_mod(vr.GetDetectorMask(),sim,vr.GetTimeStart(),vr.GetTimeEnd(),vr.GetDataSource());
+      CP::TDbiValidityRec& vrec = const_cast<CP::TDbiValidityRec&>(GetValidityRec(irec));
+      const CP::TVldRange& vr(vrec.GetVldRange());
+      CP::TVldRange vr_mod(vr.GetDetectorMask(),sim,vr.GetTimeStart(),vr.GetTimeEnd(),vr.GetDataSource());
       vrec.SetVldRange(vr_mod);
     }
   }
@@ -227,16 +227,16 @@ fTask(task)
  {
     std::ostream& msg=TDbiLog::GetLogStream();
 
-  msg << "ND::TDbiValidityRecBuilder:" << endl
+  msg << "CP::TDbiValidityRecBuilder:" << endl
       << " Query: " << vc.AsString() << endl
-      << " using associated SimFlag: " << ND::DbiSimFlag::AsString(simTry)
-      << " for " << ND::DbiSimFlag::AsString(sim)
+      << " using associated SimFlag: " << CP::DbiSimFlag::AsString(simTry)
+      << " for " << CP::DbiSimFlag::AsString(sim)
       << " found " << numVRecIn
       << " vrecs in database, for " << fVRecs.size()
       << " aggregates:-." << endl;
 
   for ( unsigned int irec = 0; irec < GetNumValidityRec(); ++irec ) {
-    const ND::TDbiValidityRec& vrec = GetValidityRec(irec);
+    const CP::TDbiValidityRec& vrec = GetValidityRec(irec);
     if ( vrec.GetAggregateNo() != -2
 	 )   msg << " " << irec << " " << GetValidityRec(irec) << endl;
   }
@@ -270,7 +270,7 @@ fTask(task)
 
 //.....................................................................
 
-ND::TDbiValidityRecBuilder::TDbiValidityRecBuilder(const ND::TDbiDBProxy& proxy,
+CP::TDbiValidityRecBuilder::TDbiValidityRecBuilder(const CP::TDbiDBProxy& proxy,
                                              const string& context,
                                              const TDbi::Task& task):
 fIsExtendedContext(kTRUE),
@@ -292,8 +292,8 @@ fTask(task)
 //  =============
 //
 //  o Create ValidityRecBuilder by applying a validity query to
-//    the database table and building a set of ND::TDbiValidityRec
-//    objects from the resulting ND::TDbiInRowStream.
+//    the database table and building a set of CP::TDbiValidityRec
+//    objects from the resulting CP::TDbiInRowStream.
 
 
 //  Program Notes:-
@@ -302,7 +302,7 @@ fTask(task)
 //  None.
 
 
-  DbiTrace( "Creating ND::TDbiValidityRecBuilder"
+  DbiTrace( "Creating CP::TDbiValidityRecBuilder"
 			    << " for extended context " << context << "  ");
 
 // Prime fVRecs with a gap that will not be used but makes the result
@@ -316,13 +316,13 @@ fTask(task)
   unsigned int numVRecIn = 0;
 
   if ( ! proxy.TableExists() ) {
-    DbiWarn(  "ND::TDbiValidityRecBuilder::Query for table:"
+    DbiWarn(  "CP::TDbiValidityRecBuilder::Query for table:"
          << proxy.GetTableName()
          << ", table does not exist!" << "  ");
   }
 
   else if ( context == "" ) {
-    DbiWarn(  "ND::TDbiValidityRecBuilder::Null query for table:"
+    DbiWarn(  "CP::TDbiValidityRecBuilder::Null query for table:"
          << proxy.GetTableName() << "  ");
   }
 
@@ -337,24 +337,24 @@ fTask(task)
 
 //    Apply validity query and build result set.
 
-      ND::TDbiInRowStream* rs = proxy.QueryValidity(context,fTask,dbNo);
+      CP::TDbiInRowStream* rs = proxy.QueryValidity(context,fTask,dbNo);
 
 //    Build a result from the result set and drop result set.
 
-      ND::TDbiValidityRec tr;
-      ND::TDbiResultSetNonAgg result(rs,&tr,0,kFALSE);
+      CP::TDbiValidityRec tr;
+      CP::TDbiResultSetNonAgg result(rs,&tr,0,kFALSE);
       delete rs;
 
-//    Loop over all entries in ND::TDbiResultSet and add them all to set.
+//    Loop over all entries in CP::TDbiResultSet and add them all to set.
 
       UInt_t numRows = result.GetNumRows();
       for (UInt_t row = 0; row < numRows; ++row) {
-        const ND::TDbiValidityRec* vr = dynamic_cast<const ND::TDbiValidityRec*>(
+        const CP::TDbiValidityRec* vr = dynamic_cast<const CP::TDbiValidityRec*>(
                                           result.GetTableRow(row));
 
 //      Cannot use AddNewAgg - aggregate numbers may be duplicated.
         Int_t index = fVRecs.size();
-        fVRecs.push_back(ND::TDbiValidityRec(*vr));
+        fVRecs.push_back(CP::TDbiValidityRec(*vr));
         fAggNoToIndex[vr->GetAggregateNo()] = index;
         foundData = kTRUE;
 	
@@ -372,7 +372,7 @@ fTask(task)
   // if( TDbiLog::GetLogLevel() >= TDbiLog::kLogLevel
     std::ostream& msg=TDbiLog::GetLogStream();
 
-  msg << "ND::TDbiValidityRecBuilder:" << endl
+  msg << "CP::TDbiValidityRecBuilder:" << endl
       << " Extended context query: " << context << endl
       << " found " << numVRecIn
       << " vrecs in database, for " << fVRecs.size()
@@ -389,7 +389,7 @@ fTask(task)
 
 //.....................................................................
 
-ND::TDbiValidityRecBuilder::TDbiValidityRecBuilder(const ND::TDbiValidityRec& vr,
+CP::TDbiValidityRecBuilder::TDbiValidityRecBuilder(const CP::TDbiValidityRec& vr,
                                              const std::string tableName):
 fIsExtendedContext(kFALSE),
 fTask(vr.GetTask())
@@ -398,16 +398,16 @@ fTask(vr.GetTask())
 //  Purpose:  Constructor for an existing query result.
 //
 //  Arguments:
-//    vr           in    The ND::TDbiValidityRec from the query.
+//    vr           in    The CP::TDbiValidityRec from the query.
 //    tableName    in    The name of the table that satisfied the query
 
 
-  DbiTrace( "Creating ND::TDbiValidityRecBuilder" << "  ");
+  DbiTrace( "Creating CP::TDbiValidityRecBuilder" << "  ");
 
-  const ND::TVldRange&          vrange(vr.GetVldRange());
+  const CP::TVldRange&          vrange(vr.GetVldRange());
   // This is the only way I can find to handle Detector and SimFlag!
-  ND::TVldContext vc( (ND::DbiDetector::Detector_t) vrange.GetDetectorMask(),
-                 (ND::DbiSimFlag::SimFlag_t) vrange.GetSimMask(),
+  CP::TVldContext vc( (CP::DbiDetector::Detector_t) vrange.GetDetectorMask(),
+                 (CP::DbiSimFlag::SimFlag_t) vrange.GetSimMask(),
                  vrange.GetTimeStart());
   this->MakeGapRec(vc,tableName);
   this->AddNewAgg(vr,vr.GetAggregateNo());
@@ -415,7 +415,7 @@ fTask(vr.GetTask())
 }
 //.....................................................................
 
-ND::TDbiValidityRecBuilder::~TDbiValidityRecBuilder() {
+CP::TDbiValidityRecBuilder::~TDbiValidityRecBuilder() {
 //
 //
 //  Purpose: Destructor
@@ -439,13 +439,13 @@ ND::TDbiValidityRecBuilder::~TDbiValidityRecBuilder() {
 //  None.
 
 
-  DbiTrace(  "Destroying ND::TDbiValidityRecBuilder" << "  ");
+  DbiTrace(  "Destroying CP::TDbiValidityRecBuilder" << "  ");
 
 }
 
 //.....................................................................
 
-std::string ND::TDbiValidityRecBuilder::GetL2CacheName() const {
+std::string CP::TDbiValidityRecBuilder::GetL2CacheName() const {
 //
 //
 //  Purpose:  Return the associated Level 2 Cache Name.
@@ -453,7 +453,7 @@ std::string ND::TDbiValidityRecBuilder::GetL2CacheName() const {
 //  Specification:-
 //  =============
 //
-//  o For format see static ND::TDbiValidityRec::GetL2CacheName.
+//  o For format see static CP::TDbiValidityRec::GetL2CacheName.
 //
 //  Gaps are excluded (and if all are gaps the returned name is empty).
 
@@ -463,12 +463,12 @@ std::string ND::TDbiValidityRecBuilder::GetL2CacheName() const {
 
   UInt_t seqLo = 0;
   UInt_t seqHi = 0;
-  ND::TVldTimeStamp ts;
-  std::vector<ND::TDbiValidityRec>::const_iterator itr = fVRecs.begin();
-  std::vector<ND::TDbiValidityRec>::const_iterator end = fVRecs.end();
+  CP::TVldTimeStamp ts;
+  std::vector<CP::TDbiValidityRec>::const_iterator itr = fVRecs.begin();
+  std::vector<CP::TDbiValidityRec>::const_iterator end = fVRecs.end();
 
   for (; itr != end; ++itr) {
-    const ND::TDbiValidityRec& vr = *itr;
+    const CP::TDbiValidityRec& vr = *itr;
     if ( ! vr.IsGap() ) {
       if ( seqLo == 0 ) {
 	seqLo = vr.GetSeqNo();
@@ -485,13 +485,13 @@ std::string ND::TDbiValidityRecBuilder::GetL2CacheName() const {
 
   if ( seqLo == 0 ) return "";
 
-  return ND::TDbiValidityRec::GetL2CacheName(seqLo,seqHi,ts);
+  return CP::TDbiValidityRec::GetL2CacheName(seqLo,seqHi,ts);
 
 }
 
 //.....................................................................
 
-UInt_t ND::TDbiValidityRecBuilder::AddNewAgg(const ND::TDbiValidityRec& vrec,Int_t aggNo) {
+UInt_t CP::TDbiValidityRecBuilder::AddNewAgg(const CP::TDbiValidityRec& vrec,Int_t aggNo) {
 //
 //
 //  Purpose:   Add new aggregate into tables and return its index.
@@ -515,7 +515,7 @@ UInt_t ND::TDbiValidityRecBuilder::AddNewAgg(const ND::TDbiValidityRec& vrec,Int
 
 //.....................................................................
 
-UInt_t ND::TDbiValidityRecBuilder::AddNewGap(Int_t aggNo) {
+UInt_t CP::TDbiValidityRecBuilder::AddNewGap(Int_t aggNo) {
 //
 //
 //  Purpose:  Add new aggregate gap into tables and return its index
@@ -528,8 +528,8 @@ UInt_t ND::TDbiValidityRecBuilder::AddNewGap(Int_t aggNo) {
 
 //.....................................................................
 
-const ND::TDbiValidityRec&
-              ND::TDbiValidityRecBuilder::GetValidityRec(Int_t rowNo) const {
+const CP::TDbiValidityRec&
+              CP::TDbiValidityRecBuilder::GetValidityRec(Int_t rowNo) const {
 //
 //
 //  Purpose: Return validity record for supplied row number.
@@ -539,14 +539,14 @@ const ND::TDbiValidityRec&
 
 //.....................................................................
 
-const ND::TDbiValidityRec&
-              ND::TDbiValidityRecBuilder::GetValidityRecFromSeqNo(UInt_t SeqNo) const {
+const CP::TDbiValidityRec&
+              CP::TDbiValidityRecBuilder::GetValidityRecFromSeqNo(UInt_t SeqNo) const {
 //
 //
 //  Purpose: Return validity record for supplied SeqNo.
 
-  std::vector<ND::TDbiValidityRec>::const_iterator itr = fVRecs.begin();
-  std::vector<ND::TDbiValidityRec>::const_iterator end = fVRecs.end();
+  std::vector<CP::TDbiValidityRec>::const_iterator itr = fVRecs.begin();
+  std::vector<CP::TDbiValidityRec>::const_iterator end = fVRecs.end();
 
   for (; itr != end; ++itr) if ( itr->GetSeqNo() == SeqNo ) return *itr;
   return fGap;
@@ -554,7 +554,7 @@ const ND::TDbiValidityRec&
 
 //.....................................................................
 
-Int_t ND::TDbiValidityRecBuilder::IndexOfAggno(Int_t aggNo) const {
+Int_t CP::TDbiValidityRecBuilder::IndexOfAggno(Int_t aggNo) const {
 //
 //
 //  Purpose:   Get index of AggNo or -1 if missing.
@@ -567,7 +567,7 @@ Int_t ND::TDbiValidityRecBuilder::IndexOfAggno(Int_t aggNo) const {
 
 //.....................................................................
 
-void ND::TDbiValidityRecBuilder::MakeGapRec(const ND::TVldContext& vc,
+void CP::TDbiValidityRecBuilder::MakeGapRec(const CP::TVldContext& vc,
                                        const string& tableName,
                                        Bool_t findFullTimeWindow) {
 //
@@ -598,15 +598,15 @@ void ND::TDbiValidityRecBuilder::MakeGapRec(const ND::TVldContext& vc,
 
   Int_t timeGate = TDbi::GetTimeGate(tableName);
   time_t contextSec = vc.GetTimeStamp().GetSec() - timeGate;
-  ND::TVldTimeStamp startGate(contextSec,0);
+  CP::TVldTimeStamp startGate(contextSec,0);
   contextSec += 2*timeGate;
-  ND::TVldTimeStamp endGate(contextSec,0);
+  CP::TVldTimeStamp endGate(contextSec,0);
   if ( findFullTimeWindow ) {
-    startGate = ND::TVldTimeStamp(0,0);
-    endGate   = ND::TVldTimeStamp(0x7FFFFFFF,0);
+    startGate = CP::TVldTimeStamp(0,0);
+    endGate   = CP::TVldTimeStamp(0x7FFFFFFF,0);
   }
-  ND::TVldRange gapVR(vc.GetDetector(), vc.GetSimFlag(), startGate, endGate, "Gap");
-  fGap =  ND::TDbiValidityRec(gapVR, fTask, -2, 0, 0, kTRUE,ND::TVldTimeStamp(0));
+  CP::TVldRange gapVR(vc.GetDetector(), vc.GetSimFlag(), startGate, endGate, "Gap");
+  fGap =  CP::TDbiValidityRec(gapVR, fTask, -2, 0, 0, kTRUE,CP::TVldTimeStamp(0));
 }
 
 

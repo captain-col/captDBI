@@ -5,13 +5,13 @@
  *
  * 
  *
- * \class ND::TDbiResultSetAgg
+ * \class CP::TDbiResultSetAgg
  *
  *
- * \brief ResultAgg is a concrete sub-class of   ND::TDbiResultSet. 
+ * \brief ResultAgg is a concrete sub-class of   CP::TDbiResultSet. 
  * 
  * <b>Concept</b>   ResultAgg is a concrete sub-class of
- *    ND::TDbiResultSet that represents a single database query for either:-
+ *    CP::TDbiResultSet that represents a single database query for either:-
  *
  *         1)  A specific context with aggregated data (i.e. rows
  *             with AggNo != -1)
@@ -40,7 +40,7 @@ using std::string;
 
 #include "TDbiResultSet.hxx"
 
-namespace ND {
+namespace CP {
 class TDbiCache;
 class TDbiTDbiBinaryFile;
 class TDbiDBProxy;
@@ -49,7 +49,7 @@ class TDbiTableRow;
 class TDbiValidityRecBuilder;
 }
 
-namespace ND {
+namespace CP {
 class TDbiResultSetAgg : public TDbiResultSet
 {
 

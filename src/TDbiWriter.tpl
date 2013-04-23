@@ -1,9 +1,9 @@
 ///////////////////////////////////////////////////////////////////////
 // $id: TDbiWriter.tpl,v 1.11 2005/11/11 09:27:26 west Exp $
 //
-// ND::TDbiWriter
+// CP::TDbiWriter
 //
-// Package: ND::TDbi (Database Interface).
+// Package: CP::TDbi (Database Interface).
 
 #include <cassert>
 #include <fstream>
@@ -19,7 +19,7 @@
 using std::endl;
 
 
-ClassImpT(ND::TDbiWriter,T)
+ClassImpT(CP::TDbiWriter,T)
 
 //   Definition of static data members
 //   *********************************
@@ -34,12 +34,12 @@ ClassImpT(ND::TDbiWriter,T)
 //.....................................................................
 
 template<class T>
-ND::TDbiWriter<T>::TDbiWriter() :
+CP::TDbiWriter<T>::TDbiWriter() :
 fAggregateNo(-2),
 fDbNo(0),
-fPacket(new ND::TDbiSqlValPacket),
+fPacket(new CP::TDbiSqlValPacket),
 fRequireGlobalSeqno(0),
-fTableProxy(&ND::TDbiWriter<T>::GetTableProxy()),
+fTableProxy(&CP::TDbiWriter<T>::GetTableProxy()),
 fTableName(fTableProxy->GetTableName()),
 fUseOverlayCreationDate(kFALSE),
 fValidRec(0),
@@ -59,29 +59,29 @@ fLogEntry(fTableName)
 //  Program Notes:-
 //  =============
 
-//  Creates an unusable ND::TDbiWriter - only present to keep rootcint happy.
+//  Creates an unusable CP::TDbiWriter - only present to keep rootcint happy.
 
 
-  DbiTrace(  "Creating default ND::TDbiWriter for " << fTableName << "  ");
+  DbiTrace(  "Creating default CP::TDbiWriter for " << fTableName << "  ");
 
 }
 //.....................................................................
 
 template<class T>
-ND::TDbiWriter<T>::TDbiWriter(const ND::TVldRange& vr,
+CP::TDbiWriter<T>::TDbiWriter(const CP::TVldRange& vr,
                         Int_t aggNo,
                         TDbi::Task task,
-                        ND::TVldTimeStamp creationDate,
+                        CP::TVldTimeStamp creationDate,
                         UInt_t dbNo,
                         const std::string& logComment,
                         const std::string& tableName) :
 fAggregateNo(aggNo),
 fDbNo(dbNo),
-fPacket(new ND::TDbiSqlValPacket),
+fPacket(new CP::TDbiSqlValPacket),
 fRequireGlobalSeqno(0),
-fTableProxy(&ND::TDbiWriter<T>::GetTableProxy(tableName)),
+fTableProxy(&CP::TDbiWriter<T>::GetTableProxy(tableName)),
 fTableName(fTableProxy->GetTableName()),
-fUseOverlayCreationDate(creationDate == ND::TVldTimeStamp(0,0)),
+fUseOverlayCreationDate(creationDate == CP::TVldTimeStamp(0,0)),
 fValidRec(0),
 fLogEntry(fTableName,logComment,vr.GetDetectorMask(),vr.GetSimMask(),task)
 {
@@ -113,7 +113,7 @@ fLogEntry(fTableName,logComment,vr.GetDetectorMask(),vr.GetSimMask(),task)
 //  None.
 
 
-  DbiTrace(  "Creating ND::TDbiWriter for " << fTableName << "  ");
+  DbiTrace(  "Creating CP::TDbiWriter for " << fTableName << "  ");
 
   Open(vr,aggNo,task,creationDate,dbNo,logComment);
 
@@ -122,19 +122,19 @@ fLogEntry(fTableName,logComment,vr.GetDetectorMask(),vr.GetSimMask(),task)
 //.....................................................................
 
 template<class T>
-ND::TDbiWriter<T>::TDbiWriter(const ND::TVldRange& vr,
+CP::TDbiWriter<T>::TDbiWriter(const CP::TVldRange& vr,
                         Int_t aggNo,
                         TDbi::Task task,
-                        ND::TVldTimeStamp creationDate,
+                        CP::TVldTimeStamp creationDate,
                         const std::string& dbName,
                         const std::string& logComment,
                         const std::string& tableName) :
 fAggregateNo(aggNo),
-fPacket(new ND::TDbiSqlValPacket),
+fPacket(new CP::TDbiSqlValPacket),
 fRequireGlobalSeqno(0),
-fTableProxy(&ND::TDbiWriter<T>::GetTableProxy(tableName)),
+fTableProxy(&CP::TDbiWriter<T>::GetTableProxy(tableName)),
 fTableName(fTableProxy->GetTableName()),
-fUseOverlayCreationDate(creationDate == ND::TVldTimeStamp(0,0)),
+fUseOverlayCreationDate(creationDate == CP::TVldTimeStamp(0,0)),
 fValidRec(0),
 fLogEntry(fTableName,logComment,vr.GetDetectorMask(),vr.GetSimMask(),task)
 {
@@ -166,7 +166,7 @@ fLogEntry(fTableName,logComment,vr.GetDetectorMask(),vr.GetSimMask(),task)
 //  None.
 
 
-  DbiTrace(  "Creating ND::TDbiWriter for " << fTableName << "  ");
+  DbiTrace(  "Creating CP::TDbiWriter for " << fTableName << "  ");
 
   Open(vr,aggNo,task,creationDate,dbName,logComment);
 
@@ -175,16 +175,16 @@ fLogEntry(fTableName,logComment,vr.GetDetectorMask(),vr.GetSimMask(),task)
 //.....................................................................
 
 template<class T>
-ND::TDbiWriter<T>::TDbiWriter(const ND::TDbiValidityRec& vrec,
+CP::TDbiWriter<T>::TDbiWriter(const CP::TDbiValidityRec& vrec,
                         UInt_t dbNo,
                         const std::string& logComment) :
 fAggregateNo(0),
 fDbNo(dbNo),
-fPacket(new ND::TDbiSqlValPacket),
+fPacket(new CP::TDbiSqlValPacket),
 fRequireGlobalSeqno(0),
 fTableProxy(0),
 fUseOverlayCreationDate(kFALSE),
-fValidRec(new ND::TDbiValidityRec(vrec)),
+fValidRec(new CP::TDbiValidityRec(vrec)),
 fLogEntry(fTableName,logComment,vrec.GetVldRange().GetDetectorMask(),
           vrec.GetVldRange().GetSimMask(),vrec.GetTask())
 {
@@ -193,7 +193,7 @@ fLogEntry(fTableName,logComment,vrec.GetVldRange().GetDetectorMask(),
 //
 //  Arguments:
 //    vrec          in       Validity record for set.
-//                           MUST have an associated ND::TDbiTableProxy
+//                           MUST have an associated CP::TDbiTableProxy
 //    dbNo          in       Database number in cascade (starting at 0).
 //    logComment    in       Reason for update.
 //
@@ -215,7 +215,7 @@ fLogEntry(fTableName,logComment,vrec.GetVldRange().GetDetectorMask(),
 
 
   T pet;
-  DbiTrace(  "Creating ND::TDbiWriter for " << pet.GetName() << "  ");
+  DbiTrace(  "Creating CP::TDbiWriter for " << pet.GetName() << "  ");
 
   this->Open(vrec,dbNo,logComment);
 
@@ -224,16 +224,16 @@ fLogEntry(fTableName,logComment,vrec.GetVldRange().GetDetectorMask(),
 //.....................................................................
 
 template<class T>
-ND::TDbiWriter<T>::TDbiWriter(const ND::TDbiValidityRec& vrec,
+CP::TDbiWriter<T>::TDbiWriter(const CP::TDbiValidityRec& vrec,
                         const std::string& dbName,
                         const std::string& logComment) :
 fAggregateNo(0),
 
-fPacket(new ND::TDbiSqlValPacket),
+fPacket(new CP::TDbiSqlValPacket),
 fRequireGlobalSeqno(0),
 fTableProxy(0),
 fUseOverlayCreationDate(kFALSE),
-fValidRec(new ND::TDbiValidityRec(vrec)),
+fValidRec(new CP::TDbiValidityRec(vrec)),
 fLogEntry(fTableName,logComment,vrec.GetVldRange().GetDetectorMask(),
           vrec.GetVldRange().GetSimMask(),vrec.GetTask())
 {
@@ -242,7 +242,7 @@ fLogEntry(fTableName,logComment,vrec.GetVldRange().GetDetectorMask(),
 //
 //  Arguments:
 //    vrec          in       Validity record for set.
-//                           MUST have an associated ND::TDbiTableProxy
+//                           MUST have an associated CP::TDbiTableProxy
 //    dbName        in       Database name.
 //    logComment    in       Reason for update.
 //
@@ -264,7 +264,7 @@ fLogEntry(fTableName,logComment,vrec.GetVldRange().GetDetectorMask(),
 
 
   T pet;
-  DbiTrace(  "Creating ND::TDbiWriter for " << pet.GetName() << "  ");
+  DbiTrace(  "Creating CP::TDbiWriter for " << pet.GetName() << "  ");
 
   this->Open(vrec,dbName,logComment);
 
@@ -273,13 +273,13 @@ fLogEntry(fTableName,logComment,vrec.GetVldRange().GetDetectorMask(),
 //.....................................................................
 
 template<class T>
-ND::TDbiWriter<T>::~TDbiWriter() {
+CP::TDbiWriter<T>::~TDbiWriter() {
 //
 //
 //  Purpose: Destructor
 
 
-  DbiTrace( "Destroying ND::TDbiWriter" << "  ");
+  DbiTrace( "Destroying CP::TDbiWriter" << "  ");
 
   Reset();
   delete fPacket;
@@ -293,10 +293,10 @@ ND::TDbiWriter<T>::~TDbiWriter() {
 //.....................................................................
 
 template<class T>
-ND::TDbiWriter<T>& ND::TDbiWriter<T>::operator<<(const T& row) {
+CP::TDbiWriter<T>& CP::TDbiWriter<T>::operator<<(const T& row) {
 //
 //
-//  Purpose:  Stream row into this ND::TDbiWriter.
+//  Purpose:  Stream row into this CP::TDbiWriter.
 
   if ( ! this->IsOpen() ) return *this;
 
@@ -306,12 +306,12 @@ ND::TDbiWriter<T>& ND::TDbiWriter<T>::operator<<(const T& row) {
       << fTableName
       << ", current set has aggregate no.: " << fAggregateNo
       << ", but it has: " << AggNoRow
-      << " \n  closing ND::TDbiWriter" << "  ");
+      << " \n  closing CP::TDbiWriter" << "  ");
     this->Abort();
     return *this;
   }
   if ( ! fPacket->AddDataRow(*fTableProxy,fValidRec,row) ) {
-    DbiSevere( "Closing ND::TDbiWriter due to above error." << "  ");
+    DbiSevere( "Closing CP::TDbiWriter due to above error." << "  ");
     this->Abort();
   }
 
@@ -321,10 +321,10 @@ ND::TDbiWriter<T>& ND::TDbiWriter<T>::operator<<(const T& row) {
 //.....................................................................
 
 template<class T>
-UInt_t ND::TDbiWriter<T>::GetEpoch() const {
+UInt_t CP::TDbiWriter<T>::GetEpoch() const {
 //
 //
-//  Purpose:  Return epoch of associated ND::TDbiValidityRec if any.
+//  Purpose:  Return epoch of associated CP::TDbiValidityRec if any.
 
   return fValidRec ? fValidRec->GetEpoch() : 0;
 
@@ -332,7 +332,7 @@ UInt_t ND::TDbiWriter<T>::GetEpoch() const {
 //.....................................................................
 
 template<class T>
-Bool_t ND::TDbiWriter<T>::CanOutput(Bool_t reportErrors) const {
+Bool_t CP::TDbiWriter<T>::CanOutput(Bool_t reportErrors) const {
 //
 //
 //  Purpose:  Return true if open and ready to receive/output  data.
@@ -386,7 +386,7 @@ Bool_t ND::TDbiWriter<T>::CanOutput(Bool_t reportErrors) const {
 //.....................................................................
 
 template<class T>
-Bool_t ND::TDbiWriter<T>::Close(const char* fileSpec) {
+Bool_t CP::TDbiWriter<T>::Close(const char* fileSpec) {
 //
 //
 //  Purpose:  Close current validity set and write it to the database.
@@ -458,7 +458,7 @@ Bool_t ND::TDbiWriter<T>::Close(const char* fileSpec) {
 //.....................................................................
 
 template<class T>
-void ND::TDbiWriter<T>::CompleteOpen(UInt_t dbNo,
+void CP::TDbiWriter<T>::CompleteOpen(UInt_t dbNo,
                                 const std::string& logComment) {
 //
 //
@@ -499,7 +499,7 @@ void ND::TDbiWriter<T>::CompleteOpen(UInt_t dbNo,
                     fValidRec->GetCreationDate());
 
 // Recreate log entry.
-  const ND::TVldRange&  vr = fValidRec->GetVldRange();
+  const CP::TVldRange&  vr = fValidRec->GetVldRange();
   fLogEntry.Recreate(fTableName,
                      logComment,
                      vr.GetDetectorMask(),
@@ -511,36 +511,36 @@ void ND::TDbiWriter<T>::CompleteOpen(UInt_t dbNo,
 //.....................................................................
 
 template<class T>
-ND::TDbiTableProxy& ND::TDbiWriter<T>::GetTableProxy() {
+CP::TDbiTableProxy& CP::TDbiWriter<T>::GetTableProxy() {
 //
 //
 //  Purpose:  Private static function to find default associated
-//            ND::TDbiTableProxy.
+//            CP::TDbiTableProxy.
 
 //  Program Notes:-
 //  =============
 
-//  As ND::TDbiResultSetHandle classes are in 1:1 correspondance with ND::TDbiWriter
-//  classes, ND::TDbiWriter uses the static methods from ND::TDbiResultSetHandle
-//  to find the associated ND::TDbiTableProxy.
+//  As CP::TDbiResultSetHandle classes are in 1:1 correspondance with CP::TDbiWriter
+//  classes, CP::TDbiWriter uses the static methods from CP::TDbiResultSetHandle
+//  to find the associated CP::TDbiTableProxy.
 
-  return ND::TDbiResultSetHandle<T>::GetTableProxy();
+  return CP::TDbiResultSetHandle<T>::GetTableProxy();
 }
 
 //.....................................................................
 
 template<class T>
-ND::TDbiTableProxy& ND::TDbiWriter<T>::GetTableProxy(
+CP::TDbiTableProxy& CP::TDbiWriter<T>::GetTableProxy(
                                            const std::string& tableName){
 //
 //
 //  Purpose:  Private static function to find an alternative
-//            associated ND::TDbiTableProxy.
+//            associated CP::TDbiTableProxy.
 //
 //  Arguments:
 //    tableName    in    Alternative table name
 //
-//  Return:   Associated ND::TDbiTableProxy.
+//  Return:   Associated CP::TDbiTableProxy.
 //
 //  Contact:   N. West
 //
@@ -549,27 +549,27 @@ ND::TDbiTableProxy& ND::TDbiWriter<T>::GetTableProxy(
 //
 //  o Ask TDbiRegistry for alternative  Table Proxy and return it.
 
-//  As ND::TDbiResultSetHandle classes are in 1:1 correspondance with ND::TDbiWriter
-//  classes, ND::TDbiWriter uses the static methods from ND::TDbiResultSetHandle
-//  to find the associated ND::TDbiTableProxy.
+//  As CP::TDbiResultSetHandle classes are in 1:1 correspondance with CP::TDbiWriter
+//  classes, CP::TDbiWriter uses the static methods from CP::TDbiResultSetHandle
+//  to find the associated CP::TDbiTableProxy.
 
-  return ND::TDbiResultSetHandle<T>::GetTableProxy(tableName);
+  return CP::TDbiResultSetHandle<T>::GetTableProxy(tableName);
 
 }
 //.....................................................................
 
 template<class T>
-Bool_t ND::TDbiWriter<T>::IsOpen(Bool_t reportErrors) const {
+Bool_t CP::TDbiWriter<T>::IsOpen(Bool_t reportErrors) const {
 //
 //
 //  Purpose:  Return true if open and ready to receive data.
 
-  if ( ! ND::TDbiDatabaseManager::IsActive()  ) {
-    if ( reportErrors ) DbiSevere(  "Cannot use ND::TDbiWriter, the DBI has been shutdown." << "  ");
+  if ( ! CP::TDbiDatabaseManager::IsActive()  ) {
+    if ( reportErrors ) DbiSevere(  "Cannot use CP::TDbiWriter, the DBI has been shutdown." << "  ");
   }
   else if (    !fValidRec
             ||  fPacket->GetNumSqlStmts() < 1 ) {
-    if ( reportErrors ) DbiSevere(  "Cannot do I/O on ND::TDbiWriter for "
+    if ( reportErrors ) DbiSevere(  "Cannot do I/O on CP::TDbiWriter for "
       << fTableName
       <<", it is currently closed." << "  ");
   }
@@ -581,15 +581,15 @@ Bool_t ND::TDbiWriter<T>::IsOpen(Bool_t reportErrors) const {
 //.....................................................................
 
 template<class T>
-Bool_t ND::TDbiWriter<T>::NeedsLogEntry() const {
+Bool_t CP::TDbiWriter<T>::NeedsLogEntry() const {
 //
 //
 //  Purpose:  Return true if a log entry is required.
 
   // Some tables are created automatically so don't require entries.
 
-  // ND280 may never use ND::TDbiWriter but if it does, assume that table
-  // updates won't require an associated  ND::TDbiLogEntry.
+  // ND280 may never use CP::TDbiWriter but if it does, assume that table
+  // updates won't require an associated  CP::TDbiLogEntry.
 
   return false;
 
@@ -602,10 +602,10 @@ Bool_t ND::TDbiWriter<T>::NeedsLogEntry() const {
 //.....................................................................
 
 template<class T>
-Bool_t ND::TDbiWriter<T>::Open (const ND::TVldRange& vr,
+Bool_t CP::TDbiWriter<T>::Open (const CP::TVldRange& vr,
                            Int_t aggNo,
                            TDbi::Task task,
-                           ND::TVldTimeStamp creationDate,
+                           CP::TVldTimeStamp creationDate,
                            UInt_t dbNo,
                            const std::string& logComment) {
 //
@@ -636,18 +636,18 @@ Bool_t ND::TDbiWriter<T>::Open (const ND::TVldRange& vr,
 
   bool ok = true;
 
-  if ( ! ND::TDbiDatabaseManager::IsActive() ) return kFALSE;
+  if ( ! CP::TDbiDatabaseManager::IsActive() ) return kFALSE;
   if ( this->CanOutput(kFALSE) ) ok = Close();
 
 // Test for special creation date.
-  fUseOverlayCreationDate = creationDate == ND::TVldTimeStamp(0,0);
+  fUseOverlayCreationDate = creationDate == CP::TVldTimeStamp(0,0);
 
 //  Create a validity record.
   delete fValidRec;
-  fValidRec = new ND::TDbiValidityRec(vr,task,aggNo,0,0,kFALSE,creationDate);
+  fValidRec = new CP::TDbiValidityRec(vr,task,aggNo,0,0,kFALSE,creationDate);
 
 // Get a proxy.
-  fTableProxy = &ND::TDbiWriter<T>::GetTableProxy(fTableName);
+  fTableProxy = &CP::TDbiWriter<T>::GetTableProxy(fTableName);
 
 // Complete opening.
   this->CompleteOpen(dbNo,logComment);
@@ -657,10 +657,10 @@ Bool_t ND::TDbiWriter<T>::Open (const ND::TVldRange& vr,
 //.....................................................................
 
 template<class T>
-Bool_t ND::TDbiWriter<T>::Open (const ND::TVldRange& vr,
+Bool_t CP::TDbiWriter<T>::Open (const CP::TVldRange& vr,
                            Int_t aggNo,
                            TDbi::Task task,
-                           ND::TVldTimeStamp creationDate,
+                           CP::TVldTimeStamp creationDate,
                            const string& dbName,
                            const std::string& logComment) {
 //
@@ -690,7 +690,7 @@ Bool_t ND::TDbiWriter<T>::Open (const ND::TVldRange& vr,
 //.....................................................................
 
 template<class T>
-Bool_t ND::TDbiWriter<T>::Open(const ND::TDbiValidityRec& vrec,
+Bool_t CP::TDbiWriter<T>::Open(const CP::TDbiValidityRec& vrec,
                           UInt_t dbNo,
                           const std::string& logComment) {
 
@@ -699,7 +699,7 @@ Bool_t ND::TDbiWriter<T>::Open(const ND::TDbiValidityRec& vrec,
 //
 //  Arguments:
 //    vrec          in       Validity record for set.
-//                           MUST have an associated ND::TDbiTableProxy
+//                           MUST have an associated CP::TDbiTableProxy
 //    dbNo          in       Database number in cascade (starting at 0).
 //    logComment    in       Reason for update.
 //
@@ -721,17 +721,17 @@ Bool_t ND::TDbiWriter<T>::Open(const ND::TDbiValidityRec& vrec,
 
   bool ok = true;
 
-  if ( ! ND::TDbiDatabaseManager::IsActive() ) return kFALSE;
+  if ( ! CP::TDbiDatabaseManager::IsActive() ) return kFALSE;
   if ( this->CanOutput(kFALSE) ) ok = Close();
 
 
 // Check that vrec is associated with the right table, but waive
-// test for ND::TDbiConfigSet so that it can be used with any.
-  const ND::TDbiTableProxy& proxyDefault = ND::TDbiWriter<T>::GetTableProxy();
-  const ND::TDbiTableProxy& proxyVrec    = *vrec.GetTableProxy();
+// test for CP::TDbiConfigSet so that it can be used with any.
+  const CP::TDbiTableProxy& proxyDefault = CP::TDbiWriter<T>::GetTableProxy();
+  const CP::TDbiTableProxy& proxyVrec    = *vrec.GetTableProxy();
   if (    proxyDefault.GetTableName() != "DBICONFIGSET"
        &&    proxyVrec.GetTableName() != proxyDefault.GetTableName() ) {
-    DbiSevere(  "Unable to create ND::TDbiWriter from query:" << "  "
+    DbiSevere(  "Unable to create CP::TDbiWriter from query:" << "  "
        << vrec
        << " was filled by " << proxyVrec.GetTableName()
        << " not by " << proxyDefault.GetTableName() << "  ");
@@ -739,14 +739,14 @@ Bool_t ND::TDbiWriter<T>::Open(const ND::TDbiValidityRec& vrec,
     return false;
   }
   else {
-//  Have to cast away const - ND::TDbiWriter needs a modifiable ND::TDbiTableProxy.
-    fTableProxy = const_cast<ND::TDbiTableProxy*>(&proxyVrec);
+//  Have to cast away const - CP::TDbiWriter needs a modifiable CP::TDbiTableProxy.
+    fTableProxy = const_cast<CP::TDbiTableProxy*>(&proxyVrec);
   }
 
-  fUseOverlayCreationDate = vrec.GetCreationDate() == ND::TVldTimeStamp(0,0);
+  fUseOverlayCreationDate = vrec.GetCreationDate() == CP::TVldTimeStamp(0,0);
 
   delete fValidRec;
-  fValidRec = new ND::TDbiValidityRec(vrec);
+  fValidRec = new CP::TDbiValidityRec(vrec);
 
 // Complete opening.
   this->CompleteOpen(dbNo,logComment);
@@ -757,7 +757,7 @@ Bool_t ND::TDbiWriter<T>::Open(const ND::TDbiValidityRec& vrec,
 //.....................................................................
 
 template<class T>
-Bool_t ND::TDbiWriter<T>::Open(const ND::TDbiValidityRec& vrec,
+Bool_t CP::TDbiWriter<T>::Open(const CP::TDbiValidityRec& vrec,
                           const string& dbName,
                           const std::string& logComment) {
 
@@ -766,7 +766,7 @@ Bool_t ND::TDbiWriter<T>::Open(const ND::TDbiValidityRec& vrec,
 //
 //  Arguments:
 //    vrec          in       Validity record for set.
-//                           MUST have an associated ND::TDbiTableProxy
+//                           MUST have an associated CP::TDbiTableProxy
 //    dbName        in       Database name.
 //    logComment    in       Reason for update.
 //
@@ -783,7 +783,7 @@ Bool_t ND::TDbiWriter<T>::Open(const ND::TDbiValidityRec& vrec,
 //.....................................................................
 
 template<class T>
-void ND::TDbiWriter<T>::Reset() {
+void CP::TDbiWriter<T>::Reset() {
 //
 //
 //  Purpose:  Clear out data and reset ready for any further I/O.
@@ -807,7 +807,7 @@ void ND::TDbiWriter<T>::Reset() {
   fAggregateNo = 0;
   fDbNo        = 0;
   fPacket->Clear();
-  fTableProxy  = &ND::TDbiWriter<T>::GetTableProxy();
+  fTableProxy  = &CP::TDbiWriter<T>::GetTableProxy();
   fTableName   = fTableProxy->GetTableName();
 
   delete fValidRec;
@@ -817,7 +817,7 @@ void ND::TDbiWriter<T>::Reset() {
 //.....................................................................
 
 template<class T>
-void ND::TDbiWriter<T>::SetDbName(const string& dbName) {
+void CP::TDbiWriter<T>::SetDbName(const string& dbName) {
 //
 //
 //  Purpose:  Set Database entry by name.  Default: entry 0.
@@ -826,16 +826,16 @@ void ND::TDbiWriter<T>::SetDbName(const string& dbName) {
     fDbNo = 0;
   }
   else {
-    fDbNo =  ND::TDbiDatabaseManager::Instance().GetCascader().GetDbNo(dbName);
+    fDbNo =  CP::TDbiDatabaseManager::Instance().GetCascader().GetDbNo(dbName);
   }
 }
 //.....................................................................
 
 template<class T>
-void ND::TDbiWriter<T>::SetEpoch(UInt_t epoch) {
+void CP::TDbiWriter<T>::SetEpoch(UInt_t epoch) {
 //
 //
-//  Purpose:  Set epoch of associated ND::TDbiValidityRec if any.
+//  Purpose:  Set epoch of associated CP::TDbiValidityRec if any.
 
   if ( fValidRec ) fValidRec->SetEpoch(epoch);
   fPacket->SetEpoch(epoch);
@@ -845,7 +845,7 @@ void ND::TDbiWriter<T>::SetEpoch(UInt_t epoch) {
 //.....................................................................
 
 template<class T>
-void ND::TDbiWriter<T>::SetLogComment(const std::string& reason) {
+void CP::TDbiWriter<T>::SetLogComment(const std::string& reason) {
 //
 //
 //  Purpose:  Set log comment.
@@ -857,26 +857,26 @@ void ND::TDbiWriter<T>::SetLogComment(const std::string& reason) {
 //.....................................................................
 
 template<class T>
-ND::TDbiTableProxy& ND::TDbiWriter<T>::TableProxy() const  {
+CP::TDbiTableProxy& CP::TDbiWriter<T>::TableProxy() const  {
 //
 //
-//  Purpose:  Return ND::TDbiTableProxy.
+//  Purpose:  Return CP::TDbiTableProxy.
 //
 
-  assert( ND::TDbiDatabaseManager::IsActive() );
+  assert( CP::TDbiDatabaseManager::IsActive() );
   return *fTableProxy;
 }
 
 //.....................................................................
 
 template<class T>
-Bool_t ND::TDbiWriter<T>::WritingToMaster() const {
+Bool_t CP::TDbiWriter<T>::WritingToMaster() const {
 //
 //
 //  Purpose:  Return true if writing permanent data to a Master Database.
 
 
-  ND::TDbiCascader& cascader = ND::TDbiDatabaseManager::Instance().GetCascader();
+  CP::TDbiCascader& cascader = CP::TDbiDatabaseManager::Instance().GetCascader();
   return  (    fDbNo == (UInt_t) cascader.GetAuthorisingDbNo()
             && ! cascader.IsTemporaryTable(fTableName,fDbNo));
 
@@ -887,7 +887,7 @@ Bool_t ND::TDbiWriter<T>::WritingToMaster() const {
 //.....................................................................
 
 template<class T>
-ND::TDbiWriter<T>:: {
+CP::TDbiWriter<T>:: {
 //
 //
 //  Purpose:

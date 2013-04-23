@@ -1,3 +1,3 @@
 #ifdef __CINT__
-#pragma link C++ class ND::TDbiString;
+#pragma link C++ class CP::TDbiString;
 #endif

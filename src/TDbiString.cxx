@@ -8,7 +8,7 @@
 using std::endl;
 using std::ostringstream;
 
-ClassImp(ND::TDbiString)
+ClassImp(CP::TDbiString)
 
 
 //   Definition of static data members
@@ -20,7 +20,7 @@ ClassImp(ND::TDbiString)
 
 //.....................................................................
 
-ND::TDbiString::TDbiString()
+CP::TDbiString::TDbiString()
 {
 //
 //
@@ -35,7 +35,7 @@ ND::TDbiString::TDbiString()
 //  Specification:-
 //  =============
 //
-//  o  Create ND::TDbiString.
+//  o  Create CP::TDbiString.
 
 
 //  Program Notes:-
@@ -44,13 +44,13 @@ ND::TDbiString::TDbiString()
 //  None.
 
 
-  DbiTrace( "Creating ND::TDbiString" << "  ");
+  DbiTrace( "Creating CP::TDbiString" << "  ");
 
 }
 
 //.....................................................................
 
-ND::TDbiString::TDbiString(const Char_t* str) :
+CP::TDbiString::TDbiString(const Char_t* str) :
 fString(str)
 {
 //
@@ -67,7 +67,7 @@ fString(str)
 //  Specification:-
 //  =============
 //
-//  o  Create ND::TDbiString.
+//  o  Create CP::TDbiString.
 
 
 //  Program Notes:-
@@ -76,13 +76,13 @@ fString(str)
 //  None.
 
 
-  DbiTrace( "Creating ND::TDbiString" << "  ");
+  DbiTrace( "Creating CP::TDbiString" << "  ");
 
 }
 
 //.....................................................................
 
-ND::TDbiString::TDbiString(const std::string& str) :
+CP::TDbiString::TDbiString(const std::string& str) :
 fString(str)
 {
 //
@@ -99,7 +99,7 @@ fString(str)
 //  Specification:-
 //  =============
 //
-//  o  Create ND::TDbiString.
+//  o  Create CP::TDbiString.
 
 
 //  Program Notes:-
@@ -108,13 +108,13 @@ fString(str)
 //  None.
 
 
-  DbiTrace( "Creating ND::TDbiString" << "  ");
+  DbiTrace( "Creating CP::TDbiString" << "  ");
 
 }
 
 //.....................................................................
 
-ND::TDbiString::~TDbiString() {
+CP::TDbiString::~TDbiString() {
 //
 //
 //  Purpose: Destructor
@@ -129,7 +129,7 @@ ND::TDbiString::~TDbiString() {
 //  Specification:-
 //  =============
 //
-//  o  Destroy ND::TDbiString
+//  o  Destroy CP::TDbiString
 
 
 //  Program Notes:-
@@ -138,7 +138,7 @@ ND::TDbiString::~TDbiString() {
 //  None.
 
 
-  DbiTrace( "Destroying ND::TDbiString" << "  ");
+  DbiTrace( "Destroying CP::TDbiString" << "  ");
 
 }
 
@@ -149,14 +149,14 @@ ND::TDbiString::~TDbiString() {
     return *this;
 
 
-ND::TDbiString& ND::TDbiString::operator<<(Int_t data)   { OUT(Int_t,data) }
-ND::TDbiString& ND::TDbiString::operator<<(UInt_t data)  { OUT(UInt_t,data) }
-ND::TDbiString& ND::TDbiString::operator<<(Float_t data) { OUT(Float_t,data) }
-ND::TDbiString& ND::TDbiString::operator<<(Char_t data) {
+CP::TDbiString& CP::TDbiString::operator<<(Int_t data)   { OUT(Int_t,data) }
+CP::TDbiString& CP::TDbiString::operator<<(UInt_t data)  { OUT(UInt_t,data) }
+CP::TDbiString& CP::TDbiString::operator<<(Float_t data) { OUT(Float_t,data) }
+CP::TDbiString& CP::TDbiString::operator<<(Char_t data) {
                              fString.append(1,data); return *this; }
-ND::TDbiString& ND::TDbiString::operator<<(const Char_t* data) {
+CP::TDbiString& CP::TDbiString::operator<<(const Char_t* data) {
                                fString.append(data); return *this; }
-ND::TDbiString& ND::TDbiString::operator<<(const std::string& data) {
+CP::TDbiString& CP::TDbiString::operator<<(const std::string& data) {
                                fString.append(data); return *this; }
 
 

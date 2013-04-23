@@ -20,7 +20,7 @@
 #include <TObject.h>
 
 class type_info;
-namespace ND {
+namespace CP {
 ///
 /// An item stored in a registry. This class does not do  a right lot, but  TDbiRegistryItemXxx which inherits from it, does a lot.
 class TDbiRegistryItem : public TObject
@@ -40,7 +40,7 @@ public:
     virtual const char* GetTypeAsString() const = 0;
 
 
-    ClassDef(ND::TDbiRegistryItem,1)
+    ClassDef(CP::TDbiRegistryItem,1)
 };                              // end of class TDbiRegistryItem
 }
 

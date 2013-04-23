@@ -21,15 +21,15 @@ using std::setw;
 using std::setfill;
 using std::setprecision;
 
-ClassImp(ND::TDbiConfigStream)
+ClassImp(CP::TDbiConfigStream)
 
 //   Definition of static data members
 //   *********************************
 
 
-ND::TVldContext  ND::TDbiConfigStream::fgDefaultContext(ND::DbiDetector::kNear,
-                                  ND::DbiSimFlag::kData,
-                                  ND::TVldTimeStamp() );
+CP::TVldContext  CP::TDbiConfigStream::fgDefaultContext(CP::DbiDetector::kNear,
+                                  CP::DbiSimFlag::kData,
+                                  CP::TVldTimeStamp() );
 
 //    Definition of all member functions (static or otherwise)
 //    *******************************************************
@@ -38,7 +38,7 @@ ND::TVldContext  ND::TDbiConfigStream::fgDefaultContext(ND::DbiDetector::kNear,
 
 //.....................................................................
 
-ND::TDbiConfigStream::TDbiConfigStream() :
+CP::TDbiConfigStream::TDbiConfigStream() :
 fCFSet(0)
 {
 //
@@ -63,14 +63,14 @@ fCFSet(0)
 //  None.
 
 
-  DbiDebug( "Creating ND::TDbiConfigStream" << "  ");
+  DbiDebug( "Creating CP::TDbiConfigStream" << "  ");
 }
 
 //.....................................................................
 
-ND::TDbiConfigStream::TDbiConfigStream(const string& SoftName,
+CP::TDbiConfigStream::TDbiConfigStream(const string& SoftName,
                                  const std::string& ConfigName,
-                                 ND::TVldContext vc,
+                                 CP::TVldContext vc,
                                  TDbi::Task task,
                                  const std::string& tableName) :
 fCFSet(0),
@@ -109,7 +109,7 @@ fSoftwName(SoftName)
 //  None.
 
 
-  DbiDebug( "Creating ND::TDbiConfigStream" << "  ");
+  DbiDebug( "Creating CP::TDbiConfigStream" << "  ");
 
   // Search for row matching software and configuration names.
   int rowNum = fCFSetTable.GetNumRows()-1;
@@ -118,7 +118,7 @@ fSoftwName(SoftName)
     if (    fCFSet->GetParamValue(0) == fSoftwName
 	 && fCFSet->GetParamValue(1) == fConfigName ) {
       fVRec = *fCFSetTable.GetValidityRec(fCFSet);
-      DbiLog( "ND::TDbiConfigStream for " << fSoftwName
+      DbiLog( "CP::TDbiConfigStream for " << fSoftwName
 				 << "," << fConfigName
 				 << " has validity rec: " << fVRec
 				 << " and aggregate no.: " << fCFSet->GetAggregateNo()
@@ -135,12 +135,12 @@ fSoftwName(SoftName)
   fCFSet = 0;
 
   fVRec.SetDbNo(0);
-  fVRec.SetTableProxy(&ND::TDbiResultSetHandle<ND::TDbiConfigSet>::GetTableProxy(tableName));
-  ND::TVldTimeStamp start(1970,1,1,0,0,0);
-  ND::TVldTimeStamp   end(2038,1,1,0,0,0);
-  ND::TVldRange vr(127,127,start,end,"ND::TDbiConfigStream");
+  fVRec.SetTableProxy(&CP::TDbiResultSetHandle<CP::TDbiConfigSet>::GetTableProxy(tableName));
+  CP::TVldTimeStamp start(1970,1,1,0,0,0);
+  CP::TVldTimeStamp   end(2038,1,1,0,0,0);
+  CP::TVldRange vr(127,127,start,end,"CP::TDbiConfigStream");
   fVRec.SetVldRange(vr);
-  DbiLog( "ND::TDbiConfigStream for " << fSoftwName
+  DbiLog( "CP::TDbiConfigStream for " << fSoftwName
 			     << "," << fConfigName
 			     << " has no existing entry; creating validity rec: " << fVRec << "  ");
 
@@ -148,7 +148,7 @@ fSoftwName(SoftName)
 
 //.....................................................................
 
-ND::TDbiConfigStream::~TDbiConfigStream() {
+CP::TDbiConfigStream::~TDbiConfigStream() {
 //
 //
 //  Purpose: Destructor
@@ -172,22 +172,22 @@ ND::TDbiConfigStream::~TDbiConfigStream() {
 //  None.
 
 
-  DbiDebug( "Destroying ND::TDbiConfigStream" << "  ");
+  DbiDebug( "Destroying CP::TDbiConfigStream" << "  ");
 
 }
 
 //.....................................................................
 
 
-  ostream& operator<<(ostream& os, const ND::TDbiConfigStream& cfStream) {
+  ostream& operator<<(ostream& os, const CP::TDbiConfigStream& cfStream) {
 
 //
 //
-//  Purpose:  Output status of ND::TDbiConfigStream on ostream.
+//  Purpose:  Output status of CP::TDbiConfigStream on ostream.
 //
 //  Arguments:
 //    os           in    ostream to be outout
-//    cfStream     in    ND::TDbiConfigStream whise status is to be output.
+//    cfStream     in    CP::TDbiConfigStream whise status is to be output.
 //
 //  Return:    Updated ostream
 //
@@ -196,23 +196,23 @@ ND::TDbiConfigStream::~TDbiConfigStream() {
 //  Specification:-
 //  =============
 //
-//  o Output status of ND::TDbiConfigStream on ostream.
+//  o Output status of CP::TDbiConfigStream on ostream.
 
 //  Program Notes:-
 //  =============
 
 //  None.
 
-  const ND::TDbiConfigSet* cfSet = cfStream.GetConfigSet();
+  const CP::TDbiConfigSet* cfSet = cfStream.GetConfigSet();
 
-  if ( cfSet )  os << "ND::TDbiConfigSet contains: " << *cfSet << endl;
-  else          os << "ND::TDbiConfigSet is empty! " << endl;
+  if ( cfSet )  os << "CP::TDbiConfigSet contains: " << *cfSet << endl;
+  else          os << "CP::TDbiConfigSet is empty! " << endl;
   return os;
 }
 
 //.....................................................................
 
-const ND::TDbiConfigStream& ND::TDbiConfigStream::operator>>(TDbiRegistry* reg) {
+const CP::TDbiConfigStream& CP::TDbiConfigStream::operator>>(TDbiRegistry* reg) {
 //
 //
 //  Purpose:  Stream configuration data into TDbiRegistry object.
@@ -221,15 +221,15 @@ const ND::TDbiConfigStream& ND::TDbiConfigStream::operator>>(TDbiRegistry* reg) 
 //    reg          in    Empty TDbiRegistry object (contents ignored)
 //                 out   Filled TDbiRegistry object.
 //
-//  Return:    Original ND::TDbiConfigStream object.
+//  Return:    Original CP::TDbiConfigStream object.
 //
 //  Contact:   N. West
 //
 //  Specification:-
 //  =============
 //
-//  o Erase the contents of reg and refill from the ND::TDbiConfigSet
-//    owned by this ND::TDbiConfigStream.
+//  o Erase the contents of reg and refill from the CP::TDbiConfigSet
+//    owned by this CP::TDbiConfigStream.
 
 //  Program Notes:-
 //  =============
@@ -246,7 +246,7 @@ const ND::TDbiConfigStream& ND::TDbiConfigStream::operator>>(TDbiRegistry* reg) 
   reg->UnLockValues();
   reg->Clear();
 
-//  Use the owned ND::TDbiConfigSet to fill reg.
+//  Use the owned CP::TDbiConfigSet to fill reg.
 
   if ( fCFSet ) {
     UInt_t numParams = fCFSet->GetNumParams();
@@ -269,7 +269,7 @@ const ND::TDbiConfigStream& ND::TDbiConfigStream::operator>>(TDbiRegistry* reg) 
 }
 //.....................................................................
 
-ND::TDbiConfigStream& ND::TDbiConfigStream::operator<<(const TDbiRegistry* reg) {
+CP::TDbiConfigStream& CP::TDbiConfigStream::operator<<(const TDbiRegistry* reg) {
 //
 //
 //  Purpose:  Stream configuration data from TDbiRegistry object.
@@ -294,7 +294,7 @@ ND::TDbiConfigStream& ND::TDbiConfigStream::operator<<(const TDbiRegistry* reg) 
     return *this;
   }
 
-  ND::TDbiFieldType stringType(TDbi::kString);
+  CP::TDbiFieldType stringType(TDbi::kString);
 
   ostringstream os;
   reg->PrintStream(os);
@@ -311,7 +311,7 @@ ND::TDbiConfigStream& ND::TDbiConfigStream::operator<<(const TDbiRegistry* reg) 
 
 //.....................................................................
 
-Bool_t ND::TDbiConfigStream::Write(UInt_t dbNo,
+Bool_t CP::TDbiConfigStream::Write(UInt_t dbNo,
                               const std::string& logComment,
                               Bool_t localTest ) {
 //
@@ -338,7 +338,7 @@ Bool_t ND::TDbiConfigStream::Write(UInt_t dbNo,
   // Use a global seqno number (or local if localTest) to define a unique aggregate number.
   int requireGlobal = localTest ? -1 : 1;
   if ( fVRec.GetAggregateNo() < 0 ) {
-    ND::TDbiCascader& cas = ND::TDbiDatabaseManager::Instance().GetCascader();
+    CP::TDbiCascader& cas = CP::TDbiDatabaseManager::Instance().GetCascader();
     Int_t aggNo = cas.AllocateSeqNo(fVRec.GetTableProxy()->GetTableName(),requireGlobal,dbNo);
     if ( aggNo <= TDbi::kMAXLOCALSEQNO && ! localTest ) {
          DbiSevere( "Cannot write out configuration data: no authorising entry in cascade." << "  ");
@@ -351,7 +351,7 @@ Bool_t ND::TDbiConfigStream::Write(UInt_t dbNo,
 		      << "," << fConfigName
 		      << " in table " << fVRec.GetTableProxy()->GetTableName() << "  ");
   }
-  ND::TDbiWriter<ND::TDbiConfigSet> writer(fVRec,dbNo,logComment);
+  CP::TDbiWriter<CP::TDbiConfigSet> writer(fVRec,dbNo,logComment);
   writer.SetRequireGlobalSeqno(requireGlobal);
   writer.SetOverlayCreationDate();
   writer << *fCFSet;

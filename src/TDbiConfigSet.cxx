@@ -10,7 +10,7 @@ using std::endl;
 
 #include <iostream>
 
-ClassImp(ND::TDbiConfigSet)
+ClassImp(CP::TDbiConfigSet)
 
 
 //   Definition of static data members
@@ -21,10 +21,10 @@ ClassImp(ND::TDbiConfigSet)
 //  ********************************************************
 
 #include "TDbiResultSetHandle.tpl"
-template class  ND::TDbiResultSetHandle<ND::TDbiConfigSet>;
+template class  CP::TDbiResultSetHandle<CP::TDbiConfigSet>;
 
 #include "TDbiWriter.tpl"
-template class  ND::TDbiWriter<ND::TDbiConfigSet>;
+template class  CP::TDbiWriter<CP::TDbiConfigSet>;
 
 //    Definition of all member functions (static or otherwise)
 //    *******************************************************
@@ -33,7 +33,7 @@ template class  ND::TDbiWriter<ND::TDbiConfigSet>;
 
 //.....................................................................
 
-ND::TDbiConfigSet::~TDbiConfigSet() {
+CP::TDbiConfigSet::~TDbiConfigSet() {
 //
 //
 //  Purpose:  Destructor
@@ -63,14 +63,14 @@ ND::TDbiConfigSet::~TDbiConfigSet() {
 ///
 ///  o Output configuration set to message stream.
 ///\endverbatim
-ostream& operator<<(ostream& s, const ND::TDbiConfigSet& cfSet) {
+ostream& operator<<(ostream& s, const CP::TDbiConfigSet& cfSet) {
 
 //  Program Notes:-
 //  =============
 
 //  None.
 
-  s << "ND::TDbiConfigSet: Number of parameters: "
+  s << "CP::TDbiConfigSet: Number of parameters: "
     << cfSet.GetNumParams() << endl;
 
   for ( UInt_t iParam = 0; iParam < cfSet.GetNumParams(); ++iParam) {
@@ -93,7 +93,7 @@ ostream& operator<<(ostream& s, const ND::TDbiConfigSet& cfSet) {
 ///  Arguments:
 ///    rs           in    Result Set used to fill object
 ///    vrec         in    Associated validity record (or 0 if filling
-///                                                    ND::TDbiValidityRec)
+///                                                    CP::TDbiValidityRec)
 ///
 ///  Return:
 ///
@@ -104,8 +104,8 @@ ostream& operator<<(ostream& s, const ND::TDbiConfigSet& cfSet) {
 ///
 ///  o Fill object from current (and only) row of Result Set.
 ///\endverbatim
-void ND::TDbiConfigSet::Fill(ND::TDbiInRowStream& rs,
-                        const ND::TDbiValidityRec* vrec) {
+void CP::TDbiConfigSet::Fill(CP::TDbiInRowStream& rs,
+                        const CP::TDbiValidityRec* vrec) {
 
 //  Program Notes:-
 //  =============
@@ -147,7 +147,7 @@ void ND::TDbiConfigSet::Fill(ND::TDbiInRowStream& rs,
 ///
 ///  o Get the name of selected parameter  or "" if parNo out of range.
 ///\endverbatim
-string ND::TDbiConfigSet::GetParamName(UInt_t parNo) const {
+string CP::TDbiConfigSet::GetParamName(UInt_t parNo) const {
 
 
 //  Program Notes:-
@@ -161,7 +161,7 @@ string ND::TDbiConfigSet::GetParamName(UInt_t parNo) const {
 }
 //.....................................................................
 
-ND::TDbiFieldType ND::TDbiConfigSet::GetParamType(UInt_t parNo) const {
+CP::TDbiFieldType CP::TDbiConfigSet::GetParamType(UInt_t parNo) const {
 //
 //
 //  Purpose:  Get the type of selected parameter.
@@ -186,7 +186,7 @@ ND::TDbiFieldType ND::TDbiConfigSet::GetParamType(UInt_t parNo) const {
 //  None.
 
  return ( parNo <= GetNumParams() ) ?
-   fParams[parNo]->Type : ND::TDbiFieldType(TDbi::kUnknown);
+   fParams[parNo]->Type : CP::TDbiFieldType(TDbi::kUnknown);
 
 }
 //.....................................................................
@@ -206,7 +206,7 @@ ND::TDbiFieldType ND::TDbiConfigSet::GetParamType(UInt_t parNo) const {
 ///
 ///  o Get the value of selected parameter  or "" if parNo out of range.
 ///\endverbatim
-string ND::TDbiConfigSet::GetParamValue(UInt_t parNo) const {
+string CP::TDbiConfigSet::GetParamValue(UInt_t parNo) const {
 
 //  Program Notes:-
 //  =============
@@ -220,9 +220,9 @@ string ND::TDbiConfigSet::GetParamValue(UInt_t parNo) const {
 
 //.....................................................................
 /// Purpose:  Add another entry to the end of the existing row.
-void ND::TDbiConfigSet::PushBack(const string& name,
+void CP::TDbiConfigSet::PushBack(const string& name,
                             const string& value,
-                            const ND::TDbiFieldType& type) {
+                            const CP::TDbiFieldType& type) {
 //
 //
 
@@ -251,13 +251,13 @@ void ND::TDbiConfigSet::PushBack(const string& name,
 ///  Program Notes:-
 ///  =============
 ///
-///  This method sneaks round the back of the ND::TDbiRowStream interface
+///  This method sneaks round the back of the CP::TDbiRowStream interface
 ///  and directly uses the private Store method as the data is already
 ///  in string form.  Its all in a good cause because this allows
-///  ND::TDbiConfigSet to output data from any type of table.
+///  CP::TDbiConfigSet to output data from any type of table.
 ///\endverbatim
-void ND::TDbiConfigSet::Store(ND::TDbiOutRowStream& ors,
-                         const ND::TDbiValidityRec* /* vrec */) const {
+void CP::TDbiConfigSet::Store(CP::TDbiOutRowStream& ors,
+                         const CP::TDbiValidityRec* /* vrec */) const {
 
   for ( vector<Param*>::const_iterator itr = fParams.begin();
         itr != fParams.end();

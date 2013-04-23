@@ -19,7 +19,7 @@
 #endif
 #endif
 
-namespace ND{
+namespace CP{
 namespace DbiSimFlag {
 
    typedef enum ESimFlag {

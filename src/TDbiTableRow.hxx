@@ -9,7 +9,7 @@
  *
  * $Id: TDbiTableRow.hxx,v 1.2 2011/06/09 14:44:29 finch Exp $
  *
- * \class ND::TDbiTableRow
+ * \class CP::TDbiTableRow
  *
  *
  * \brief
@@ -21,7 +21,7 @@
  *   much of the database machinery to be generic.
  *
  * \brief
- * <b>Subclass ND::obligations</b> All subclasses must have public default
+ * <b>Subclass CP::obligations</b> All subclasses must have public default
  *  and constructors.
  *
  * \brief
@@ -37,7 +37,7 @@
 #include <string>
 #include <cassert>
 
-namespace ND {
+namespace CP {
 class TDbiOutRowStream;
 class TDbiResultSet;
 class TDbiInRowStream;
@@ -45,7 +45,7 @@ class TDbiTableProxy;
 class TDbiValidityRec;
 }
 
-namespace ND {
+namespace CP {
 class TDbiTableRow : public TObject
 {
 

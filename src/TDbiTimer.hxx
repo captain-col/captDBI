@@ -4,7 +4,7 @@
 #define DBITIMER
 
 ////////////////////////////////////////////////////////////////////////
-/// \class ND::TDbiTimer                                                           
+/// \class CP::TDbiTimer                                                           
 ///                                                   
 ///                                                                    
 /// \brief <b> Concept: </b> Simple timer, record query progress and final times.       
@@ -18,11 +18,11 @@
 #include "TStopwatch.h"
 #include "TDbiFieldType.hxx"
 
-namespace ND {
+namespace CP {
 class TDbiTableMetaData;
 }
 
-namespace ND {
+namespace CP {
 class TDbiTimer
 {
 

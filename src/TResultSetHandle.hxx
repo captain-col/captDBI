@@ -3,7 +3,7 @@
 
 #include "TDbiResultSetHandle.hxx"
 
-namespace ND {
+namespace CP {
     class TEventContext;
 
 /// This is the base class for all results sets of rows of type T

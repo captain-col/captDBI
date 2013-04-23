@@ -7,7 +7,7 @@ Int_t DateTimeToUnixTime(const std::string& dateTime) {
 }
 
 std::string UnixTimeToDateTime(Int_t unixSecs) {
-  return TDbi::MakeDateTimeString(ND::TVldTimeStamp(unixSecs,0));
+  return TDbi::MakeDateTimeString(CP::TVldTimeStamp(unixSecs,0));
 }
 
 

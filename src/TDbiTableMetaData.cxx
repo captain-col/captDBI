@@ -17,13 +17,13 @@
 #include <MsgFormat.h>
 using std::endl;
 
-ClassImp(ND::TDbiTableMetaData)
+ClassImp(CP::TDbiTableMetaData)
 
 //   Definition of static data members
 //   *********************************
 
 
-ND::TDbiTableMetaData::ColumnAttributes ND::TDbiTableMetaData::fgDummy;
+CP::TDbiTableMetaData::ColumnAttributes CP::TDbiTableMetaData::fgDummy;
 
 //    Definition of all member functions (static or otherwise)
 //    *******************************************************
@@ -32,7 +32,7 @@ ND::TDbiTableMetaData::ColumnAttributes ND::TDbiTableMetaData::fgDummy;
 
 //.....................................................................
 
-ND::TDbiTableMetaData::TDbiTableMetaData(const string& tableName) :
+CP::TDbiTableMetaData::TDbiTableMetaData(const string& tableName) :
 fNumCols(0),
 fTableName(tableName)
 {
@@ -43,29 +43,29 @@ fTableName(tableName)
 //  Program Notes:-
 //  =============
 
-//  This is filled by the owning ND::TDbiTableProxy, as it is too low level to
-//  use the cascade to fill itself, hence the friend status granted to ND::TDbiDBProxy.
+//  This is filled by the owning CP::TDbiTableProxy, as it is too low level to
+//  use the cascade to fill itself, hence the friend status granted to CP::TDbiDBProxy.
 
 
-  DbiTrace( "Creating ND::TDbiTableMetaData" << "  ");
+  DbiTrace( "Creating CP::TDbiTableMetaData" << "  ");
 
 }
 
 //.....................................................................
 
-ND::TDbiTableMetaData::~TDbiTableMetaData() {
+CP::TDbiTableMetaData::~TDbiTableMetaData() {
 //
 //
 //  Purpose: Destructor
 
 
-  DbiTrace( "Destroying ND::TDbiTableMetaData" << "  ");
+  DbiTrace( "Destroying CP::TDbiTableMetaData" << "  ");
 
 }
 
 ///.....................................................................
 
-void ND::TDbiTableMetaData::Clear() {
+void CP::TDbiTableMetaData::Clear() {
 //
 //
 //  Purpose: Clear out existing data (apart from table name)
@@ -79,7 +79,7 @@ void ND::TDbiTableMetaData::Clear() {
 
 //.....................................................................
 
-void ND::TDbiTableMetaData::ExpandTo(UInt_t colNum) {
+void CP::TDbiTableMetaData::ExpandTo(UInt_t colNum) {
 //
 //
 //  Purpose: Expand table if required to specied colNum
@@ -110,7 +110,7 @@ void ND::TDbiTableMetaData::ExpandTo(UInt_t colNum) {
 
 //.....................................................................
 
-const  ND::TDbiTableMetaData::ColumnAttributes&  ND::TDbiTableMetaData::GetAttributes(Int_t colNum) const {
+const  CP::TDbiTableMetaData::ColumnAttributes&  CP::TDbiTableMetaData::GetAttributes(Int_t colNum) const {
 
 // Return a column attributes (will be dummy entry if requesting invalid column)
 
@@ -122,7 +122,7 @@ const  ND::TDbiTableMetaData::ColumnAttributes&  ND::TDbiTableMetaData::GetAttri
 
 //.....................................................................
 
-string ND::TDbiTableMetaData::GetToken(const char*& strPtr) {
+string CP::TDbiTableMetaData::GetToken(const char*& strPtr) {
 //
 //
 //  Purpose:  Skip spaces and return next token from string and move pointer on.
@@ -146,20 +146,20 @@ string ND::TDbiTableMetaData::GetToken(const char*& strPtr) {
 
 //.....................................................................
 
- ND::TDbiTableMetaData::ColumnAttributes& ND::TDbiTableMetaData::SetAttributes(Int_t colNum) {
+ CP::TDbiTableMetaData::ColumnAttributes& CP::TDbiTableMetaData::SetAttributes(Int_t colNum) {
 
 // Return a column attributes (will be dummy entry if requesting invalid column)
 
   this->ExpandTo(colNum);
   // Using const metho so must cast away constness.
-  return const_cast<ND::TDbiTableMetaData::ColumnAttributes&>(this->GetAttributes(colNum));
+  return const_cast<CP::TDbiTableMetaData::ColumnAttributes&>(this->GetAttributes(colNum));
 
 }
 
 
 //.....................................................................
 
-void ND::TDbiTableMetaData::SetColFieldType(const ND::TDbiFieldType& fieldType,
+void CP::TDbiTableMetaData::SetColFieldType(const CP::TDbiFieldType& fieldType,
                                        Int_t colNum) {
 //
 //
@@ -180,7 +180,7 @@ void ND::TDbiTableMetaData::SetColFieldType(const ND::TDbiFieldType& fieldType,
 
 //.....................................................................
 
-void ND::TDbiTableMetaData::SetFromSql(const string& sql) {
+void CP::TDbiTableMetaData::SetFromSql(const string& sql) {
 //
 //
 //  Purpose:  Reconstruct this object using SQL to create table.
@@ -191,10 +191,10 @@ void ND::TDbiTableMetaData::SetFromSql(const string& sql) {
 
   const char* strPtr = SqlUpper.Data();
 
-  string token1(ND::TDbiTableMetaData::GetToken(strPtr));
-  string token2(ND::TDbiTableMetaData::GetToken(strPtr));
-  string token3(ND::TDbiTableMetaData::GetToken(strPtr));
-  string token4(ND::TDbiTableMetaData::GetToken(strPtr));
+  string token1(CP::TDbiTableMetaData::GetToken(strPtr));
+  string token2(CP::TDbiTableMetaData::GetToken(strPtr));
+  string token3(CP::TDbiTableMetaData::GetToken(strPtr));
+  string token4(CP::TDbiTableMetaData::GetToken(strPtr));
 
   if ( token1 != "CREATE" || token2 != "TABLE" || token4 != "(" ) {
     DbiSevere( "Cannot recreate: SQL " << SqlUpper
@@ -204,21 +204,21 @@ void ND::TDbiTableMetaData::SetFromSql(const string& sql) {
 
   this->Clear();
   fTableName = token3;
-  DbiLog( "Recreating  ND::TDbiTableMetaData for table " << fTableName << "  ");
+  DbiLog( "Recreating  CP::TDbiTableMetaData for table " << fTableName << "  ");
 
 // Loop processing column specifications.
   Int_t col = 0;
 
   string delim;
   while ( delim != ")" ) {
-    string name = ND::TDbiTableMetaData::GetToken(strPtr);
+    string name = CP::TDbiTableMetaData::GetToken(strPtr);
 
 //  Deal with INDEX and PRIMARY KEY
     if ( name == "INDEX" ||  name == "KEY" || name == "PRIMARY" ) {
-      if ( name == "PRIMARY" || name == "KEY" )delim = ND::TDbiTableMetaData::GetToken(strPtr);
-      delim = ND::TDbiTableMetaData::GetToken(strPtr);
-      if ( delim == "(" ) while ( delim != ")" ) delim = ND::TDbiTableMetaData::GetToken(strPtr);
-      delim = ND::TDbiTableMetaData::GetToken(strPtr);
+      if ( name == "PRIMARY" || name == "KEY" )delim = CP::TDbiTableMetaData::GetToken(strPtr);
+      delim = CP::TDbiTableMetaData::GetToken(strPtr);
+      if ( delim == "(" ) while ( delim != ")" ) delim = CP::TDbiTableMetaData::GetToken(strPtr);
+      delim = CP::TDbiTableMetaData::GetToken(strPtr);
       continue;
     }
 
@@ -227,17 +227,17 @@ void ND::TDbiTableMetaData::SetFromSql(const string& sql) {
     this->SetColName(name,col);
     this->SetColIsNullable(col);
 
-    string type = ND::TDbiTableMetaData::GetToken(strPtr);
+    string type = CP::TDbiTableMetaData::GetToken(strPtr);
     int precision = 0;
-    delim = ND::TDbiTableMetaData::GetToken(strPtr);
+    delim = CP::TDbiTableMetaData::GetToken(strPtr);
     if ( delim == "(" ) {
-      delim = ND::TDbiTableMetaData::GetToken(strPtr);
+      delim = CP::TDbiTableMetaData::GetToken(strPtr);
       std::istringstream is(delim);
       is >> precision;
-      delim = ND::TDbiTableMetaData::GetToken(strPtr);
-      delim = ND::TDbiTableMetaData::GetToken(strPtr);
+      delim = CP::TDbiTableMetaData::GetToken(strPtr);
+      delim = CP::TDbiTableMetaData::GetToken(strPtr);
     }
-    ND::TDbiFieldType ft(type,precision);
+    CP::TDbiFieldType ft(type,precision);
     this->SetColFieldType(ft,col);
     DbiLog( "  Column: " << col << " name " << this->ColName(col)
 			  << " type " << this->ColFieldType(col).AsString()
@@ -246,13 +246,13 @@ void ND::TDbiTableMetaData::SetFromSql(const string& sql) {
 //  Collect optional qualifiers.
 
     while ( delim != ","  &&  delim != ")" ) {
-      string opt2 = ND::TDbiTableMetaData::GetToken(strPtr);
+      string opt2 = CP::TDbiTableMetaData::GetToken(strPtr);
       if ( delim == "NOT" && opt2 == "NULL") {
         this->SetColIsNullable(col,false);
-        delim = ND::TDbiTableMetaData::GetToken(strPtr);
+        delim = CP::TDbiTableMetaData::GetToken(strPtr);
       }
       else if ( delim == "PRIMARY" && opt2 == "KEY") {
-        delim = ND::TDbiTableMetaData::GetToken(strPtr);
+        delim = CP::TDbiTableMetaData::GetToken(strPtr);
       }
       else if ( delim == "AUTO_INCREMENT") {
         delim = opt2;
@@ -273,7 +273,7 @@ void ND::TDbiTableMetaData::SetFromSql(const string& sql) {
 
 //.....................................................................
 
-string ND::TDbiTableMetaData::Sql() const {
+string CP::TDbiTableMetaData::Sql() const {
 //
 //
 //  Purpose:  Return SQL string to create table.
@@ -283,7 +283,7 @@ string ND::TDbiTableMetaData::Sql() const {
   Bool_t mainTable = fTableName.substr(fTableName.size()-3,3) != "VLD";
 
   string tableName = fTableName;
-  ND::TDbiString sql;
+  CP::TDbiString sql;
   sql.GetString() = "";
   sql << "create table " << tableName << "(";
 

@@ -5,14 +5,14 @@
  *
  * $Id: TDbiRowStream.hxx,v 1.1 2011/01/18 05:49:20 finch Exp $
  *
- * \class ND::TDbiRowStream
+ * \class CP::TDbiRowStream
  *
  *
  * \brief
  * <b>Concept</b>  I/O buffer for a row of a table.
  *
  * \brief
- * <b>Purpose</b> This forms the base class ND::for TDbiInRowStream (input)
+ * <b>Purpose</b> This forms the base class CP::for TDbiInRowStream (input)
  *  and TDbiWriter (input)
  *
  * Contact: A.Finch@lancaster.ac.uk
@@ -24,11 +24,11 @@
 
 #include "TDbiFieldType.hxx"
 
-namespace ND {
+namespace CP {
 class TDbiTableMetaData;
 }
 
-namespace ND {
+namespace CP {
 class TDbiRowStream
 {
 

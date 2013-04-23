@@ -5,7 +5,7 @@
  *
  * $Id: TDbiValidityRec.hxx,v 1.1 2011/01/18 05:49:20 finch Exp $
  *
- * \class ND::TDbiValidityRec
+ * \class CP::TDbiValidityRec
  *
  *
  * \brief
@@ -30,15 +30,15 @@
 #include <iosfwd>
 #include <string>
 
-namespace ND {
+namespace CP {
 class TDbiBinaryFile;
 class TDbiTableProxy;
 class TDbiValidityRec;
 }
 
-ostream& operator<<(ostream& s, const ND::TDbiValidityRec& vRec);
+ostream& operator<<(ostream& s, const CP::TDbiValidityRec& vRec);
 
-namespace ND {
+namespace CP {
 class TDbiValidityRec : public TDbiTableRow
 {
 
@@ -48,13 +48,13 @@ public:
 // Constructors and destructors.
            TDbiValidityRec(Int_t dbNo = -1, Bool_t isGap = kTRUE);
            TDbiValidityRec(const TDbiValidityRec& from);
-           TDbiValidityRec(const ND::TVldRange& range,
+           TDbiValidityRec(const CP::TVldRange& range,
                           TDbi::Task task,
                           Int_t aggNo,
                           UInt_t seqNo,
                           Int_t dbNo = -1,
                           Bool_t isGap = kFALSE,
-                          ND::TVldTimeStamp time = ND::TVldTimeStamp(),
+                          CP::TVldTimeStamp time = CP::TVldTimeStamp(),
 			  UInt_t epoch = 0);
   virtual ~TDbiValidityRec();
 
@@ -63,37 +63,37 @@ public:
   virtual TDbiTableRow* CreateTableRow() const {
                                            return new TDbiValidityRec; }
         	 Int_t GetAggregateNo() const { return fAggregateNo; }
-          ND::TVldTimeStamp GetCreationDate() const { return fCreationDate; }
+          CP::TVldTimeStamp GetCreationDate() const { return fCreationDate; }
         	UInt_t GetDbNo() const { return fDbNo; }
         	UInt_t GetEpoch() const { return fEpoch; }
-          ND::TVldTimeStamp GetInsertDate() const { return fInsertDate; }
+          CP::TVldTimeStamp GetInsertDate() const { return fInsertDate; }
              TDbi::Task GetTask() const { return fTask; }
 	   std::string GetL2CacheName() const;
         	UInt_t GetSeqNo() const { return fSeqNo; }
   const TDbiTableProxy* GetTableProxy() const { return fTableProxy; }
-       const ND::TVldRange& GetVldRange() const { return fVldRange;}
+       const CP::TVldRange& GetVldRange() const { return fVldRange;}
                 Bool_t HasExpired(const TDbiValidityRec& other) const;
-                Bool_t HasExpired(const ND::TVldContext& vc,
+                Bool_t HasExpired(const CP::TVldContext& vc,
                                   const TDbi::Task& task) const;
-               Bool_t IsCompatible(const ND::TVldContext& vc,
+               Bool_t IsCompatible(const CP::TVldContext& vc,
                                     const TDbi::Task& task) const;
                 Bool_t IsGap() const { return fIsGap; }
                 Bool_t IsHigherPriority(const TDbiValidityRec& that,
 					Bool_t useCreationDate = false) const;
 
-static     std::string GetL2CacheName(UInt_t seqLo, UInt_t seqHi, ND::TVldTimeStamp ts);
+static     std::string GetL2CacheName(UInt_t seqLo, UInt_t seqHi, CP::TVldTimeStamp ts);
 
 // State changing member functions
-        void AndTimeWindow(const ND::TVldTimeStamp& start,
-                           const ND::TVldTimeStamp& end);
+        void AndTimeWindow(const CP::TVldTimeStamp& start,
+                           const CP::TVldTimeStamp& end);
         void SetAggregateNo(Int_t aggNo) { fAggregateNo = aggNo; }
         void SetDbNo(Int_t dbNo) { fDbNo = dbNo; }
         void SetEpoch(UInt_t epoch) { fEpoch = epoch; }
         void SetTableProxy(const TDbiTableProxy* tp) { fTableProxy = tp; }
-        void SetTimeWindow(const ND::TVldTimeStamp& start,
-                           const ND::TVldTimeStamp& end);
-        void SetVldRange(const ND::TVldRange& range) { fVldRange=range;}
-        void Trim(const ND::TVldTimeStamp& queryTime,
+        void SetTimeWindow(const CP::TVldTimeStamp& start,
+                           const CP::TVldTimeStamp& end);
+        void SetVldRange(const CP::TVldRange& range) { fVldRange=range;}
+        void Trim(const CP::TVldTimeStamp& queryTime,
                   const TDbiValidityRec& other);
 
 // I/O  member functions
@@ -114,13 +114,13 @@ private:
   Int_t fAggregateNo;
 
 ///  Creation date
-  ND::TVldTimeStamp fCreationDate;
+  CP::TVldTimeStamp fCreationDate;
 
 /// Cascade no. of source db =-1 unknown
   Int_t fDbNo;
 
 ///  Insertion date
-  ND::TVldTimeStamp fInsertDate;
+  CP::TVldTimeStamp fInsertDate;
 
 ///  kTRUE if corresponds to a gap.
     Bool_t fIsGap;
@@ -136,7 +136,7 @@ private:
   const TDbiTableProxy* fTableProxy;
 
 /// Validity range of record.
-  ND::TVldRange fVldRange;
+  CP::TVldRange fVldRange;
 
 /// Calibration Epoch
   UInt_t fEpoch;

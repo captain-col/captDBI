@@ -1,37 +1,37 @@
 #include "TTableRow.hxx"
 
-ClassImp(ND::TTableRow);
+ClassImp(CP::TTableRow);
 
 //_____________________________________________________________________________
 
-ND::TTableRow::TTableRow()  {
+CP::TTableRow::TTableRow()  {
 
    // Default constructor
 
-    DbiTrace("ND::TTableRow: Default ctor at:" << (void*) this);
+    DbiTrace("CP::TTableRow: Default ctor at:" << (void*) this);
 
 }
 
 
 //_____________________________________________________________________________
 
-ND::TTableRow::TTableRow(const ND::TTableRow& from) {
+CP::TTableRow::TTableRow(const CP::TTableRow& from) {
 
    // Copy constructor
 
-    DbiTrace("ND::TTableRow: Copy ctor at:" << (void*) this);
+    DbiTrace("CP::TTableRow: Copy ctor at:" << (void*) this);
 
-    //  Nothing to copy; no data member in ND::TDbiTableRow.
+    //  Nothing to copy; no data member in CP::TDbiTableRow.
 
 }
 
 //_____________________________________________________________________________
 
-ND::TTableRow::~TTableRow()  {
+CP::TTableRow::~TTableRow()  {
 
    // Destructor
 
-    DbiTrace("ND::TTableRow: dtor at:" << (void*) this);
+    DbiTrace("CP::TTableRow: dtor at:" << (void*) this);
 
 }
 

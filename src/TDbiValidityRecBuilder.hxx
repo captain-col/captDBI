@@ -5,7 +5,7 @@
  *
  * $Id: TDbiValidityRecBuilder.hxx,v 1.1 2011/01/18 05:49:20 finch Exp $
  *
- * \class ND::TDbiValidityRecBuilder
+ * \class CP::TDbiValidityRecBuilder
  *
  *
  * \brief
@@ -14,7 +14,7 @@
  *
  * \brief
  * <b>Purpose</b> Parse a TDbiInRowStream from a validity query and build
- *   TDbiValidityRecs for the best, with ND::TVldRange trimmed by neighbouring
+ *   TDbiValidityRecs for the best, with CP::TVldRange trimmed by neighbouring
  *   validity records of higher priority. For non-aggregated tables
  *   there will only be one TDbiValidityRec, but for aggregated data,
  *   there will be one for each aggregate
@@ -33,11 +33,11 @@
 #include "TVldContext.hxx"
 
 
-namespace ND {
+namespace CP {
 class TDbiDBProxy;
 }
 
-namespace ND {
+namespace CP {
 class TDbiValidityRecBuilder
 {
 
@@ -50,7 +50,7 @@ public:
 
 // Constructors and destructors
            TDbiValidityRecBuilder(const TDbiDBProxy& proxy,
-                                 const ND::TVldContext& vc,
+                                 const CP::TVldContext& vc,
                                  const TDbi::Task& task,
                                  Int_t selectDbNo = -1,
                                  Bool_t findFullTimeWindow = true);
@@ -91,7 +91,7 @@ UInt_t AddNewAgg(const TDbiValidityRec& vrec,Int_t aggNo);
 ///  Add new aggregate gap into tables and return its index
 UInt_t AddNewGap(Int_t aggNo);
 
-  void MakeGapRec(const ND::TVldContext& vc,
+  void MakeGapRec(const CP::TVldContext& vc,
                   const string& tableName,
                   Bool_t findFullTimeWindow = true);
 

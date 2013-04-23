@@ -4,7 +4,7 @@
 
 // Issue local and global SEQNOs.
 
-Int_t ND::TSeqNoAllocator::GetSeqNo(const std::string& tableName,
+Int_t CP::TSeqNoAllocator::GetSeqNo(const std::string& tableName,
                                     Int_t requireGlobal /* = 0 */,
                                     Int_t dbNo          /* = 0 */) const
 //   tableName       in    The table for which the SEQNO is required.
@@ -16,7 +16,7 @@ Int_t ND::TSeqNoAllocator::GetSeqNo(const std::string& tableName,
 //   dbNo            in     The entry in the cascade for which the SEQNO is required
 
 {
-   return ND::TDbiDatabaseManager::Instance().GetCascader().AllocateSeqNo(tableName,requireGlobal,dbNo);
+   return CP::TDbiDatabaseManager::Instance().GetCascader().AllocateSeqNo(tableName,requireGlobal,dbNo);
 
 }
 

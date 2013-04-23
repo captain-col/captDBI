@@ -7,7 +7,7 @@
 #include "TResultSetHandle.hxx"  // Needed for TDemo_DB_Table_LinkDef.hxx
 #include "TTableRow.hxx"
 
-namespace ND {
+namespace CP {
     class TTFBChannelId;
     class TDemo_DB_Table;
     class TResultInputStream;
@@ -20,11 +20,11 @@ namespace ND {
 /// 
 /// For table XXX_YYY (all tables names are upper case) the corresponding TTableRow subclass is
 /// 
-///     ND::TXxx_Yyy  (arbitrary capitalisation).
+///     CP::TXxx_Yyy  (arbitrary capitalisation).
 /// 
 /// This is a demonstration table row
 ///\endverbatim
-class ND::TDemo_DB_Table : public ND::TTableRow {
+class CP::TDemo_DB_Table : public CP::TTableRow {
 
   //using TObject::Print;
 using TTableRow::Fill;
@@ -54,10 +54,10 @@ public:
     virtual         UInt_t GetIndex(UInt_t defIndex) const {return fChannelId.AsUInt();}
 
     /// Required method to create new row.
-    virtual ND::TTableRow* MakeTableRow() const {return new TDemo_DB_Table;}
+    virtual CP::TTableRow* MakeTableRow() const {return new TDemo_DB_Table;}
 
     /// Required method to fill self from a ResultInputStream. 
-    virtual           void Fill(ND::TResultInputStream& ris);
+    virtual           void Fill(CP::TResultInputStream& ris);
     virtual           void Print(const Option_t* = "") const;
 
 private:
