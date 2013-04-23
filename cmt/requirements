@@ -1,0 +1,58 @@
+package captDBI
+# This package provides read access API to the offline calibration
+# database.  Version 1 was a wrapper package for MinosDBI, but since
+# Version 2 it has reimplemented the functionality with the minimal set of
+# classes, adapted to follow T2K conventions.  This version has been
+# subsequently adapted to CAPTAIN.
+
+# FOR MINOS and T2K
+#manager Nick West <n.west1@physics.ox.ac.uk>
+#manager Alex Finch <A.Finch@lancaster.ac.uk>
+
+# For CAPTAIN
+manager Clark McGrew <clark.mcgrew@stonybrook.edu>
+author captain-sw@simpa.lbl.gov
+
+branches cmt src dict app demo
+
+# Needed packages
+use captEvent 
+
+# Build methods to include.
+document version version *.cxx ../dict/*.cxx
+document register register
+document rootcint rootcint *_LinkDef.h
+document doxygen doxygen -group=documentation *.cxx *.hxx   ../doc/*.dox
+
+# The library to be build
+library captDBI *.cxx *.hxx ../dict/*.cxx
+
+# Build information used by packages that use this one.
+macro captDBI_cppflags " -DCAPTDBI_USED "
+macro captDBI_linkopts " -L$(CAPTDBIROOT)/$(captDBI_tag) -lcaptDBI "
+macro captDBI_stamps " $(CAPTDBIROOT)/$(captDBI_tag)/captDBI.stamp"
+
+# The paths to find this library.
+path_remove LD_LIBRARY_PATH "$(CAPTDBIROOT)"
+path_prepend LD_LIBRARY_PATH "$(CAPTDBIROOT)/$(captDBI_tag)"
+
+# library path for Mac OS X
+path_remove DYLD_LIBRARY_PATH "" \
+            Darwin            "$(CAPTDBIROOT)"
+path_prepend DYLD_LIBRARY_PATH "" \
+             Darwin            "$(CAPTDBIROOT)/$(captDBI_tag)"
+
+path_remove PATH "$(CAPTDBIROOT)"
+path_prepend PATH "$(CAPTDBIROOT)/$(captDBI_tag)"
+
+application demoDBI -group=demo ../demo/*.cxx
+
+application allocate_seq_no ../app/allocate_seq_no.cxx
+
+macro install_dir $(CAPTDBIROOT)/$(captDBI_tag)
+document installer installer ../app/database_updater.py 
+document installer installer ../app/database_access_string.py
+
+# Define a setup script to check that calibration database environment variables
+# are set.  If not, use defaults.
+setup_script caldb_env_setup
