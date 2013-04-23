@@ -14,8 +14,7 @@
 #include "TDbiString.hxx"
 #include "TDbiTableMetaData.hxx"
 #include <TDbiLog.hxx>
-#include <MsgFormat.h>
-using std::endl;
+#include <MsgFormat.hxx>
 
 ClassImp(CP::TDbiTableMetaData)
 
@@ -32,7 +31,7 @@ CP::TDbiTableMetaData::ColumnAttributes CP::TDbiTableMetaData::fgDummy;
 
 //.....................................................................
 
-CP::TDbiTableMetaData::TDbiTableMetaData(const string& tableName) :
+CP::TDbiTableMetaData::TDbiTableMetaData(const std::string& tableName) :
 fNumCols(0),
 fTableName(tableName)
 {
@@ -122,12 +121,12 @@ const  CP::TDbiTableMetaData::ColumnAttributes&  CP::TDbiTableMetaData::GetAttri
 
 //.....................................................................
 
-string CP::TDbiTableMetaData::GetToken(const char*& strPtr) {
+std::string CP::TDbiTableMetaData::GetToken(const char*& strPtr) {
 //
 //
 //  Purpose:  Skip spaces and return next token from string and move pointer on.
 
-  string token;
+  std::string token;
 
 // Skip white space and quit if at EOS.
   while ( isspace(*strPtr) ) ++strPtr;
@@ -180,7 +179,7 @@ void CP::TDbiTableMetaData::SetColFieldType(const CP::TDbiFieldType& fieldType,
 
 //.....................................................................
 
-void CP::TDbiTableMetaData::SetFromSql(const string& sql) {
+void CP::TDbiTableMetaData::SetFromSql(const std::string& sql) {
 //
 //
 //  Purpose:  Reconstruct this object using SQL to create table.
@@ -191,10 +190,10 @@ void CP::TDbiTableMetaData::SetFromSql(const string& sql) {
 
   const char* strPtr = SqlUpper.Data();
 
-  string token1(CP::TDbiTableMetaData::GetToken(strPtr));
-  string token2(CP::TDbiTableMetaData::GetToken(strPtr));
-  string token3(CP::TDbiTableMetaData::GetToken(strPtr));
-  string token4(CP::TDbiTableMetaData::GetToken(strPtr));
+  std::string token1(CP::TDbiTableMetaData::GetToken(strPtr));
+  std::string token2(CP::TDbiTableMetaData::GetToken(strPtr));
+  std::string token3(CP::TDbiTableMetaData::GetToken(strPtr));
+  std::string token4(CP::TDbiTableMetaData::GetToken(strPtr));
 
   if ( token1 != "CREATE" || token2 != "TABLE" || token4 != "(" ) {
     DbiSevere( "Cannot recreate: SQL " << SqlUpper
@@ -209,9 +208,9 @@ void CP::TDbiTableMetaData::SetFromSql(const string& sql) {
 // Loop processing column specifications.
   Int_t col = 0;
 
-  string delim;
+  std::string delim;
   while ( delim != ")" ) {
-    string name = CP::TDbiTableMetaData::GetToken(strPtr);
+    std::string name = CP::TDbiTableMetaData::GetToken(strPtr);
 
 //  Deal with INDEX and PRIMARY KEY
     if ( name == "INDEX" ||  name == "KEY" || name == "PRIMARY" ) {
@@ -227,7 +226,7 @@ void CP::TDbiTableMetaData::SetFromSql(const string& sql) {
     this->SetColName(name,col);
     this->SetColIsNullable(col);
 
-    string type = CP::TDbiTableMetaData::GetToken(strPtr);
+    std::string type = CP::TDbiTableMetaData::GetToken(strPtr);
     int precision = 0;
     delim = CP::TDbiTableMetaData::GetToken(strPtr);
     if ( delim == "(" ) {
@@ -246,7 +245,7 @@ void CP::TDbiTableMetaData::SetFromSql(const string& sql) {
 //  Collect optional qualifiers.
 
     while ( delim != ","  &&  delim != ")" ) {
-      string opt2 = CP::TDbiTableMetaData::GetToken(strPtr);
+      std::string opt2 = CP::TDbiTableMetaData::GetToken(strPtr);
       if ( delim == "NOT" && opt2 == "NULL") {
         this->SetColIsNullable(col,false);
         delim = CP::TDbiTableMetaData::GetToken(strPtr);
@@ -273,7 +272,7 @@ void CP::TDbiTableMetaData::SetFromSql(const string& sql) {
 
 //.....................................................................
 
-string CP::TDbiTableMetaData::Sql() const {
+std::string CP::TDbiTableMetaData::Sql() const {
 //
 //
 //  Purpose:  Return SQL string to create table.
@@ -282,7 +281,7 @@ string CP::TDbiTableMetaData::Sql() const {
 
   Bool_t mainTable = fTableName.substr(fTableName.size()-3,3) != "VLD";
 
-  string tableName = fTableName;
+  std::string tableName = fTableName;
   CP::TDbiString sql;
   sql.GetString() = "";
   sql << "create table " << tableName << "(";

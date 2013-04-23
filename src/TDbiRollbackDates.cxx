@@ -10,8 +10,7 @@
 #include "TDbi.hxx"
 #include "TDbiRollbackDates.hxx"
 #include <TDbiLog.hxx>
-#include <MsgFormat.h>
-using std::endl;
+#include <MsgFormat.hxx>
 #include "TDbiRegistry.hxx"
 #include "UtilString.hxx"
 #include "TVldTimeStamp.hxx"
@@ -210,28 +209,28 @@ void CP::TDbiRollbackDates::Show() const {
 
  std::ostream& msg=TDbiLog::GetLogStream();
   msg << "\n\nRollback Status:  ";
-  if ( fTableToDate.size() == 0 ) msg <<"Not enabled" << endl;
+  if ( fTableToDate.size() == 0 ) msg <<"Not enabled" << std::endl;
   else {
-    msg << "\n\n  Dates:- " << endl;
+    msg << "\n\n  Dates:- " << std::endl;
     name_map_t::const_reverse_iterator itr    = fTableToDate.rbegin();
     name_map_t::const_reverse_iterator itrEnd = fTableToDate.rend();
     for (; itr != itrEnd; ++itr) {
       std::string name = itr->first;
       if ( name.size() < 30 ) name.append(30-name.size(),' ');
-      msg <<"    " << name << "  " << itr->second << endl;
+      msg <<"    " << name << "  " << itr->second << std::endl;
     }
     msg << "\n  Rollback Type is 'INSERTDATE'";
     if ( fTableToType.size() ) {
-      msg << " except as follows:- " << endl;
+      msg << " except as follows:- " << std::endl;
       itr    = fTableToType.rbegin();
       itrEnd = fTableToType.rend();
       for (; itr != itrEnd; ++itr) {
         std::string name = itr->first;
         if ( name.size() < 30 ) name.append(30-name.size(),' ');
-        msg <<"    " << name << "  " << itr->second << endl;
+        msg <<"    " << name << "  " << itr->second << std::endl;
       }
     }
-    msg << endl;
+    msg << std::endl;
   }
 }
 

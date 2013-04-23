@@ -20,12 +20,11 @@
  *
  */
 
+#include "TDbi.hxx"
+
 #include <list>
 #include <map>
 #include <string>
-using std::string;
-
-#include "TDbi.hxx"
 
 namespace CP {
 class TVldContext;
@@ -52,7 +51,7 @@ typedef std::list<CP::TDbiResultSet*> ResultList_t;
 // Constructors and destructors.
 
            TDbiCache(TDbiTableProxy& qp,
-                    const string& tableName);
+                    const std::string& tableName);
   virtual ~TDbiCache();
 
 
@@ -64,11 +63,11 @@ typedef std::list<CP::TDbiResultSet*> ResultList_t;
 // Primary searches.
 const TDbiResultSet* Search(const CP::TVldContext& vc,
                         const TDbi::Task& task) const;
-const TDbiResultSet* Search(const string& sqlQualifiers) const;
+const TDbiResultSet* Search(const std::string& sqlQualifiers) const;
 
 /// Secondary search.
 const TDbiResultSet* Search(const TDbiValidityRec& vr,
-                        const string& sqlQualifiers = "") const;
+                        const std::string& sqlQualifiers = "") const;
       ostream& ShowStatistics(ostream& msg) const;
 
 // State changing member functions
@@ -98,7 +97,7 @@ private:
   TDbiTableProxy&  fTableProxy;
 
 /// Name of associated table.
-  const string& fTableName;
+  const std::string& fTableName;
 
 /// Map of sub-caches indexed by aggregate number.
 /// Each sub-cache is a list of owned results for

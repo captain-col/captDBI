@@ -32,12 +32,11 @@
  *
  */
 
+#include "TDbi.hxx"
+
 #include <string>
-using std::string;
 #include <list>
 #include <vector>
-
-#include "TDbi.hxx"
 
 namespace CP {
 class TDbiCascader;
@@ -65,7 +64,7 @@ typedef const std::vector<UInt_t> SeqList_t;
 
 // Constructors.
            TDbiDBProxy(TDbiCascader& cascader,
-                      const string& tableName,
+                      const std::string& tableName,
                       const TDbiTableMetaData* metaData,
                       const TDbiTableMetaData* metaValid,
                       const TDbiTableProxy* tableProxy);
@@ -74,7 +73,7 @@ typedef const std::vector<UInt_t> SeqList_t;
 // State testing member functions
               Bool_t HasEpoch() const;
               UInt_t GetNumDb() const;
-       const string& GetTableName() const { return fTableName; }
+       const std::string& GetTableName() const { return fTableName; }
 const TDbiTableProxy* GetTableProxy() const { return fTableProxy; }
                 void StoreMetaData(TDbiTableMetaData& metaData) const;
               Bool_t TableExists(Int_t selectDbNo=-1) const;
@@ -93,13 +92,13 @@ const TDbiTableProxy* GetTableProxy() const { return fTableProxy; }
 /// Secondary query for aggregate and extended context queries.
   TDbiInRowStream* QuerySeqNos(SeqList_t& seqNos,
                             UInt_t dbNo,
-                            const string& sqlData = "",
-                            const string& fillOpts = "") const;
+                            const std::string& sqlData = "",
+                            const std::string& fillOpts = "") const;
 #endif
   TDbiInRowStream* QueryValidity(const CP::TVldContext& vc,
                               const TDbi::Task& task,
                               UInt_t dbNo) const;
-  TDbiInRowStream* QueryValidity(const string& context,
+  TDbiInRowStream* QueryValidity(const std::string& context,
                               const TDbi::Task& task,
                               UInt_t dbNo) const;
   TDbiInRowStream* QueryValidity(UInt_t seqNo,
@@ -116,7 +115,7 @@ const TDbiTableProxy* GetTableProxy() const { return fTableProxy; }
                              UInt_t dbNo) const;
 
 // State changing member functions
-	   void SetSqlCondition(const string& sql) {
+	   void SetSqlCondition(const std::string& sql) {
                                                   fSqlCondition = sql; }
 
 private:
@@ -139,10 +138,10 @@ private:
 
 /// Optional condition to be applied.
 /// See Usage Notes.
-  string fSqlCondition;
+  std::string fSqlCondition;
 
 /// Table Name
-  string fTableName;
+  std::string fTableName;
 
 /// Owning TDbiTableProxy.
    const TDbiTableProxy* fTableProxy;

@@ -68,9 +68,7 @@
 #include "DbiDetector.hxx"
 #include "DbiSimFlag.hxx"
 #include <TDbiLog.hxx>
-#include <MsgFormat.h>
-using std::endl;
-using std::string;
+#include <MsgFormat.hxx>
 #include "TDbi.hxx"
 #include "TDbiException.hxx"
 #include "TDbiExceptionLog.hxx"
@@ -130,7 +128,7 @@ std::string TDbi::GetVldDescr(const char* tableName,
 //  be updated as that format is hardwired into an SQL CREATE TABLE
 //  command in this function.
 
-  string sql;
+  std::string sql;
   sql += "create ";
   if ( isTemporary ) sql += "temporary ";
   sql += "table ";
@@ -152,27 +150,27 @@ std::string TDbi::GetVldDescr(const char* tableName,
 
 //.....................................................................
 
-string TDbi::MakeDateTimeString(const CP::TVldTimeStamp& timeStamp) {
+std::string TDbi::MakeDateTimeString(const CP::TVldTimeStamp& timeStamp) {
 //
 //
-//  Purpose: Convert CP::TVldTimeStamp to SQL DateTime string.
+//  Purpose: Convert CP::TVldTimeStamp to SQL DateTime std::string.
 //
 //  Arguments:
 //    timeStamp    in    CP::TVldTimeStamp to be converted.
 //
-//  Return: SQL DateTime string corresponding to CP::TVldTimeStamp.
+//  Return: SQL DateTime std::string corresponding to CP::TVldTimeStamp.
 //
 //  Contact:   N. West
 //
 //  Specification:-
 //  =============
 //
-//  o Return SQL DateTime string corresponding to CP::TVldTimeStamp.
+//  o Return SQL DateTime std::string corresponding to CP::TVldTimeStamp.
 
 //  Program Notes:-
 //  =============
 
-//  The format of a  SQL DateTime string is:-
+//  The format of a  SQL DateTime std::string is:-
 //
 //            YYYY-MM-DD HH:MM:SS
 //    e.g.    2001-01-03 00:00:00
@@ -218,8 +216,8 @@ CP::TVldTimeStamp TDbi::MakeTimeStamp(const std::string& sqlDateTime,
     int sec;};
   char dummy;
 
-  static string lo = "1970-01-01 00:00:00";
-  static string hi = "2038-01-19 03:14:07";
+  static std::string lo = "1970-01-01 00:00:00";
+  static std::string hi = "2038-01-19 03:14:07";
 
   // Set up defaults from 0:0am today.
   CP::TVldTimeStamp nowTS;

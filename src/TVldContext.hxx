@@ -34,6 +34,7 @@
 
 namespace CP {
 class TVldContext;
+std::ostream& operator<<(std::ostream& os, const CP::TVldContext& vldts);
 
 class TVldContext : public TObject {
 
@@ -85,7 +86,7 @@ class TVldContext : public TObject {
    ClassDef(CP::TVldContext,2)  // CP::TVldTimeStamp+Detector+SimFlag
 
 };
-}; std::ostream& operator<<(std::ostream& os, const CP::TVldContext& vldts);
+}; 
 
 #ifndef __CINT__
 //=============================================================================

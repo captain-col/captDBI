@@ -55,7 +55,7 @@ public:
                                  Int_t selectDbNo = -1,
                                  Bool_t findFullTimeWindow = true);
            TDbiValidityRecBuilder(const TDbiDBProxy& proxy,
-                                 const string& context,
+                                 const std::string& context,
                                  const TDbi::Task& task);
             TDbiValidityRecBuilder(const TDbiValidityRec& vr,
                                   const std::string tableName);
@@ -92,7 +92,7 @@ UInt_t AddNewAgg(const TDbiValidityRec& vrec,Int_t aggNo);
 UInt_t AddNewGap(Int_t aggNo);
 
   void MakeGapRec(const CP::TVldContext& vc,
-                  const string& tableName,
+                  const std::string& tableName,
                   Bool_t findFullTimeWindow = true);
 
 // Data members

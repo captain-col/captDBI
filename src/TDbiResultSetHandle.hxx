@@ -26,15 +26,14 @@
  *
  */
 
-#include <map>
-#include <string>
-using std::string;
-
 #include "TDbi.hxx"
 #include "TDbiResultSet.hxx"
 #include "TDbiDatabaseManager.hxx"  //Only for cleaner
 #include "TDbiValidityRec.hxx"
 #include "TVldContext.hxx"
+
+#include <map>
+#include <string>
 
 namespace CP {
 class TDbiResultSet;
@@ -56,21 +55,21 @@ public:
                         TDbi::Task task = TDbi::kDefaultTask,
                         TDbi::AbortTest abortTest = TDbi::kTableMissing,
                         Bool_t findFullTimeWindow = true);
-           TDbiResultSetHandle(const string& tableName,
+           TDbiResultSetHandle(const std::string& tableName,
                         const CP::TVldContext& vc,
                         TDbi::Task task = TDbi::kDefaultTask,
                         TDbi::AbortTest abortTest = TDbi::kTableMissing,
                         Bool_t findFullTimeWindow = true);
-            TDbiResultSetHandle(const string& tableName,
+            TDbiResultSetHandle(const std::string& tableName,
                          const TDbiSqlContext& context,
 			 const TDbi::Task& task = TDbi::kAnyTask,
-                         const string& data = "",
-                         const string& fillOpts = "",
+                         const std::string& data = "",
+                         const std::string& fillOpts = "",
                          TDbi::AbortTest abortTest = TDbi::kTableMissing);
-            TDbiResultSetHandle(const string& tableName,
+            TDbiResultSetHandle(const std::string& tableName,
                          const TDbiValidityRec& vrec,
                          TDbi::AbortTest abortTest = TDbi::kTableMissing);
-            TDbiResultSetHandle(const string& tableName,
+            TDbiResultSetHandle(const std::string& tableName,
                          UInt_t seqNo,
                          UInt_t dbNo,
                          TDbi::AbortTest abortTest = TDbi::kTableMissing);
@@ -89,7 +88,7 @@ const TDbiResultSet* GetResult() const { return fResult; }
 	           Bool_t ResultsFromDb() const;
 
     static TDbiTableProxy& GetTableProxy();
-    static TDbiTableProxy& GetTableProxy(const string& tableName);
+    static TDbiTableProxy& GetTableProxy(const std::string& tableName);
 
 // State changing member functions
     UInt_t NextQuery(Bool_t forwards = kTRUE);
@@ -98,8 +97,8 @@ const TDbiResultSet* GetResult() const { return fResult; }
                     Bool_t findFullTimeWindow = true);
     UInt_t NewQuery(const TDbiSqlContext& context,
 		    const TDbi::Task& task = 0,
-                    const string& data = "",
-                    const string& fillOpts = "");
+                    const std::string& data = "",
+                    const std::string& fillOpts = "");
     UInt_t NewQuery(const TDbiValidityRec& vrec);
     UInt_t NewQuery(UInt_t seqNo,UInt_t dbNo);
 
@@ -133,7 +132,7 @@ const TDbiResultSet* fResult;
   CP::DbiSimFlag::SimFlag_t fSimType;
 
 #ifndef __CINT__ //  Hide map from CINT; it complains about missing Streamer() etc.
-static std::map<string,TDbiTableProxy*> fgNameToProxy;
+static std::map<std::string,TDbiTableProxy*> fgNameToProxy;
 #endif  // __CINT__
 static             TDbiTableProxy* fgTableProxy;
 

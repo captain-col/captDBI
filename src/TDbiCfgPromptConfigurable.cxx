@@ -1,8 +1,7 @@
 #include "TDbiCfgPromptConfigurable.hxx"
 #include "TDbiCfgDialog.hxx"
 #include <TDbiLog.hxx>
-#include <MsgFormat.h>
-using std::endl;
+#include <MsgFormat.hxx>
 #include <string.h>
 #include <stdlib.h>
 #include <typeinfo>

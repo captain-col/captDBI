@@ -14,8 +14,7 @@
 #include "TDbiValidityRec.hxx"
 #include "TDbiValidityRecBuilder.hxx"
 #include <TDbiLog.hxx>
-#include <MsgFormat.h>
-using std::endl;
+#include <MsgFormat.hxx>
 
 ClassImp(CP::TDbiTableProxy)
 
@@ -53,7 +52,7 @@ ClassImp(CP::TDbiTableProxy)
 ///  =============
 ///
 CP::TDbiTableProxy::TDbiTableProxy(CP::TDbiCascader* cascader,
-                             const string& tableName,
+                             const std::string& tableName,
                              const CP::TDbiTableRow* tableRow) :
 fCascader(cascader),
 fMetaData(tableName),
@@ -226,10 +225,10 @@ const CP::TDbiResultSet* CP::TDbiTableProxy::Query(const CP::TVldContext& vc,
 }
 //.....................................................................
 
-const CP::TDbiResultSet* CP::TDbiTableProxy::Query(const string& context,
+const CP::TDbiResultSet* CP::TDbiTableProxy::Query(const std::string& context,
                                       const TDbi::Task& task,
-                                      const string& data,
-                                      const string&fillOpts) {
+                                      const std::string& data,
+                                      const std::string&fillOpts) {
 //
 //
 //  Purpose:  Apply extended context query to database table and return result.
@@ -263,7 +262,7 @@ const CP::TDbiResultSet* CP::TDbiTableProxy::Query(const string& context,
   if ( task != TDbi::kAnyTask
        ) os << " and  Task = " << task;
   os <<  ';' << data << ';' << fillOpts;
-  string sqlQualifiers = os.str();
+  std::string sqlQualifiers = os.str();
 
   DbiVerbose(  "Extended query: sqlQualifiers: " << sqlQualifiers << "  ");
 
@@ -531,11 +530,11 @@ Bool_t CP::TDbiTableProxy::RestoreFromL2Cache(const CP::TDbiValidityRecBuilder& 
 //
 //  o Restore to cache but only if enabled and exists.
 
-  const string name(builder.GetL2CacheName());
+  const std::string name(builder.GetL2CacheName());
   DbiDebug( "Request to restore query result  " << name
 			 << "  ");
   if ( ! this->CanReadL2Cache() ) return kFALSE;
-  string cacheFileName;
+  std::string cacheFileName;
   if (  name != ""
    ) cacheFileName =  this->GetTableName() + "_"
                     + this->GetRowName() + "_"
@@ -543,7 +542,7 @@ Bool_t CP::TDbiTableProxy::RestoreFromL2Cache(const CP::TDbiValidityRecBuilder& 
   CP::TDbiBinaryFile bf(cacheFileName.c_str());
   if ( ! bf.IsOK() ) {
     DbiDebug( "Caching disabled or cannot open "
-			   << bf.GetFileName() << "  ");
+              << bf.GetFileName() << "  ");
     return kFALSE;
   }
 
@@ -598,7 +597,7 @@ Bool_t CP::TDbiTableProxy::RestoreFromL2Cache(const CP::TDbiValidityRecBuilder& 
 }
 //.....................................................................
 
-Bool_t CP::TDbiTableProxy::SaveToL2Cache(const string& name, CP::TDbiResultSet& res) {
+Bool_t CP::TDbiTableProxy::SaveToL2Cache(const std::string& name, CP::TDbiResultSet& res) {
 //
 //
 //  Purpose: Save result to named level 2 cache. Returns true if saved.
@@ -615,7 +614,7 @@ Bool_t CP::TDbiTableProxy::SaveToL2Cache(const string& name, CP::TDbiResultSet& 
 			 << " ; can be saved? " << res.CanSave() << "  ");
   if ( ! this->CanWriteL2Cache() || ! res.ResultsFromDb() || ! res.CanSave() ) return kFALSE;
 
-  string cacheFileName;
+  std::string cacheFileName;
   if (  name != ""
    ) cacheFileName =  this->GetTableName() + "_"
                     + this->GetRowName() + "_"
@@ -642,13 +641,13 @@ Bool_t CP::TDbiTableProxy::SaveToL2Cache(const string& name, CP::TDbiResultSet& 
 }
 //.....................................................................
 
-void CP::TDbiTableProxy::SetSqlCondition(const string& sql) {
+void CP::TDbiTableProxy::SetSqlCondition(const std::string& sql) {
 //
 //
 //  Purpose:  Apply Sql condition to its CP::TDbiDBProxy.
 //
 //  Arguments:
-//   sql           in    SQL condition string (excluding where).
+//   sql           in    SQL condition std::string (excluding where).
 //
 //  Return:  n/a
 //

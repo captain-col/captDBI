@@ -9,8 +9,7 @@
 #include "TDbiValidityRec.hxx"
 #include "TDbiValidityRecBuilder.hxx"
 #include <TDbiLog.hxx>
-#include <MsgFormat.h>
-using std::endl;
+#include <MsgFormat.hxx>
 #include "TVldContext.hxx"
 
 ClassImp(CP::TDbiValidityRecBuilder)
@@ -77,7 +76,7 @@ fTask(task)
   CP::DbiSimFlag::SimFlag_t       sim(vc.GetSimFlag());
   CP::TVldTimeStamp             ts(vc.GetTimeStamp());
   CP::DbiSimFlag::SimFlag_t       simTry(sim);
-  const string& tableName = proxy.GetTableName();
+  const std::string& tableName = proxy.GetTableName();
   Int_t sumTimeWindows = 0;
   Int_t numTimeWindows = 0;
 
@@ -227,18 +226,18 @@ fTask(task)
  {
     std::ostream& msg=TDbiLog::GetLogStream();
 
-  msg << "CP::TDbiValidityRecBuilder:" << endl
-      << " Query: " << vc.AsString() << endl
+  msg << "CP::TDbiValidityRecBuilder:" << std::endl
+      << " Query: " << vc.AsString() << std::endl
       << " using associated SimFlag: " << CP::DbiSimFlag::AsString(simTry)
       << " for " << CP::DbiSimFlag::AsString(sim)
       << " found " << numVRecIn
       << " vrecs in database, for " << fVRecs.size()
-      << " aggregates:-." << endl;
+      << " aggregates:-." << std::endl;
 
   for ( unsigned int irec = 0; irec < GetNumValidityRec(); ++irec ) {
     const CP::TDbiValidityRec& vrec = GetValidityRec(irec);
     if ( vrec.GetAggregateNo() != -2
-	 )   msg << " " << irec << " " << GetValidityRec(irec) << endl;
+	 )   msg << " " << irec << " " << GetValidityRec(irec) << std::endl;
   }
 
 }
@@ -271,7 +270,7 @@ fTask(task)
 //.....................................................................
 
 CP::TDbiValidityRecBuilder::TDbiValidityRecBuilder(const CP::TDbiDBProxy& proxy,
-                                             const string& context,
+                                             const std::string& context,
                                              const TDbi::Task& task):
 fIsExtendedContext(kTRUE),
 fTask(task)
@@ -372,14 +371,14 @@ fTask(task)
   // if( TDbiLog::GetLogLevel() >= TDbiLog::kLogLevel
     std::ostream& msg=TDbiLog::GetLogStream();
 
-  msg << "CP::TDbiValidityRecBuilder:" << endl
-      << " Extended context query: " << context << endl
+  msg << "CP::TDbiValidityRecBuilder:" << std::endl
+      << " Extended context query: " << context << std::endl
       << " found " << numVRecIn
       << " vrecs in database, for " << fVRecs.size()
-      << " records:-." << endl;
+      << " records:-." << std::endl;
 
   for ( unsigned int irec = 0; irec < GetNumValidityRec(); ++irec ) {
-    msg << " " << irec << " " << GetValidityRec(irec) << endl;
+    msg << " " << irec << " " << GetValidityRec(irec) << std::endl;
   }
   return;
 
@@ -568,7 +567,7 @@ Int_t CP::TDbiValidityRecBuilder::IndexOfAggno(Int_t aggNo) const {
 //.....................................................................
 
 void CP::TDbiValidityRecBuilder::MakeGapRec(const CP::TVldContext& vc,
-                                       const string& tableName,
+                                       const std::string& tableName,
                                        Bool_t findFullTimeWindow) {
 //
 //

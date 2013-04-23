@@ -8,8 +8,7 @@
 
 #include "TDbiException.hxx"
 #include <TDbiLog.hxx>
-#include <MsgFormat.h>
-using std::endl;
+#include <MsgFormat.hxx>
 
 ClassImp(CP::TDbiException)
 
@@ -84,7 +83,7 @@ CP::TDbiException::~TDbiException() {
 std::ostream& operator<<(std::ostream& os, const CP::TDbiException& e) {
 
   os << "Error " << e.GetErrorCode()
-     << " (" << e.GetMessage() << ")"  << endl;
+     << " (" << e.GetMessage() << ")"  << std::endl;
   return os;
 
 }

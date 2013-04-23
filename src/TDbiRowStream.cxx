@@ -22,8 +22,7 @@
 #include "TDbiTableMetaData.hxx"
 #include "TDbiRowStream.hxx"
 #include <TDbiLog.hxx>
-#include <MsgFormat.h>
-using std::endl;
+#include <MsgFormat.hxx>
 
 #include "UtilString.hxx"
 
@@ -122,7 +121,7 @@ const CP::TDbiFieldType& CP::TDbiRowStream::ColFieldType(UInt_t col) const {
 }
 //.....................................................................
 
-string CP::TDbiRowStream::ColName(UInt_t col) const {
+std::string CP::TDbiRowStream::ColName(UInt_t col) const {
 //
 //
 //  Purpose: Return specified column name, if defined
@@ -157,7 +156,7 @@ const CP::TDbiFieldType& CP::TDbiRowStream::CurColFieldType() const {
 
 //.....................................................................
 
-string CP::TDbiRowStream::CurColName() const {
+std::string CP::TDbiRowStream::CurColName() const {
 //
 //
 //  Purpose: Return current column name, if defined
@@ -216,7 +215,7 @@ Bool_t CP::TDbiRowStream::HasEpoch() const {
 
 //.....................................................................
 
-string CP::TDbiRowStream::TableName() const {
+std::string CP::TDbiRowStream::TableName() const {
 //
 //
 //  Purpose: Return table name in upper case.
@@ -227,7 +226,7 @@ string CP::TDbiRowStream::TableName() const {
 
 //.....................................................................
 
-string CP::TDbiRowStream::TableNameTc() const {
+std::string CP::TDbiRowStream::TableNameTc() const {
 //
 //
 //  Purpose: Return table name in true case.

@@ -8,8 +8,7 @@
 // insure that __CVSID__ symbol is defined.
 
 #include <TDbiLog.hxx>
-#include <MsgFormat.h>
-using std::endl;
+#include <MsgFormat.hxx>
 
 #include "TDbiResultSetHandle.tpl"
 #define  DbiResultPtr CP::TDbiResultSetHandle

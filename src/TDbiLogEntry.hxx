@@ -21,20 +21,18 @@
  *
  */
 
-#include <string>
-using std::string;
-#include <iosfwd>
-
-#include "TObject.h"
-
 #include "DbiDetector.hxx"
 #include "DbiSimFlag.hxx"
 #include "TDbi.hxx"
 #include "TDbiTableRow.hxx"
 #include "TVldTimeStamp.hxx"
 
-#include "TDbiResultSetHandle.hxx"    //Needed for LinkDef
-//#include "TDbiWriter.hxx"    //Needed for LinkDef
+#include "TDbiResultSetHandle.hxx"
+
+#include "TObject.h"
+
+#include <string>
+#include <iosfwd>
 
 namespace CP {
 class TDbiLogEntry;
@@ -42,9 +40,9 @@ class TDbiOutRowStream;
 class TDbiInRowStream;
 class TDbiTableProxy;
 class TDbiValidityRec;
+std::ostream& operator<<(std::ostream& s, const CP::TDbiLogEntry& logEntry);
 }
 
-std::ostream& operator<<(std::ostream& s, const CP::TDbiLogEntry& logEntry);
 
 namespace CP {
 class TDbiLogEntry : public TDbiTableRow
@@ -55,8 +53,8 @@ public:
   using TObject::Write;
 
 // Constructors and destructors.
-  TDbiLogEntry(const string& tableName = "",
-              const string& reason = "",
+  TDbiLogEntry(const std::string& tableName = "",
+              const std::string& reason = "",
 	      Int_t detMask = CP::DbiDetector::FullMask(),
 	      Int_t simMask = CP::DbiSimFlag::FullMask(),
               TDbi::Task task = 0,
@@ -73,31 +71,31 @@ public:
          Int_t GetAggregateNo() const { return -1; }
 
 // New member functions.
- const string& GetLogTableName() const { return fLogTableName; }
+ const std::string& GetLogTableName() const { return fLogTableName; }
 	 Int_t GetDetectorMask() const { return fLogDetMask; }
 	 Int_t GetLogSeqNoMin() const { return fLogSeqNoMin; }
 	 Int_t GetLogSeqNoMax() const { return fLogSeqNoMax; }
  	 Int_t GetLogNumSeqNo() const { return fLogNumSeqNo; }
 	 Int_t GetSimMask() const { return fLogSimMask; }
      TDbi::Task GetTask() const { return fLogTask; }
- const string& GetUserName() const { return fUserName; }
- const string& GetProcessName() const { return fProcessName; }
- const string& GetHostName() const { return fHostName; }
- const string& GetServerName() const { return fServerName; }
- const string& GetReason() const { return fReason; }
+ const std::string& GetUserName() const { return fUserName; }
+ const std::string& GetProcessName() const { return fProcessName; }
+ const std::string& GetHostName() const { return fHostName; }
+ const std::string& GetServerName() const { return fServerName; }
+ const std::string& GetReason() const { return fReason; }
   CP::TVldTimeStamp GetUpdateTime() const { return fUpdateTime; }
 
 	Bool_t HasReason() const { return fReason.size() > 0; }
 
 // State changing member functions
- 	  void SetReason(const string& reason);
+ 	  void SetReason(const std::string& reason);
 	  void SetDetectorMask(Int_t detMask) { fLogDetMask = detMask; }
 	  void SetSimMask(Int_t simMask) { fLogSimMask = simMask; }
           void SetTask(TDbi::Task task) { fLogTask = task; }
           void SetUpdateTime(const CP::TVldTimeStamp& updateTime) {
                                          fUpdateTime = updateTime; }
-          void Recreate (const string& tableName = "",
-                         const string& reason = "",
+          void Recreate (const std::string& tableName = "",
+                         const std::string& reason = "",
             	         Int_t detMask = CP::DbiDetector::FullMask(),
 	                 Int_t simMask = CP::DbiSimFlag::FullMask(),
                          TDbi::Task task = 0,
@@ -127,7 +125,7 @@ private:
   Int_t fSeqNo;
 
 /// Table being updated.
-  string fLogTableName;
+  std::string fLogTableName;
 
 /// Detector type mask of update.
   Int_t fLogDetMask;
@@ -151,19 +149,19 @@ private:
   CP::TVldTimeStamp fUpdateTime;
 
 /// User performing update.
-  string fUserName;
+  std::string fUserName;
 
 /// Process performing update.
-  string fProcessName;
+  std::string fProcessName;
 
 /// Host performing update.
-  string fHostName;
+  std::string fHostName;
 
 /// Db server being updated.
-  string fServerName;
+  std::string fServerName;
 
 /// Reason for update.
-  string fReason;
+  std::string fReason;
 
 
 // Note: fLogDetMask,fLogSimMask,fLogTask,fUpdateTime are used to construct the TDbiValidityRec

@@ -20,14 +20,7 @@
 #include "TDbiValRecSet.hxx"
 
 #include <TDbiLog.hxx>
-#include <MsgFormat.h>
-using std::auto_ptr;
-using std::endl;
-using std::istringstream;
-using std::ostringstream;
-using std::setw;
-using std::setfill;
-using std::setprecision;
+#include <MsgFormat.hxx>
 #include "UtilString.hxx"
 #include "TVldRange.hxx"
 
@@ -47,7 +40,7 @@ enum EFillState { kLOOKING_FOR_HEADER,
 //   Definition of file static members functions
 //   *******************************************
 
-static bool compStringPtrs(const string* str1, const string* str2 ) {
+static bool compStringPtrs(const std::string* str1, const std::string* str2 ) {
   return *str1 < *str2; }
 
 //    Definition of all member functions (static or otherwise)
@@ -154,7 +147,7 @@ fCreationDate(vrec.GetCreationDate())
 
 
   for(; ! rset->IsExhausted(); rset->FetchRow()) {
-    string str;
+    std::string str;
     rset->RowAsCsv(str);
     this->AddRow(str);
   }
@@ -216,17 +209,17 @@ Bool_t CP::TDbiSqlValPacket::AddDataRow(const CP::TDbiTableProxy& tblProxy,
 
 //.....................................................................
 /// add row to sql statements
-void CP::TDbiSqlValPacket::AddRow(const string & row){
+void CP::TDbiSqlValPacket::AddRow(const std::string & row){
 //
 //
 //  Purpose: Add row.
 //
 
-  string sql("INSERT INTO ");
+  std::string sql("INSERT INTO ");
   sql += this->GetTableName();
   if ( this->GetNumSqlStmts() == 0 ) sql += "VLD";
   sql += " VALUES (" + row + ");";
-  ostringstream seqno;
+  std::ostringstream seqno;
   seqno << this->GetSeqNo();
   this->SetSeqNoOnRow(sql,seqno.str());
   fSqlStmts.push_back(sql);
@@ -349,7 +342,7 @@ Bool_t CP::TDbiSqlValPacket::CreateTable(UInt_t dbNo) const {
   if ( ! CanBeStored() ) return kFALSE;
 
   // Locate required CP::TDbiStatement.
-  auto_ptr<CP::TDbiStatement> stmtDb(CP::TDbiDatabaseManager::Instance()
+  std::auto_ptr<CP::TDbiStatement> stmtDb(CP::TDbiDatabaseManager::Instance()
                                .GetCascader()
                                .CreateStatement(dbNo));
   if ( ! stmtDb.get() ) {
@@ -411,14 +404,14 @@ Bool_t CP::TDbiSqlValPacket::Fill(std::ifstream& is) {
   enum { kMAXTABLENAMELEN        = TDbi::kMAXTABLENAMELEN,
          kHEADER_TRAILER_MAX_LEN = kMAXTABLENAMELEN + 20 };
 
-  string nameHead;
-  string nameTrail;
+  std::string nameHead;
+  std::string nameTrail;
   UInt_t seqNoHead  = 0;
   UInt_t seqNoTrail = 0;
 
-  string line;
-  string msg;
-  string sql;
+  std::string line;
+  std::string msg;
+  std::string sql;
   int lineNum = 0;
 
   this->Reset();
@@ -439,7 +432,7 @@ Bool_t CP::TDbiSqlValPacket::Fill(std::ifstream& is) {
 	}
 
 	// Look for optional metadata.
-        if ( line.find("Metadata") != string::npos ) {
+        if ( line.find("Metadata") != std::string::npos ) {
           getline(is,fSqlMySqlMetaVld);
           ++lineNum;
           getline(is,fSqlMySqlMetaMain);
@@ -447,7 +440,7 @@ Bool_t CP::TDbiSqlValPacket::Fill(std::ifstream& is) {
           getline(is,line);
           ++lineNum;
           if (   line.substr(0,5) != "<<<<<"
-              || line.find("Metadata") == string::npos ) {
+              || line.find("Metadata") == std::string::npos ) {
             Report("Bad metadata",lineNum,line);
             continue;
 	  }
@@ -460,7 +453,7 @@ Bool_t CP::TDbiSqlValPacket::Fill(std::ifstream& is) {
 	}
 
         //  Collect table name and SeqNo.
-        istringstream istr(line.substr(5));
+        std::istringstream istr(line.substr(5));
         istr.width(kMAXTABLENAMELEN);
 	istr >> nameHead >> seqNoHead;
         if ( ! istr.eof() ) {
@@ -487,7 +480,7 @@ Bool_t CP::TDbiSqlValPacket::Fill(std::ifstream& is) {
         else {
 
 	  //  Collect table name and SeqNo.
-          istringstream istr(line.substr(5));
+            std::istringstream istr(line.substr(5));
           istr.width(kMAXTABLENAMELEN);
 	  istr >> nameTrail >> seqNoTrail;
           if ( ! istr.eof() ) msg = "Input error";
@@ -506,7 +499,7 @@ Bool_t CP::TDbiSqlValPacket::Fill(std::ifstream& is) {
             fTableName = nameHead;
 
 	    //Dig out the creation date from the first record.
-            string date = this->GetStmtValues(0)[9];
+            std::string date = this->GetStmtValues(0)[9];
 	    //Remove the quotes.
             date.erase(0,1);
             date.erase(date.size()-1,1);
@@ -543,7 +536,7 @@ Bool_t CP::TDbiSqlValPacket::Fill(std::ifstream& is) {
 }
 //.....................................................................
 /// Return a selected statment
-string CP::TDbiSqlValPacket::GetStmt(UInt_t stmtNo) const {
+std::string CP::TDbiSqlValPacket::GetStmt(UInt_t stmtNo) const {
 //
 //
 //  Purpose:  Return a selected statment
@@ -629,25 +622,25 @@ if ( log ) TDbiLog::GetLogStream()<< "Conflict found:"
 	     << "  SeqNo " << fSeqNo << "," << that.fSeqNo
 	     << "\n  TableName " << fTableName << "," << that.fTableName
 	     << "\n  Size " << fNumStmts << ","
-	     << that.fNumStmts << endl;
+	     << that.fNumStmts << std::endl;
     return kFALSE;
   }
 
-  list<string>::const_iterator itrThisBegin = fSqlStmts.begin();
-  list<string>::const_iterator itrThisEnd   = fSqlStmts.end();
-  list<string>::const_iterator itrThatBegin = that.fSqlStmts.begin();
-  list<string>::const_iterator itrThatEnd   = that.fSqlStmts.end();
+  std::list<std::string>::const_iterator itrThisBegin = fSqlStmts.begin();
+  std::list<std::string>::const_iterator itrThisEnd   = fSqlStmts.end();
+  std::list<std::string>::const_iterator itrThatBegin = that.fSqlStmts.begin();
+  std::list<std::string>::const_iterator itrThatEnd   = that.fSqlStmts.end();
 
-  list<string>::const_iterator itrThis = itrThisBegin;
-  list<string>::const_iterator itrThat = itrThatBegin;
+  std::list<std::string>::const_iterator itrThis = itrThisBegin;
+  std::list<std::string>::const_iterator itrThat = itrThatBegin;
 
   Bool_t isEqual = kTRUE;
 
   // Strip off InsertDate from first statement (assume its
   // the last parameter in list).
 
-  string strThis = (*itrThis).substr(0,(*itrThis).rfind(','));
-  string strThat = (*itrThat).substr(0,(*itrThat).rfind(','));
+  std::string strThis = (*itrThis).substr(0,(*itrThis).rfind(','));
+  std::string strThat = (*itrThat).substr(0,(*itrThat).rfind(','));
   if ( strThis != strThat ) {
   if ( ! log ) return kFALSE;
   isEqual = kFALSE;
@@ -666,7 +659,7 @@ if ( log ) TDbiLog::GetLogStream()<< "Conflict found:"
   ++itrThat;
   while ( itrThis != itrThisEnd && (*itrThis) == (*itrThat) ) {
 //     cout << "Debug: trying forward compare ..." << *itrThis
-// 	 << "::" << *itrThat << endl;
+// 	 << "::" << *itrThat << std::endl;
     ++itrThis;
     ++itrThat;
   }
@@ -679,7 +672,7 @@ if ( log ) TDbiLog::GetLogStream()<< "Conflict found:"
 
   while ( itrThis != itrThisEnd &&  (*itrThis) == (*itrThat) ) {
 //   cout << "Debug: trying reverse compare ..." << *itrThis
-// 	 << "::" << *itrThat << endl;
+// 	 << "::" << *itrThat << std::endl;
     ++itrThis;
     --itrThat;
   }
@@ -688,7 +681,7 @@ if ( log ) TDbiLog::GetLogStream()<< "Conflict found:"
   // O.K., we are out of luck so set up pointers to both sets
   // and sort these.
 
-  typedef vector<const string*>      shadow_list_t;
+  typedef std::vector<const std::string*>      shadow_list_t;
   typedef shadow_list_t::iterator  shadow_list_itr_t;
 
   shadow_list_t shadowThis;
@@ -751,8 +744,8 @@ void CP::TDbiSqlValPacket::Print(Option_t * /* option */) const {
   DbiInfo(  "   MySQL VLD table creation: \"" << fSqlMySqlMetaVld << "\"" << "  ");
 
   if ( GetNumSqlStmts() > 0 ) {
-    std::list<string>::const_iterator itr    = fSqlStmts.begin();
-    std::list<string>::const_iterator itrEnd = fSqlStmts.end();
+    std::list<std::string>::const_iterator itr    = fSqlStmts.begin();
+    std::list<std::string>::const_iterator itrEnd = fSqlStmts.end();
     for (; itr != itrEnd; ++itr)
       DbiInfo(  "   SqlStmt \"" << *itr << "\"" << "  ");
   }
@@ -766,7 +759,7 @@ void CP::TDbiSqlValPacket::Print(Option_t * /* option */) const {
 //.....................................................................
 //
 ///  Purpose:  Recreate and define first row (VLD - the validity record).
-void CP::TDbiSqlValPacket::Recreate(const string& tableName,
+void CP::TDbiSqlValPacket::Recreate(const std::string& tableName,
                                const CP::TVldRange& vr,
                                Int_t aggNo,
                                TDbi::Task task,             /*  Default: 0 */
@@ -824,7 +817,7 @@ void CP::TDbiSqlValPacket::Recreate(const string& tableName,
 ///\endverbatim
 void CP::TDbiSqlValPacket::Report(const char* msg,
                              UInt_t lineNum,
-                             const string& line) {
+                             const std::string& line) {
 //
 
 //  Program Notes:-
@@ -864,12 +857,12 @@ void CP::TDbiSqlValPacket::SetCreationDate(CP::TVldTimeStamp ts) {
   //  Update the validity row assuming:  "...,'creationdate',insertdate);"
   if ( this->GetNumSqlStmts() == 0 ) return;
 
-  string& vldRow = *fSqlStmts.begin();
-  string::size_type locEnd = vldRow.rfind(',');
-  if ( locEnd == string::npos ) return;
+  std::string& vldRow = *fSqlStmts.begin();
+  std::string::size_type locEnd = vldRow.rfind(',');
+  if ( locEnd == std::string::npos ) return;
   locEnd -=2;
-  string::size_type locStart = vldRow.rfind(',',locEnd);
-  if ( locStart == string::npos ) return;
+  std::string::size_type locStart = vldRow.rfind(',',locEnd);
+  if ( locStart == std::string::npos ) return;
   locStart+=2;
   vldRow.replace(locStart,locEnd-locStart+1,ts.AsString("s"));
 
@@ -884,17 +877,17 @@ void CP::TDbiSqlValPacket::SetEpoch(UInt_t epoch) {
   //  Update the validity row assuming:  "(seqno,timestart,timeend,epoch,....)
   if ( this->GetNumSqlStmts() == 0 ) return;
 
-  string& vldRow = *fSqlStmts.begin();
-  string::size_type locStart = 0;
+  std::string& vldRow = *fSqlStmts.begin();
+  std::string::size_type locStart = 0;
   for (int field = 0; field < 3; ++field) {
     locStart = vldRow.find(',',locStart+1);
-    if ( locStart == string::npos ) return;
+    if ( locStart == std::string::npos ) return;
   }
-  string::size_type locEnd = vldRow.find(',',locStart+1);
-  if ( locEnd == string::npos ) return;
+  std::string::size_type locEnd = vldRow.find(',',locStart+1);
+  if ( locEnd == std::string::npos ) return;
   locEnd  -=1;
   locStart+=1;
-  ostringstream epoch_str;
+  std::ostringstream epoch_str;
   epoch_str << epoch;
   vldRow.replace(locStart,locEnd-locStart+1,epoch_str.str());
 
@@ -938,12 +931,12 @@ void CP::TDbiSqlValPacket::SetSeqNo(UInt_t seqno) {
   //  Update all rows
   if ( this->GetNumSqlStmts() == 0 ) return;
 
-  ostringstream tmp;
+  std::ostringstream tmp;
   tmp << seqno;
-  const string seqnoStr = tmp.str();
+  const std::string seqnoStr = tmp.str();
 
-  std::list<string>::iterator itr    = fSqlStmts.begin();
-  std::list<string>::iterator itrEnd = fSqlStmts.end();
+  std::list<std::string>::iterator itr    = fSqlStmts.begin();
+  std::list<std::string>::iterator itrEnd = fSqlStmts.end();
   for (; itr != itrEnd; ++itr) SetSeqNoOnRow(*itr,seqnoStr);
 
 
@@ -951,17 +944,17 @@ void CP::TDbiSqlValPacket::SetSeqNo(UInt_t seqno) {
 
 //.....................................................................
 ///  Purpose:  Set Sequence number on supplied row
-void CP::TDbiSqlValPacket::SetSeqNoOnRow(string& row,const string& seqno) {
+void CP::TDbiSqlValPacket::SetSeqNoOnRow(std::string& row,const std::string& seqno) {
 //
 //
 
 //  Update row assuming:  "...(seqno, ...."
 
-  string::size_type locStart = row.find('(');
-  if ( locStart == string::npos ) return;
+  std::string::size_type locStart = row.find('(');
+  if ( locStart == std::string::npos ) return;
   ++locStart;
-  string::size_type locEnd = row.find(',',locStart);
-  if ( locEnd == string::npos ) return;
+  std::string::size_type locEnd = row.find(',',locStart);
+  if ( locEnd == std::string::npos ) return;
   row.replace(locStart,locEnd-locStart,seqno);
 
 }
@@ -1000,7 +993,7 @@ Bool_t CP::TDbiSqlValPacket::Store(UInt_t dbNo, Bool_t replace) const {
   }
 
   // Locate required CP::TDbiStatement.
-  auto_ptr<CP::TDbiStatement> stmtDb(CP::TDbiDatabaseManager::Instance()
+  std::auto_ptr<CP::TDbiStatement> stmtDb(CP::TDbiDatabaseManager::Instance()
                                .GetCascader()
                                .CreateStatement(dbNo));
   if ( ! stmtDb.get() ) {
@@ -1014,16 +1007,16 @@ Bool_t CP::TDbiSqlValPacket::Store(UInt_t dbNo, Bool_t replace) const {
   Bool_t first = kTRUE;
   int combineInserts = 0;
   int maxInserts = 20;
-  string sqlInserts;
+  std::string sqlInserts;
 
-  for (list<string>::const_iterator itr = fSqlStmts.begin();
+  for (std::list<std::string>::const_iterator itr = fSqlStmts.begin();
        itr != fSqlStmts.end();
        ++itr) {
     if ( first ) {
 //    On first statement replace InsertDate by current datetime.
-      string sql = *itr;
-      list<string>::size_type locDate = sql.rfind(",\'");
-      if ( locDate !=  string::npos ) {
+      std::string sql = *itr;
+      std::list<std::string>::size_type locDate = sql.rfind(",\'");
+      if ( locDate !=  std::string::npos ) {
         CP::TVldTimeStamp now;
         sql.replace(locDate+2,19,TDbi::MakeDateTimeString(now));
       }
@@ -1033,12 +1026,12 @@ Bool_t CP::TDbiSqlValPacket::Store(UInt_t dbNo, Bool_t replace) const {
       continue;
     }
 
-    string sql = *itr;
+    std::string sql = *itr;
 
 //  Reduce database I/O by combining groups of insert commands.
 
-    string::size_type insertIndex = sql.find("VALUES (");
-    if ( insertIndex == string::npos) {
+    std::string::size_type insertIndex = sql.find("VALUES (");
+    if ( insertIndex == std::string::npos) {
          DbiSevere( "Unexpected SQL : " << sql
 			     << "\n  should be of form INSERT INTO ... VALUES (...);" << "  ");
       return kFALSE;
@@ -1103,20 +1096,20 @@ Bool_t CP::TDbiSqlValPacket::Write(std::ofstream& ios,
     else {
 
 
-      ios << ">>>>>" << GetTableName() << " Metadata [MySQL]" << endl;
-      ios << fSqlMySqlMetaVld   << endl;
-      ios << fSqlMySqlMetaMain  << endl;
-      ios << "<<<<<" << GetTableName() << " Metadata" << endl;
+        ios << ">>>>>" << GetTableName() << " Metadata [MySQL]" << std::endl;
+      ios << fSqlMySqlMetaVld   << std::endl;
+      ios << fSqlMySqlMetaMain  << std::endl;
+      ios << "<<<<<" << GetTableName() << " Metadata" << std::endl;
     }
   }
 
-  ios << ">>>>>" << GetTableName() << "  " << GetSeqNo() << endl;
+  ios << ">>>>>" << GetTableName() << "  " << GetSeqNo() << std::endl;
 
-  for ( list<string>::const_iterator itr = fSqlStmts.begin();
+  for ( std::list<std::string>::const_iterator itr = fSqlStmts.begin();
         itr != fSqlStmts.end();
-        ++itr) ios << (*itr) << endl;
+        ++itr) ios << (*itr) << std::endl;
 
-  ios << "<<<<<" << GetTableName() << "  " << GetSeqNo() << endl;
+  ios << "<<<<<" << GetTableName() << "  " << GetSeqNo() << std::endl;
 
   return kTRUE;
 

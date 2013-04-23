@@ -7,12 +7,7 @@
 #include "TDbiOutRowStream.hxx"
 #include "TDbiValidityRec.hxx"
 #include <TDbiLog.hxx>
-#include <MsgFormat.h>
-using std::endl;
-using std::ostringstream;
-using std::setw;
-using std::setfill;
-using std::setprecision;
+#include <MsgFormat.hxx>
 
 #include "TVldRange.hxx"
 #include "TVldTimeStamp.hxx"
@@ -40,7 +35,7 @@ template class  CP::TDbiResultSetHandle<CP::TDbiValidityRec>;
 
 //.....................................................................
 
-ostream& operator<<(ostream& os, const CP::TDbiValidityRec& vRec) {
+ostream& CP::operator<<(ostream& os, const CP::TDbiValidityRec& vRec) {
 //
 //
 //  Purpose:  Output validity record to ostream.
@@ -65,14 +60,14 @@ ostream& operator<<(ostream& os, const CP::TDbiValidityRec& vRec) {
 
   const CP::TVldRange&           range(vRec.GetVldRange());
 
-  ostringstream os2;  //Use local to avoid manipulators from making permanent change to os.
+  std::ostringstream os2;  //Use local to avoid manipulators from making permanent change to os.
   os2 << "SeqNo: " << vRec.GetSeqNo()
       << "  AggNo: " << vRec.GetAggregateNo()
       << "  DbNo: " << vRec.GetDbNo();
   if ( vRec.IsGap() ) os2 << " (gap)";
   os2  << "  CP::TVldRange: |"
-       << setprecision(3) << std::ios::hex << setfill ('0') << "0x" <<  setw(3) << range.GetDetectorMask() << "|"
-       << "0x" << setw(3) << range.GetSimMask() << "|"
+       << std::setprecision(3) << std::ios::hex << std::setfill ('0') << "0x" <<  std::setw(3) << range.GetDetectorMask() << "|"
+       << "0x" << std::setw(3) << range.GetSimMask() << "|"
        << " " << range.GetTimeStart().AsString("s") << " .. "
        << range.GetTimeEnd().AsString("s")
        << " Epoch: " << vRec.GetEpoch()
@@ -373,7 +368,7 @@ std::string CP::TDbiValidityRec::GetL2CacheName(UInt_t seqLo,
 //  The static routine centralises the definition of cache names both for
 //  CP::TDbiValidityRec and CP::TDbiValidityRecBuilder.
 
-  ostringstream oss;
+    std::ostringstream oss;
   oss << seqLo << "_";
   if ( seqLo != seqHi )  oss << seqHi << "_";
   oss << ts.AsString("s");

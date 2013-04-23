@@ -9,8 +9,7 @@
 #include "TDbiServices.hxx"
 #include "TDbiTableRow.hxx"
 #include <TDbiLog.hxx>
-#include <MsgFormat.h>
-using std::endl;
+#include <MsgFormat.hxx>
 
 ClassImp(CP::TDbiResultSet)
 
@@ -49,7 +48,7 @@ CP::TDbiBinaryFile& operator>>(CP::TDbiBinaryFile& bf, CP::TDbiResultSet& res) {
 
 CP::TDbiResultSet::TDbiResultSet(CP::TDbiInRowStream* resultSet,
                      const CP::TDbiValidityRec* vrec,
-                     const string& sqlQualifiers) :
+                     const std::string& sqlQualifiers) :
 fID(++fgLastID),
 fCanReuse(kTRUE),
 fEffVRec(0),

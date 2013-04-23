@@ -20,25 +20,22 @@
  *
  */
 
-#include <string>
-using std::string;
-
-#include <vector>
-using std::vector;
-
 #include "TDbiResultSetHandle.hxx"    //Needed for LinkDef
 #include "TDbiWriter.hxx"    //Needed for LinkDef
 
 #include "TDbiTableRow.hxx"
 #include "TDbiFieldType.hxx"
+
 #include <iosfwd>
+#include <string>
+#include <vector>
 
 namespace CP {
-class TDbiConfigSet;
-class TDbiValidityRec;
+    class TDbiConfigSet;
+    class TDbiValidityRec;
+    std::ostream& operator<<(std::ostream& s, const CP::TDbiConfigSet& cfSet);
 }
 
-std::ostream& operator<<(std::ostream& s, const CP::TDbiConfigSet& cfSet);
 
 namespace CP {
 class TDbiConfigSet : public TDbiTableRow
@@ -55,14 +52,14 @@ public:
                                               return new TDbiConfigSet; }
         Int_t GetAggregateNo() const { return fAggregateNo; }
        UInt_t GetNumParams() const { return fParams.size(); }
-       string GetParamName(UInt_t parNo) const;
+       std::string GetParamName(UInt_t parNo) const;
  TDbiFieldType GetParamType(UInt_t parNo) const;
-       string GetParamValue(UInt_t parNo) const;
+       std::string GetParamValue(UInt_t parNo) const;
 
 // State changing member functions
          void Clear(const Option_t* = "") { fParams.clear(); }
-	 void PushBack(const string& name,
-                       const string& value,
+	 void PushBack(const std::string& name,
+                       const std::string& value,
                        const TDbiFieldType& type);
          void SetAggregateNo(Int_t aggNo) { fAggregateNo = aggNo; }
 
@@ -82,21 +79,21 @@ private:
     Param() {  }
     Param(const Param& that) {
                               *this = that;}
-    Param(const string& name,
-          const string& value,
+    Param(const std::string& name,
+          const std::string& value,
           const TDbiFieldType& type) : Name(name), Value(value), Type(type) {
                                    }
    ~Param() {  }
 
-    string Name;
-    string Value;
+    std::string Name;
+    std::string Value;
     TDbiFieldType Type;
   };
 
 // Data members
 
 // Set of parameter, one per column.
-  vector<Param*> fParams;
+  std::vector<Param*> fParams;
 
 /// Aggregate number or:-
 ///     -1 Non-aggregated data or multiple aggregates

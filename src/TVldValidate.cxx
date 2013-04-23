@@ -18,11 +18,8 @@
 #include "TSystem.h"
 
 #include <TDbiLog.hxx>
-#include <MsgFormat.h>
-using std::endl;
-using std::cout;
-using std::map;
-#include <MsgFormat.h>
+#include <MsgFormat.hxx>
+#include <MsgFormat.hxx>
 
 #include <iomanip>
 #include <map>
@@ -65,7 +62,7 @@ Bool_t CP::TVldValidate::RunAllTests()
 
    DbiInfo(  "VldValidate::RunAllTests had " << fail
       << " failures in " << tests << " tests"
-      << "  " << endl);
+      << "  " << std::endl);
 
    return (!fail);
 
@@ -76,16 +73,16 @@ Bool_t CP::TVldValidate::TestTimeStamp(void)
 {
    // Test CP::TVldTimeStamp behaviour
 
-   cout << "Test CP::TVldTimeStamp" << endl << endl;
+    std::cout << "Test CP::TVldTimeStamp" << std::endl << std::endl;
 
    Int_t fail = 0;
    Int_t tests = 0;
 
-   cout << "default ctor:    " << std::flush;
+   std::cout << "default ctor:    " << std::flush;
    CP::TVldTimeStamp defctor;
    defctor.Print("");
 
-   DbiInfo(  " Test output to MSG service: " << defctor << "  " << endl);
+   DbiInfo(  " Test output to MSG service: " << defctor << "  " << std::endl);
 
    time_t nowtime;
    time(&nowtime);
@@ -210,7 +207,7 @@ Bool_t CP::TVldValidate::TestTimeStamp(void)
 
    DbiInfo(  "VldValidate::TestTimeStamp had " << fail
       << " failures in " << tests << " tests"
-      << "  " << endl);
+      << "  " << std::endl);
 
    return (!fail);
 
@@ -237,11 +234,11 @@ Bool_t CP::TVldValidate::TestContext(void)
 {
    // Test CP::TVldContext
 
-   cout << "Test CP::TVldContext" << endl << endl;
+   std::cout << "Test CP::TVldContext" << std::endl << std::endl;
 
    Int_t fail = 0;
 
-   map<CP::TVldContext,long> vldc_map;
+   std::map<CP::TVldContext,long> vldc_map;
    long int entry = 0;
 
    CP::TVldContext defctor;
@@ -257,7 +254,7 @@ Bool_t CP::TVldValidate::TestContext(void)
    // for the same timestamp try different combinations of detector & simflag
    // in the expected order that it will sort
    // (detector primary over simflag --> detector in outer loop)
-   DbiInfo(  "VldContext test map<CP::TVldContext,long>" << "  ");
+   DbiInfo(  "VldContext test std::map<CP::TVldContext,long>" << "  ");
    CP::TVldTimeStamp now;
    for (Int_t ibit_det = 0; ibit_det<3; ibit_det++) {
       CP::DbiDetector::Detector_t det =
@@ -269,12 +266,12 @@ Bool_t CP::TVldValidate::TestContext(void)
 //         MSG("Vld",Msg::kInfo)
 //            << " entry " << setw(2) << entry << " : "
 //            << vldc.AsString()
-//            << endl;
+//            << std::endl;
          vldc_map[vldc] = entry++;
 
       }
    }
-   typedef map<CP::TVldContext,long>::const_iterator vcl_itr;
+   typedef std::map<CP::TVldContext,long>::const_iterator vcl_itr;
    int expect = 0;
    bool pass  = true;
    for (vcl_itr p = vldc_map.begin(); p != vldc_map.end(); ++p, ++expect) {
@@ -291,7 +288,7 @@ Bool_t CP::TVldValidate::TestContext(void)
    DbiInfo(  " Test output to MSG service: " << defctor << "  ");
 
    DbiInfo(  "VldValidate::TestContext had " << fail << " failures "
-      << "  " << endl);
+      << "  " << std::endl);
 
    return (!fail);
 }
@@ -301,18 +298,18 @@ Bool_t CP::TVldValidate::TestRange(void)
 {
    // Test CP::TVldRange
 
-   cout << "Test CP::TVldRange" << endl << endl;
+   std::cout << "Test CP::TVldRange" << std::endl << std::endl;
 
    Int_t fail = 0;
 
-   cout << "default ctor:          ";
+   std::cout << "default ctor:          ";
    CP::TVldRange defctor;
    defctor.Print("");
 
    DbiInfo(  " Test output to MSG service: " << defctor << "  ");
 
    DbiInfo(  "VldValidate::TestRange had " << fail << " failures "
-      << "  " << endl);
+      << "  " << std::endl);
 
    return (!fail);
 
@@ -323,7 +320,7 @@ Bool_t CP::TVldValidate::TestFileIO(void)
 {
    // Test write/read Validity objects to/from a file
 
-   cout << "Test file IO" << endl << endl;
+   std::cout << "Test file IO" << std::endl << std::endl;
 
 //   UInt_t sleep_msec = 2000;
 
@@ -345,7 +342,7 @@ Bool_t CP::TVldValidate::TestFileIO(void)
 
    // ****************** Pause *******************************
 
-   DbiInfo( "  " << endl);
+   DbiInfo( "  " << std::endl);
 //   gSystem->Sleep(sleep_msec);
    CP::TVldContext pause_c;
 
@@ -361,7 +358,7 @@ Bool_t CP::TVldValidate::TestFileIO(void)
 
    // ****************** Comparison *******************************
 
-   DbiInfo( "  " << endl);
+   DbiInfo( "  " << std::endl);
 
 //   gSystem->Sleep(sleep_msec);
    CP::TVldContext final_c;
@@ -376,13 +373,13 @@ Bool_t CP::TVldValidate::TestFileIO(void)
 
    Int_t fail = 0;
 
-//   cout << "default ctor:          ";
+//   std::cout << "default ctor:          ";
 //   CP::TVldRange defctor;
 //   defctor.Print("");
 
 
    DbiInfo(  "VldValidate::TestRange had " << fail << " failures "
-      << "  " << endl);
+      << "  " << std::endl);
 
    return (!fail);
 

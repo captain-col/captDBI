@@ -29,8 +29,8 @@
 
 namespace CP {
 class TDbiResultKey;
-}
 std::ostream& operator<<(std::ostream& os, const CP::TDbiResultKey& key);
+}
 
 namespace CP {
 class TDbiResultKey : public TObject

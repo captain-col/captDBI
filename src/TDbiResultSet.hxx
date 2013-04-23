@@ -23,13 +23,12 @@
  *
  */
 
-#include <map>
-#include <string>
-using std::string;
-
 #include "TDbi.hxx"
 #include "TDbiExceptionLog.hxx"
 #include "TDbiValidityRec.hxx"
+
+#include <map>
+#include <string>
 
 typedef std::map<UInt_t,const CP::TDbiTableRow*> IndexToRow_t;
 
@@ -42,10 +41,10 @@ class TDbiTableRow;
 }
 namespace CP {
 class TVldContext;
-};
-
 CP::TDbiBinaryFile& operator<<(CP::TDbiBinaryFile& bf, const CP::TDbiResultSet& res);
 CP::TDbiBinaryFile& operator>>(CP::TDbiBinaryFile& bf, CP::TDbiResultSet& res);
+
+};
 
 namespace CP {
 class TDbiResultSet
@@ -56,7 +55,7 @@ public:
 // Constructors and destructors.
            TDbiResultSet(TDbiInRowStream* resultSet = 0,
                      const TDbiValidityRec* vrec = 0,
-                     const string& sqlQualifiers = "");
+                     const std::string& sqlQualifiers = "");
   virtual ~TDbiResultSet();
 
 // State testing member functions
@@ -73,7 +72,7 @@ public:
  virtual                UInt_t GetNumClients() const {
                                                    return fNumClients; }
  virtual                UInt_t GetNumRows() const =0;
-                 const string& GetSqlQualifiers() const { return fSqlQualifiers; }
+                 const std::string& GetSqlQualifiers() const { return fSqlQualifiers; }
  virtual    const TDbiTableRow* GetTableRow(UInt_t rowNum) const =0;
  virtual    const TDbiTableRow* GetTableRowByIndex(UInt_t index) const;
  virtual const TDbiValidityRec& GetValidityRec(
@@ -85,7 +84,7 @@ public:
                                        return this->GetSqlQualifiers() != ""; }
  virtual                Bool_t Owns(const TDbiTableRow* /* row */) const { return kFALSE; }
                         Bool_t ResultsFromDb() const { return fResultsFromDb; }
- virtual         const string& TableName() const { return fTableName; }
+ virtual         const std::string& TableName() const { return fTableName; }
 
 // State changing member functions
                           void CaptureExceptionLog(UInt_t startFrom);
@@ -99,9 +98,9 @@ public:
                              const TDbi::Task& task);
 /// Not all TDbiResultSet classes can satisfy these types of
 /// query so those that do must override.
-virtual     Bool_t Satisfies(const string&) {return kFALSE;}
+virtual     Bool_t Satisfies(const std::string&) {return kFALSE;}
 virtual     Bool_t Satisfies(const TDbiValidityRec&,
-                             const string& = "") {return kFALSE;}
+                             const std::string& = "") {return kFALSE;}
 
 /// Key handling
  virtual    void GenerateKey();
@@ -119,7 +118,7 @@ protected:
 
 //  State changing member functions.
 
- virtual void SetTableName(const string& tableName)  {
+ virtual void SetTableName(const std::string& tableName)  {
                                                fTableName = tableName; }
  virtual void SetValidityRec(const TDbiValidityRec& vRec)  {
                                                       fEffVRec = vRec; }
@@ -150,11 +149,11 @@ private:
   mutable Int_t fNumClients;
 
 //// Table name
-  string fTableName;
+  std::string fTableName;
 
 /// Null unless Extended Context query in which case it contains:-
 /// context-sql;data-sql;fill-options
-  string fSqlQualifiers;
+  std::string fSqlQualifiers;
 
 /// Exception log produced when query was executed.
   TDbiExceptionLog fExceptionLog;

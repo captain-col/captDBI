@@ -10,8 +10,7 @@
 #include "TDbiBinaryFile.hxx"
 #include "TDbiTableRow.hxx"
 #include <TDbiLog.hxx>
-#include <MsgFormat.h>
-using std::endl;
+#include <MsgFormat.hxx>
 #include "TVldRange.hxx"
 #include "TVldTimeStamp.hxx"
 
@@ -40,7 +39,7 @@ void SetVTptr(void* obj, const void* vt) {
 //   Definition of static data members
 //   *********************************
 
-string CP::TDbiBinaryFile::fgWorkDir;
+std::string CP::TDbiBinaryFile::fgWorkDir;
 Bool_t CP::TDbiBinaryFile::fgReadAccess  = kTRUE;
 Bool_t CP::TDbiBinaryFile::fgWriteAccess = kTRUE;
 
@@ -81,8 +80,8 @@ fArrayBuffer(0)
   }
 
   // Open the file.
-  ios_base::openmode mode = ios_base::in|ios_base::binary;
-  if ( ! input ) mode = ios_base::out|ios_base::binary;
+  std::ios_base::openmode mode = std::ios_base::in|std::ios_base::binary;
+  if ( ! input ) mode = std::ios_base::out|std::ios_base::binary;
 
   if ( fFileName == "" ) fHasErrors = kTRUE;
   else {
@@ -182,7 +181,7 @@ WRITE_BUILTIN(CP::TVldTimeStamp)
 
 //.....................................................................
 
-CP::TDbiBinaryFile& CP::TDbiBinaryFile::operator >> (string& str) {
+CP::TDbiBinaryFile& CP::TDbiBinaryFile::operator >> (std::string& str) {
 
   if ( this->CanRead() ) {
     getline(*fFile,str,'\0');
@@ -192,7 +191,7 @@ CP::TDbiBinaryFile& CP::TDbiBinaryFile::operator >> (string& str) {
 }
 //.....................................................................
 
-CP::TDbiBinaryFile& CP::TDbiBinaryFile::operator << (const string& str) {
+CP::TDbiBinaryFile& CP::TDbiBinaryFile::operator << (const std::string& str) {
 
   UInt_t numBytes = str.size()+1;
   this->Write(str.c_str(),numBytes);
@@ -208,7 +207,7 @@ CP::TDbiBinaryFile& CP::TDbiBinaryFile::operator >> (CP::TVldRange& vr) {
     Int_t        simMask;
     CP::TVldTimeStamp timeStart;
     CP::TVldTimeStamp timeEnd;
-    string str;
+    std::string str;
     (*this) >> detectorMask
             >> simMask
             >> timeStart
@@ -225,7 +224,7 @@ CP::TDbiBinaryFile& CP::TDbiBinaryFile::operator >> (CP::TVldRange& vr) {
 CP::TDbiBinaryFile& CP::TDbiBinaryFile::operator << (const CP::TVldRange& vr) {
 
   if ( this->CanWrite() ) {
-    string str(vr.GetDataSource().Data());
+    std::string str(vr.GetDataSource().Data());
     (*this) << vr.GetDetectorMask()
             << vr.GetSimMask()
             << vr.GetTimeStart()
@@ -237,7 +236,7 @@ CP::TDbiBinaryFile& CP::TDbiBinaryFile::operator << (const CP::TVldRange& vr) {
 
 //.....................................................................
 
-CP::TDbiBinaryFile& CP::TDbiBinaryFile::operator >> (vector<CP::TDbiTableRow*>& arr) {
+CP::TDbiBinaryFile& CP::TDbiBinaryFile::operator >> (std::vector<CP::TDbiTableRow*>& arr) {
 
 
   if ( ! this->CanRead() ) return *this;
@@ -265,7 +264,7 @@ CP::TDbiBinaryFile& CP::TDbiBinaryFile::operator >> (vector<CP::TDbiTableRow*>& 
 
   if ( arrSize ) {
     Int_t objSize  = 0;
-    string objName;
+    std::string objName;
     (*this) >> objName >> objSize;
 
 //  Ensure that sizes look sensible and use ROOT to instatiate
@@ -329,7 +328,7 @@ CP::TDbiBinaryFile& CP::TDbiBinaryFile::operator >> (vector<CP::TDbiTableRow*>& 
 }
 
 ///.....................................................................
-CP::TDbiBinaryFile& CP::TDbiBinaryFile::operator << (vector<CP::TDbiTableRow*>& arr) {
+CP::TDbiBinaryFile& CP::TDbiBinaryFile::operator << (std::vector<CP::TDbiTableRow*>& arr) {
 
 
   if ( ! this->CanWrite() ) return *this;
@@ -342,7 +341,7 @@ CP::TDbiBinaryFile& CP::TDbiBinaryFile::operator << (vector<CP::TDbiTableRow*>& 
   if ( arrSize ) {
     CP::TDbiTableRow* obj = arr[0];
     Int_t objSize  = obj->IsA()->Size();
-    string objName = obj->ClassName();
+    std::string objName = obj->ClassName();
     (*this) << objName << objSize;
     for (int row = 0; row < arrSize; ++row ) {
       obj = arr[row];

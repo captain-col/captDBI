@@ -5,8 +5,7 @@
 #include "TDbiOutRowStream.hxx"
 #include "TDbiInRowStream.hxx"
 #include <TDbiLog.hxx>
-#include <MsgFormat.h>
-using std::endl;
+#include <MsgFormat.hxx>
 
 #include <iostream>
 
@@ -39,7 +38,7 @@ CP::TDbiConfigSet::~TDbiConfigSet() {
 //  Purpose:  Destructor
 
 
-  for ( vector<Param*>::iterator itr = fParams.begin();
+  for ( std::vector<Param*>::iterator itr = fParams.begin();
         itr != fParams.end();
         ++itr ) delete (*itr);
 
@@ -71,12 +70,12 @@ ostream& operator<<(ostream& s, const CP::TDbiConfigSet& cfSet) {
 //  None.
 
   s << "CP::TDbiConfigSet: Number of parameters: "
-    << cfSet.GetNumParams() << endl;
+    << cfSet.GetNumParams() << std::endl;
 
   for ( UInt_t iParam = 0; iParam < cfSet.GetNumParams(); ++iParam) {
     s << "   "  << cfSet.GetParamName(iParam) << ":  "
       << cfSet.GetParamValue(iParam) << " ("
-      << cfSet.GetParamType(iParam).AsString() << ")" << endl;
+      << cfSet.GetParamType(iParam).AsString() << ")" << std::endl;
   }
 
   return s;
@@ -147,7 +146,7 @@ void CP::TDbiConfigSet::Fill(CP::TDbiInRowStream& rs,
 ///
 ///  o Get the name of selected parameter  or "" if parNo out of range.
 ///\endverbatim
-string CP::TDbiConfigSet::GetParamName(UInt_t parNo) const {
+std::string CP::TDbiConfigSet::GetParamName(UInt_t parNo) const {
 
 
 //  Program Notes:-
@@ -206,7 +205,7 @@ CP::TDbiFieldType CP::TDbiConfigSet::GetParamType(UInt_t parNo) const {
 ///
 ///  o Get the value of selected parameter  or "" if parNo out of range.
 ///\endverbatim
-string CP::TDbiConfigSet::GetParamValue(UInt_t parNo) const {
+std::string CP::TDbiConfigSet::GetParamValue(UInt_t parNo) const {
 
 //  Program Notes:-
 //  =============
@@ -220,8 +219,8 @@ string CP::TDbiConfigSet::GetParamValue(UInt_t parNo) const {
 
 //.....................................................................
 /// Purpose:  Add another entry to the end of the existing row.
-void CP::TDbiConfigSet::PushBack(const string& name,
-                            const string& value,
+void CP::TDbiConfigSet::PushBack(const std::string& name,
+                            const std::string& value,
                             const CP::TDbiFieldType& type) {
 //
 //
@@ -259,7 +258,7 @@ void CP::TDbiConfigSet::PushBack(const string& name,
 void CP::TDbiConfigSet::Store(CP::TDbiOutRowStream& ors,
                          const CP::TDbiValidityRec* /* vrec */) const {
 
-  for ( vector<Param*>::const_iterator itr = fParams.begin();
+  for ( std::vector<Param*>::const_iterator itr = fParams.begin();
         itr != fParams.end();
         ++itr ) ors.Store((*itr)->Value.c_str());
 

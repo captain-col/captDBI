@@ -13,8 +13,7 @@
 #include "TVldContext.hxx"
 
 #include <TDbiLog.hxx>
-#include <MsgFormat.h>
-using std::endl;
+#include <MsgFormat.hxx>
 //CVSID("$Id: TVldContext.cxx,v 1.1 2011/01/18 05:49:20 finch Exp $");
 
 ClassImp(CP::TVldContext)

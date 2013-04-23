@@ -11,10 +11,7 @@
 #include "TDbiStatement.hxx"
 #include "TDbiTableMetaData.hxx"
 #include <TDbiLog.hxx>
-#include <MsgFormat.h>
-using std::endl;
-using std::istringstream;
-using std::ostringstream;
+#include <MsgFormat.hxx>
 #include "UtilString.hxx"
 #include "TVldTimeStamp.hxx"
 
@@ -58,7 +55,7 @@ CP::TDbiInRowStream::TDbiInRowStream(CP::TDbiStatement* stmtDb,
                            const CP::TDbiTableMetaData* metaData,
                            const CP::TDbiTableProxy* tableProxy,
                            UInt_t dbNo,
-                           const string& fillOpts) :
+                                     const std::string& fillOpts) :
 CP::TDbiRowStream(metaData),
 fCurRow(0),
 fDbNo(dbNo),
@@ -124,7 +121,7 @@ CP::TDbiInRowStream::~TDbiInRowStream() {
 //.....................................................................
 
 
-#define IN(t) istringstream in(AsString(t)); in
+#define IN(t) std::istringstream in(AsString(t)); in
 
 // On first row use AsString to force type checking.
 // On subsequent rows use binary interface for speed.
@@ -132,7 +129,7 @@ CP::TDbiInRowStream::~TDbiInRowStream() {
 #define IN2(t,m)                            \
   int col = CurColNum()-1;                  \
   if ( CurRowNum() == 0 ) {                 \
-    istringstream in(AsString(t));          \
+      std::istringstream in(AsString(t));   \
     in >> dest;                             \
   }                                         \
   else {                                    \
@@ -187,7 +184,7 @@ CP::TDbiInRowStream& CP::TDbiInRowStream::operator>>(Double_t& dest) {
 
 // Also use AsString() for string and CP::TVldTimeStamp; conversion to string
 // is needed in any case.
-CP::TDbiInRowStream& CP::TDbiInRowStream::operator>>(string& dest) {
+CP::TDbiInRowStream& CP::TDbiInRowStream::operator>>(std::string& dest) {
                           dest = AsString(TDbi::kString);  return *this;}
 CP::TDbiInRowStream& CP::TDbiInRowStream::operator>>(CP::TVldTimeStamp& dest){
            dest=TDbi::MakeTimeStamp(AsString(TDbi::kDate)); return *this;}
@@ -216,7 +213,7 @@ CP::TDbiInRowStream& CP::TDbiInRowStream::operator>>(CP::TVldTimeStamp& dest){
 /// o Check for compatibility between required data type and table
 ///   data type, report problems and return default if incompatible.
 ///\endverbatim
-string& CP::TDbiInRowStream::AsString(TDbi::DataTypes type) {
+std::string& CP::TDbiInRowStream::AsString(TDbi::DataTypes type) {
 //
 
 //  Program Notes:-
@@ -234,7 +231,7 @@ string& CP::TDbiInRowStream::AsString(TDbi::DataTypes type) {
   IncrementCurCol();
 
   if ( fail ) {
-    string udef = reqdt.UndefinedValue();
+    std::string udef = reqdt.UndefinedValue();
        DbiSevere(  "... value \"" << udef
        << "\" will be substitued." <<  "  ");
     fValString = udef;
@@ -262,7 +259,7 @@ string& CP::TDbiInRowStream::AsString(TDbi::DataTypes type) {
     }
   }
   else {
-    string udef = reqdt.UndefinedValue();
+    std::string udef = reqdt.UndefinedValue();
        DbiSevere(  "In table " << TableNameTc()
          << " row " << fCurRow
         << " column "<< col
@@ -340,7 +337,7 @@ Bool_t CP::TDbiInRowStream::CurColExists() const {
 ///
 ///  o Return current column as a string.
 ///\endverbatim
-string CP::TDbiInRowStream::CurColString() const {
+std::string CP::TDbiInRowStream::CurColString() const {
 
 //  Program Notes:-
 //  =============
@@ -468,7 +465,7 @@ Bool_t CP::TDbiInRowStream::LoadCurValue() const{
 ///    row          in    String to append to.
 ///
 ///\endverbatim
-void CP::TDbiInRowStream::RowAsCsv(string& row) const {
+void CP::TDbiInRowStream::RowAsCsv(std::string& row) const {
 
   const CP::TDbiTableMetaData* md = this->MetaData();
 
@@ -492,7 +489,7 @@ void CP::TDbiInRowStream::RowAsCsv(string& row) const {
     // For floating point, use binary interface to preserve precision
     // e.g.-1.234567890123457e-100 as string is -0.000000
     else if ( concept == TDbi::kFloat ) {
-      ostringstream out;
+        std::ostringstream out;
       out << std::setprecision(8);
       if ( md->ColFieldType(col).GetType() == TDbi::kDouble ) out << std::setprecision(16);
       out << fTSQLStatement->GetDouble(col-1);

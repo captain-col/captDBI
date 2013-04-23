@@ -14,13 +14,12 @@ class MsgFormat;
 
 //......................................................................
 
-class MsgBoundFormat 
-{
+class MsgBoundFormat{
 public:
-  MsgBoundFormat(const MsgFormat& ff, double v) : f(ff), val(v) { }
-  
-  const MsgFormat& f; // Format to use to print
-  double val;         // Value to print
+    MsgBoundFormat(const MsgFormat& ff, double v) : f(ff), val(v) { }
+    
+    const MsgFormat& f; // Format to use to print
+    double val;         // Value to print
 };
 
 #endif // MSGBOUNDFORMAT_H

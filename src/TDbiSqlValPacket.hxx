@@ -22,12 +22,6 @@
  */
 
 
-#include <fstream>
-#include <list>
-#include <vector>
-#include <string>
-using std::string;
-
 #if !defined(__CINT__) || defined(__MAKECINT__)
 #include "Rtypes.h"
 #endif
@@ -35,6 +29,11 @@ using std::string;
 #include "TDbi.hxx"
 #include "TDbiTableProxy.hxx"
 #include "TVldTimeStamp.hxx"
+
+#include <fstream>
+#include <list>
+#include <vector>
+#include <string>
 
 namespace CP {
 class TDbiTableRow;
@@ -78,9 +77,9 @@ public:
         UInt_t GetNumSqlStmts() const { return fNumStmts; }
         UInt_t GetSeqNo() const { return fSeqNo; }
   CP::TVldTimeStamp GetCreationDate() const { return fCreationDate; }
-	string GetStmt(UInt_t stmtNo) const;
-	std::vector<string> GetStmtValues(UInt_t stmtNo) const;
- const string& GetTableName() const{ return fTableName; }
+	std::string GetStmt(UInt_t stmtNo) const;
+	std::vector<std::string> GetStmtValues(UInt_t stmtNo) const;
+ const std::string& GetTableName() const{ return fTableName; }
         Bool_t IsEqual(const TDbiSqlValPacket& that,
                        Bool_t log = kFALSE,
                        const Char_t* thisName = "this",
@@ -93,7 +92,7 @@ public:
                      Bool_t addMetadata = kFALSE) const;
 
 //  Reconstruct.	
-          void Recreate(const string& tableName,
+          void Recreate(const std::string& tableName,
                         const CP::TVldRange& vr,
                         Int_t aggNo,
                         TDbi::Task task = 0,
@@ -114,15 +113,15 @@ public:
 protected:
 
 private:
-          void AddRow(const string & row);
+          void AddRow(const std::string & row);
         Bool_t AddRow(const TDbiTableProxy& tblProxy,
                       const TDbiValidityRec* vrec,
                       const TDbiTableRow& row);
           void Report(const char* msg,
                       UInt_t line_num,
-                      const string& line);
+                      const std::string& line);
 	  void SetMetaData() const;
-          void SetSeqNoOnRow(string& row,const string& seqno);
+          void SetSeqNoOnRow(std::string& row,const std::string& seqno);
 
   TDbiSqlValPacket(const TDbiSqlValPacket& );  // Not allowed.
 
@@ -136,19 +135,19 @@ private:
   UInt_t fSeqNo;
 
 /// MySQL SQL to create main table. May be empty until needed.
-  mutable string fSqlMySqlMetaMain;
+  mutable std::string fSqlMySqlMetaMain;
 
 /// As fSqlMySqlMetaMain but for aux. table.
-  mutable string fSqlMySqlMetaVld;
+  mutable std::string fSqlMySqlMetaVld;
 
 /// Set of SQL statements to generate packet.
-  std::list<string>  fSqlStmts;
+  std::list<std::string>  fSqlStmts;
 
 /// Number of statements
   UInt_t fNumStmts;
 
 /// Table name or null if not filled.
-  string fTableName;
+  std::string fTableName;
 
 /// Creation date, or object creation date if unfilled.
   CP::TVldTimeStamp fCreationDate;

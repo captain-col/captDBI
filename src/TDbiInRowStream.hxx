@@ -76,22 +76,22 @@ public:
                         const TDbiTableMetaData* metaData,
                         const TDbiTableProxy* tableProxy,
                         UInt_t dbNo,
-                        const string& fillOpts = "");
+                        const std::string& fillOpts = "");
   virtual ~TDbiInRowStream();
 
 // State testing member functions
               Bool_t CurColExists() const;
-              string CurColString() const;
-              string CurColValue() const { LoadCurValue(); return fValString;}
+              std::string CurColString() const;
+              std::string CurColValue() const { LoadCurValue(); return fValString;}
               UInt_t CurRowNum() const { return fCurRow;}
               UInt_t GetDbNo() const { return fDbNo; }
-              string GetFillOpts() const { return fFillOpts;}
+              std::string GetFillOpts() const { return fFillOpts;}
 const TDbiTableProxy* GetTableProxy() const { return fTableProxy; }
 /// IsBeforeFirst not needed for ROOT API, but leave a dummy
 /// for now so as not to disturb TDbiInRowStream API.
   Bool_t IsBeforeFirst() const { return false; };
               Bool_t IsExhausted() const { return fExhausted; }
-	        void RowAsCsv(string& row) const;
+	        void RowAsCsv(std::string& row) const;
 
 // State changing member functions
 
@@ -105,14 +105,14 @@ const TDbiTableProxy* GetTableProxy() const { return fTableProxy; }
  CP::TDbiInRowStream& operator>>(ULong_t& dest);
  CP::TDbiInRowStream& operator>>(Float_t& dest);
  CP::TDbiInRowStream& operator>>(Double_t& dest);
- CP::TDbiInRowStream& operator>>(string& dest);
+ CP::TDbiInRowStream& operator>>(std::string& dest);
  CP::TDbiInRowStream& operator>>(CP::TVldTimeStamp& dest);
 
   Bool_t FetchRow();
 
 private:
 
-  string& AsString(TDbi::DataTypes type);
+  std::string& AsString(TDbi::DataTypes type);
  Bool_t LoadCurValue() const;
  TString GetStringFromTSQL(Int_t col) const;
 
@@ -140,10 +140,10 @@ private:
   const TDbiTableProxy* fTableProxy;
 
 /// Buffer for assembling value
-mutable  string fValString;
+mutable  std::string fValString;
 
 /// Optional fill options.
-  string fFillOpts;
+  std::string fFillOpts;
 
 ClassDef(TDbiInRowStream,0)     //ResultSet from Query to database table
 

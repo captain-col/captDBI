@@ -17,17 +17,13 @@
 
 #include <iostream>
 #include <sstream>
-using std::ostringstream;
 
 #include <string>
-using std::string;
 #include <vector>
-using std::vector;
 
 #include "TDbiSimFlagAssociation.hxx"
 #include <TDbiLog.hxx>
-#include <MsgFormat.h>
-using std::endl;
+#include <MsgFormat.hxx>
 #include "TDbiRegistry.hxx"
 #include "UtilString.hxx"
 
@@ -135,17 +131,17 @@ void CP::TDbiSimFlagAssociation::Print(ostream& s)const {
 //  Purpose:  Print self.
 
   s << "\n\nSimFlag Association Status:  ";
-  if ( fAssociations.size() == 0 ) s <<"Not enabled" << endl;
+  if ( fAssociations.size() == 0 ) s <<"Not enabled" << std::endl;
   else {
-    s << endl;
+    s << std::endl;
 
     SimMap_t::const_iterator mapItr    = fAssociations.begin();
     SimMap_t::const_iterator mapItrEnd = fAssociations.end();
     while ( mapItr != mapItrEnd ) {
 
       CP::DbiSimFlag::SimFlag_t value = mapItr->first;
-      string name = CP::DbiSimFlag::AsString(value);
-      ostringstream buff;
+      std::string name = CP::DbiSimFlag::AsString(value);
+      std::ostringstream buff;
       buff << name << "(" << value << ")";
       name = buff.str();
       if ( name.size() < 20 ) name.append(20-name.size(),' ');
@@ -156,12 +152,12 @@ void CP::TDbiSimFlagAssociation::Print(ostream& s)const {
       SimList_t::const_iterator listItrEnd = l.end();
       while ( listItr != listItrEnd ) {
         CP::DbiSimFlag::SimFlag_t v = *listItr;
-        string n = CP::DbiSimFlag::AsString(v);
+        std::string n = CP::DbiSimFlag::AsString(v);
         s << n << "(" << v << ")";
 	++listItr;
         if ( listItr != listItrEnd ) s << ", ";
       }
-      s << endl;
+      s << std::endl;
       ++mapItr;
     }
 
@@ -197,17 +193,17 @@ void CP::TDbiSimFlagAssociation::Set(TDbiRegistry& reg) {
     if ( ! strncmp("SimFlagAssociation:",key,19) ) {
 
       // Found a SimFlagAssociation key, extract its value.
-      string Name = key+19;
+      std::string Name = key+19;
       CP::DbiSimFlag::SimFlag_t value = CP::DbiSimFlag::StringToEnum(Name.c_str());
       const char* listChars = 0;
       bool ok = reg.Get(key,listChars) && (value != CP::DbiSimFlag::kUnknown);
       // Collect the associated list
       SimList_t lv;
       if ( ok ) {
-        vector<string> ls;
+        std::vector<std::string> ls;
 	CP::UtilString::StringTok(ls,listChars,",");
-        vector<string>::iterator itr    = ls.begin();
-        vector<string>::iterator itrEnd = ls.end();
+        std::vector<std::string>::iterator itr    = ls.begin();
+        std::vector<std::string>::iterator itrEnd = ls.end();
         for (; itr != itrEnd; ++itr ) {
           CP::DbiSimFlag::SimFlag_t v = CP::DbiSimFlag::StringToEnum(itr->c_str());
           if ( v == CP::DbiSimFlag::kUnknown) ok = false;

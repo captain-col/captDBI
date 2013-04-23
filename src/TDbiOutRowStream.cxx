@@ -9,21 +9,18 @@
 #include "TDbiOutRowStream.hxx"
 #include "TDbiTableMetaData.hxx"
 #include <TDbiLog.hxx>
-#include <MsgFormat.h>
-using std::endl;
-using std::ostringstream;
-using std::setprecision;
+#include <MsgFormat.hxx>
 #include "UtilString.hxx"
 #include "TVldTimeStamp.hxx"
 
 ClassImp(CP::TDbiOutRowStream)
 
-#define OUT(t,v)                         \
-  if ( ! StoreDefaultIfInvalid(t) ) {    \
-    ostringstream out;                   \
-    out << setprecision(16)<< v;         \
-    Store(out.str());                    \
-  }                                      \
+#define OUT(t,v)                                \
+    if ( ! StoreDefaultIfInvalid(t) ) {         \
+        std::ostringstream out;                 \
+        out << std::setprecision(16)<< v;       \
+        Store(out.str());                       \
+    }                                           \
 
 // If writing unsigned dat as signed, convert bit pattern to signed,
 // extending sign bit if necessary.
@@ -109,7 +106,7 @@ CP::TDbiOutRowStream& CP::TDbiOutRowStream::operator<<(Float_t src) {
 CP::TDbiOutRowStream& CP::TDbiOutRowStream::operator<<(Double_t src) {
                                      OUT(TDbi::kDouble,src);  return *this;}
 
-CP::TDbiOutRowStream& CP::TDbiOutRowStream::operator<<(const string& src) {
+CP::TDbiOutRowStream& CP::TDbiOutRowStream::operator<<(const std::string& src) {
                                     OUT(TDbi::kString,src); return *this;}
 
 CP::TDbiOutRowStream& CP::TDbiOutRowStream::operator<<(const CP::TVldTimeStamp& src) {
@@ -151,7 +148,7 @@ Bool_t CP::TDbiOutRowStream::StoreDefaultIfInvalid(TDbi::DataTypes type) {
   CP::TDbiFieldType typeRequired(CurColFieldType());
   if ( typeSupplied.IsCompatible(typeRequired) ) return kFALSE;
 
-  string udef = typeRequired.UndefinedValue();
+  std::string udef = typeRequired.UndefinedValue();
      DbiSevere(  "In table " << TableNameTc()
       << " column "<< CurColNum()
       << " (" << CurColName() << ")"
@@ -166,7 +163,7 @@ Bool_t CP::TDbiOutRowStream::StoreDefaultIfInvalid(TDbi::DataTypes type) {
 }
 //.....................................................................
 
-void CP::TDbiOutRowStream::Store(const string& str)  {
+void CP::TDbiOutRowStream::Store(const std::string& str)  {
 //
 //
 //  Purpose: Store string value as comma separated values but exclude SeqNo.
@@ -193,7 +190,7 @@ void CP::TDbiOutRowStream::Store(const string& str)  {
 //  None.
 
   UInt_t concept = CurColFieldType().GetConcept();
-  string delim = "";
+  std::string delim = "";
   if (    concept == TDbi::kString
        || concept == TDbi::kDate
        || concept == TDbi::kChar ) delim = "\'";

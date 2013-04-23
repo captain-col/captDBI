@@ -26,10 +26,9 @@
  *
  */
 
-#include <string>
-using std::string;
-
 #include "TDbi.hxx"
+
+#include <string>
 
 namespace CP {
 class TDbiFieldType
@@ -52,15 +51,15 @@ public:
                         Int_t size,
                         const char* typeName);
            TDbiFieldType(const TDbiFieldType& from);
-           TDbiFieldType(const string& sql,
+           TDbiFieldType(const std::string& sql,
                         Int_t size);
   virtual ~TDbiFieldType();
 
 // State testing member functions
 
- string AsString() const;
- string AsSQLString() const;
- string UndefinedValue() const;
+ std::string AsString() const;
+ std::string AsSQLString() const;
+ std::string UndefinedValue() const;
  UInt_t GetConcept() const { return fConcept; }
  UInt_t GetSize() const { return fSize; }
  UInt_t GetType() const { return fType; }

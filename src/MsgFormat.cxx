@@ -7,17 +7,15 @@
 //
 // messier@huhepl.harvard.edu
 ////////////////////////////////////////////////////////////////////////
-#include <MsgFormat.h>
+#include <MsgFormat.hxx>
 #include <cstdlib>
 #include <iostream>
 #include <iomanip>
-#include <MsgBoundFormat.h>
-
-using namespace std;
+#include <MsgBoundFormat.hxx>
 
 //......................................................................
 
-ostream& operator<<(ostream& os, const MsgBoundFormat& bf) 
+std::ostream& operator<<(std::ostream& os, const MsgBoundFormat& bf) 
 {
 //======================================================================
 // Purpose: Print a value with the given format
@@ -34,12 +32,12 @@ ostream& operator<<(ostream& os, const MsgBoundFormat& bf)
 
   if (bf.f.flc != c) os.fill(bf.f.flc);
 
-  if ((bf.f.fmt&ios::hex) || (bf.f.fmt&ios::oct)) {
-    os.setf(bf.f.fmt, ios::basefield);
-    os << setprecision(bf.f.prc) << setw(bf.f.wdt) << (int)bf.val;
+  if ((bf.f.fmt&std::ios::hex) || (bf.f.fmt&std::ios::oct)) {
+    os.setf(bf.f.fmt, std::ios::basefield);
+    os << std::setprecision(bf.f.prc) << std::setw(bf.f.wdt) << (int)bf.val;
   }
   else {
-    os << setprecision(bf.f.prc) << setw(bf.f.wdt) << bf.val;
+    os << std::setprecision(bf.f.prc) << std::setw(bf.f.wdt) << bf.val;
   }
 
   // Reset stream
@@ -66,19 +64,19 @@ MsgFormat::MsgFormat(const char* f)
   flc = ' ';
   for (i=0; f[i] != '\0'; ++i) {
     switch(c = f[i]) {
-    case '-': fmt |= ios::left; break;
-    case '+': fmt |= ios::showpos; break;
+    case '-': fmt |= std::ios::left; break;
+    case '+': fmt |= std::ios::showpos; break;
     case ' ': break;
-    case 'O': flc = '0'; fmt |= ios::left; break;
+    case 'O': flc = '0'; fmt |= std::ios::left; break;
     case 'd': break;
     case 'u': break;
     case 'i': break;
-    case 'o': fmt |= ios::oct; fmt |= ios::showbase; break;
-    case 'x': fmt |= ios::hex; fmt |= ios::showbase; break;
-    case 'X': fmt |= ios::hex; fmt |= ios::showbase; break;
-    case 'f': fmt |= ios::fixed; break;
-    case 'e': fmt |= ios::scientific; break;
-    case 'E': fmt |= ios::scientific; break;
+    case 'o': fmt |= std::ios::oct; fmt |= std::ios::showbase; break;
+    case 'x': fmt |= std::ios::hex; fmt |= std::ios::showbase; break;
+    case 'X': fmt |= std::ios::hex; fmt |= std::ios::showbase; break;
+    case 'f': fmt |= std::ios::fixed; break;
+    case 'e': fmt |= std::ios::scientific; break;
+    case 'E': fmt |= std::ios::scientific; break;
     case 'g': break;
     case 'G': break;
     default:

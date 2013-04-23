@@ -9,8 +9,7 @@
 
 #include "TDbiExceptionLog.hxx"
 #include <TDbiLog.hxx>
-#include <MsgFormat.h>
-using std::endl;
+#include <MsgFormat.hxx>
 
 ClassImp(CP::TDbiExceptionLog)
 
@@ -48,14 +47,14 @@ CP::TDbiExceptionLog::~TDbiExceptionLog() {
 std::ostream& operator<<(std::ostream& os, const CP::TDbiExceptionLog& el) {
 
   if ( el.IsEmpty() ) {
-    os << "The database exception log is empty" << endl;
+      os << "The database exception log is empty" << std::endl;
   }
   else {
-    os << "Database exception log:-" << endl;
+      os << "Database exception log:-" << std::endl;
     std::vector<CP::TDbiException>::const_iterator itr(el.GetEntries().begin()),
                                                itrEnd(el.GetEntries().end());
     while ( itr != itrEnd ) {
-      os << *itr << endl;
+      os << *itr << std::endl;
       ++itr;
     }
   }

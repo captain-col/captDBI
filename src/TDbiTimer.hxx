@@ -35,7 +35,7 @@ public:
 // State testing member functions
 
 // State changing member functions
-    void RecBegin(string tableName, UInt_t rowSize);
+    void RecBegin(std::string tableName, UInt_t rowSize);
     void RecEnd(UInt_t numRows);
     void RecFillAgg(Int_t aggNo);
     void RecMainQuery();
@@ -56,7 +56,7 @@ private:
       UInt_t fRowSize;     // Size of row object
   QueryStage fQueryStage;  // Query stage
   TStopwatch fSubWatches[kMaxSubWatch]; // Partial timers
-      string fTableName;   // Current table
+      std::string fTableName;   // Current table
   TStopwatch fWatch;       // Timer
 
  ClassDef(TDbiTimer,0)     // Simple query timer

@@ -6,10 +6,9 @@
 #include "TDbiResultSetNonAgg.hxx"
 #include "TDbiSimFlagAssociation.hxx"
 #include "TDbiValidityRec.hxx"
-#include <MsgFormat.h>
+#include <MsgFormat.hxx>
 #include <TDbiLog.hxx>
-#include <MsgFormat.h>
-using std::endl;
+#include <MsgFormat.hxx>
 #include "TVldContext.hxx"
 
 ClassImp(CP::TDbiCache)
@@ -17,8 +16,8 @@ ClassImp(CP::TDbiCache)
 // Typedefs
 
   typedef CP::TDbiCache::ResultList_t ResultList_t;
-  typedef map<Int_t,ResultList_t>::const_iterator ConstCacheItr_t;
-  typedef map<Int_t,ResultList_t>::iterator CacheItr_t;
+  typedef std::map<Int_t,ResultList_t>::const_iterator ConstCacheItr_t;
+  typedef std::map<Int_t,ResultList_t>::iterator CacheItr_t;
   typedef ResultList_t::const_iterator ConstSubCacheItr_t;
   typedef ResultList_t::iterator SubCacheItr_t;
 
@@ -58,7 +57,7 @@ ClassImp(CP::TDbiCache)
 ///
 ///  None.
 ///\endverbatim
-CP::TDbiCache::TDbiCache(CP::TDbiTableProxy& qp,const string& tableName) :
+CP::TDbiCache::TDbiCache(CP::TDbiTableProxy& qp,const std::string& tableName) :
 fTableProxy(qp),
 fTableName(tableName),
 fCurSize(0),
@@ -276,7 +275,7 @@ void CP::TDbiCache::Purge(ResultList_t& subCache, const CP::TDbiResultSet* res) 
 ///  Return:   Pointer to matching CP::TDbiResultSet, or = 0 if none.
 ///\endverbatim
 const CP::TDbiResultSet* CP::TDbiCache::Search(const CP::TDbiValidityRec& vrec,
-                                  const string& sqlQualifiers) const {
+                                  const std::string& sqlQualifiers) const {
 
 
   Int_t aggNo = vrec.GetAggregateNo();
@@ -376,7 +375,7 @@ const CP::TDbiResultSet* CP::TDbiCache::Search(const CP::TVldContext& vc,
 ///
 ///  Return:   Pointer to matching CP::TDbiResultSet, or = 0 if none.
 ///\endverbatim
-const CP::TDbiResultSet* CP::TDbiCache::Search(const string& sqlQualifiers) const {
+const CP::TDbiResultSet* CP::TDbiCache::Search(const std::string& sqlQualifiers) const {
 
   DbiTrace( "Primary cache search of table " << fTableName
 			 << " for  SQL " << sqlQualifiers << "  ");

@@ -28,9 +28,7 @@
 #include "TDbiTimerManager.hxx"
 #include "TDbiValidityRec.hxx"
 #include <TDbiLog.hxx>
-#include <MsgFormat.h>
-using std::endl;
-using std::auto_ptr;
+#include <MsgFormat.hxx>
 #include "TVldContext.hxx"
 
 #include "UtilString.hxx"
@@ -53,7 +51,7 @@ ClassImp(CP::TDbiDBProxy)
 //.....................................................................
 
 CP::TDbiDBProxy::TDbiDBProxy(CP::TDbiCascader& cascader,
-                       const string& tableName,
+                       const std::string& tableName,
                        const CP::TDbiTableMetaData* metaData,
                        const CP::TDbiTableMetaData* metaValid,
                        const CP::TDbiTableProxy* tableProxy) :
@@ -167,16 +165,16 @@ void CP::TDbiDBProxy::FindTimeBoundaries(const CP::TVldContext& vc,
   CP::TVldTimeStamp startGate(vcSec,0);
   vcSec += 2*timeGate;
   CP::TVldTimeStamp endGate(vcSec,0);
-  string startGateString(TDbi::MakeDateTimeString(startGate));
-  string endGateString(TDbi::MakeDateTimeString(endGate));
+  std::string startGateString(TDbi::MakeDateTimeString(startGate));
+  std::string endGateString(TDbi::MakeDateTimeString(endGate));
 
 // Extract information for CP::TVldContext.
 
   CP::DbiDetector::Detector_t    detType(vc.GetDetector());
   CP::DbiSimFlag::SimFlag_t       simFlg(vc.GetSimFlag());
 
-// Use an auto_ptr to manage ownership of CP::TDbiStatement and TSQLStatement
-  auto_ptr<CP::TDbiStatement> stmtDb(fCascader.CreateStatement(dbNo));
+// Use an std::auto_ptr to manage ownership of CP::TDbiStatement and TSQLStatement
+  std::auto_ptr<CP::TDbiStatement> stmtDb(fCascader.CreateStatement(dbNo));
 
   for (int i_limit =1; i_limit <= 4; ++i_limit ) {
     CP::TDbiString sql("select ");
@@ -197,7 +195,7 @@ void CP::TDbiDBProxy::FindTimeBoundaries(const CP::TVldContext& vc,
     DbiVerbose( "  FindTimeBoundaries query no. " << i_limit
 			  << " SQL:" <<sql.c_str() << "  ");
 
-    auto_ptr<TSQLStatement> stmt(stmtDb->ExecuteQuery(sql.c_str()));
+    std::auto_ptr<TSQLStatement> stmt(stmtDb->ExecuteQuery(sql.c_str()));
     stmtDb->PrintExceptions(CP::TDbiLog::DebugLevel );
 
 //  If the query returns data, convert to a time stamp and trim the limits
@@ -334,8 +332,8 @@ CP::TDbiInRowStream*  CP::TDbiDBProxy::QuerySeqNo(UInt_t seqNo, UInt_t dbNo) con
 
 CP::TDbiInRowStream*  CP::TDbiDBProxy::QuerySeqNos(SeqList_t& seqNos,
                                        UInt_t dbNo,
-                                       const string& sqlData,
-                                       const string& fillOpts) const {
+                                       const std::string& sqlData,
+                                       const std::string& fillOpts) const {
 //
 //
 //  Purpose:  Apply query for a list of sequence numbers to database..
@@ -460,8 +458,8 @@ CP::TDbiInRowStream*  CP::TDbiDBProxy::QueryValidity (const CP::TVldContext& vc,
 
 // Extract information for CP::TVldContext.
 
-  string startGateString(TDbi::MakeDateTimeString(startGate));
-  string endGateString(TDbi::MakeDateTimeString(endGate));
+  std::string startGateString(TDbi::MakeDateTimeString(startGate));
+  std::string endGateString(TDbi::MakeDateTimeString(endGate));
   CP::DbiDetector::Detector_t    detType(vc.GetDetector());
   CP::DbiSimFlag::SimFlag_t       simFlg(vc.GetSimFlag());
 
@@ -480,7 +478,7 @@ CP::TDbiInRowStream*  CP::TDbiDBProxy::QueryValidity (const CP::TVldContext& vc,
 }
 //.....................................................................
 
-CP::TDbiInRowStream*  CP::TDbiDBProxy::QueryValidity (const string& context,
+CP::TDbiInRowStream*  CP::TDbiDBProxy::QueryValidity (const std::string& context,
                                           const TDbi::Task& task,
                                           UInt_t dbNo) const {
 //
@@ -511,7 +509,7 @@ CP::TDbiInRowStream*  CP::TDbiDBProxy::QueryValidity (const string& context,
 // In the MINOS  scheme queries are  ordered by creation date (the later the better)
 // but if the table has an EPOCH column then the T2K scheme is used (EPOCH,TIMESTART,INSERTDATE)
 
-  string orderByName("CREATIONDATE desc");
+  std::string orderByName("CREATIONDATE desc");
   if ( this->HasEpoch() ) orderByName = "EPOCH desc,TIMESTART desc,INSERTDATE desc";
   sql << "select * from " << fTableName << "VLD"
       << " where " ;
@@ -608,7 +606,7 @@ Bool_t CP::TDbiDBProxy::RemoveSeqNo(UInt_t seqNo,
                         << " RemoveSeqNo SQL: " << sql.c_str() << "  ");
 
 //  Apply query.
-  auto_ptr<CP::TDbiStatement> stmtDb(fCascader.CreateStatement(dbNo));
+  std::auto_ptr<CP::TDbiStatement> stmtDb(fCascader.CreateStatement(dbNo));
   if ( ! stmtDb.get() ) return false;
   if ( ! stmtDb->ExecuteUpdate(sql.c_str()) || stmtDb->PrintExceptions() ) {
        DbiSevere( "SQL: " << sql.c_str()
@@ -667,7 +665,7 @@ Bool_t CP::TDbiDBProxy::ReplaceInsertDate(const CP::TVldTimeStamp& ts,
                         << sql.c_str() << "  ");
 
 //  Apply query.
-  auto_ptr<CP::TDbiStatement> stmtDb(fCascader.CreateStatement(dbNo));
+  std::auto_ptr<CP::TDbiStatement> stmtDb(fCascader.CreateStatement(dbNo));
   if ( ! stmtDb.get() ) return false;
   if (! stmtDb->ExecuteUpdate(sql.c_str()) || stmtDb->PrintExceptions() ) {
        DbiSevere( "SQL: " << sql.c_str()
@@ -723,7 +721,7 @@ Bool_t CP::TDbiDBProxy::ReplaceSeqNo(UInt_t oldSeqNo,
                         << " ReplaceSeqNo SQL: " << sql.c_str() << "  ");
 
 //  Apply query.
-  auto_ptr<CP::TDbiStatement> stmtDb(fCascader.CreateStatement(dbNo));
+  std::auto_ptr<CP::TDbiStatement> stmtDb(fCascader.CreateStatement(dbNo));
   if ( ! stmtDb.get() ) return false;
   if ( ! stmtDb->ExecuteUpdate(sql.c_str()) || stmtDb->PrintExceptions() ) {
        DbiSevere( "SQL: " << sql.c_str()
@@ -790,7 +788,7 @@ void  CP::TDbiDBProxy::StoreMetaData(CP::TDbiTableMetaData& metaData) const {
     while ( TSQLColumnInfo* colInfo = dynamic_cast<TSQLColumnInfo*>(colItr.Next()) ) {
 
       ++col;
-      string name(colInfo->GetName());
+      std::string name(colInfo->GetName());
       name = CP::UtilString::ToUpper(name);
       metaData.SetColName(name,col);
 

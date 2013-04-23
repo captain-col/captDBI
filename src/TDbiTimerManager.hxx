@@ -15,9 +15,6 @@
 #include <string>
 #include <list>
 
-using std::string;
-using std::list;
-
 namespace CP {
 class TDbiTableMetaData;
 class TDbiTimer;
@@ -39,7 +36,7 @@ public:
     void Enable(Bool_t flag=kTRUE,
 		Bool_t enableSubWatch = kFALSE) { fEnabled = flag;
                                     fSubWatchEnabled = enableSubWatch;}
-    void RecBegin(string tableName, UInt_t rowSize);
+    void RecBegin(std::string tableName, UInt_t rowSize);
     void RecEnd(UInt_t numRows);
     void RecFillAgg(Int_t aggNo);
     void RecMainQuery();
@@ -60,7 +57,7 @@ private:
           Bool_t fEnabled;     // Enable/disable
           Bool_t fSubWatchEnabled;
                                // SubWatch Enable/disable (not used now).
- list<TDbiTimer*> fTimers;      // Push-down stack of timers.
+    std::list<TDbiTimer*> fTimers;      // Push-down stack of timers.
 
  ClassDef(TDbiTimerManager,0)    // Simple query timer
 

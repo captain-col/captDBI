@@ -14,10 +14,9 @@
 ///////////////////////////////////////////////////////////////////////
 
 #include "TDbiTimer.hxx"
-#include <MsgFormat.h>
+#include <MsgFormat.hxx>
 #include <TDbiLog.hxx>
-#include <MsgFormat.h>
-using std::endl;
+#include <MsgFormat.hxx>
 
 ClassImp(CP::TDbiTimer)
 
@@ -71,7 +70,7 @@ CP::TDbiTimer::~TDbiTimer() {
 
 //.....................................................................
 
-void CP::TDbiTimer::RecBegin(string tableName, UInt_t rowSize) {
+void CP::TDbiTimer::RecBegin(std::string tableName, UInt_t rowSize) {
 //
 //
 //  Purpose:  Record the start of initial query on supplied table.
@@ -121,7 +120,7 @@ void CP::TDbiTimer::RecEnd(UInt_t numRows) {
   if ( fQueryStage != kMainQuery ) return;
 
   Float_t tableSize = numRows * fRowSize/1.0e+3;
-  string units = "Kb";
+  std::string units = "Kb";
   if ( tableSize > 1000. ) {
     tableSize /= 1000.;
     units = "Mb";

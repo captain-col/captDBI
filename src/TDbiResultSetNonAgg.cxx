@@ -7,9 +7,7 @@
 #include "TDbiTableRow.hxx"
 #include "TDbiTimerManager.hxx"
 #include <TDbiLog.hxx>
-#include <MsgFormat.h>
-using std::endl;
-using std::cout;
+#include <MsgFormat.hxx>
 
 ClassImp(CP::TDbiResultSetNonAgg)
 
@@ -68,7 +66,7 @@ CP::TDbiResultSetNonAgg::TDbiResultSetNonAgg(CP::TDbiInRowStream* resultSet,
                                  const CP::TDbiTableRow* tableRow,
                                  const CP::TDbiValidityRec* vrec,
                                  Bool_t dropSeqNo,
-                                 const string& sqlQualifiers) :
+                                 const std::string& sqlQualifiers) :
 CP::TDbiResultSet(resultSet,vrec,sqlQualifiers),
 fBuffer(0)
 {
@@ -162,7 +160,7 @@ CP::TDbiResultSetNonAgg::~TDbiResultSetNonAgg() {
 
   DbiTrace( "Destroying CP::TDbiResultSetNonAgg."  << "  ");
 
-  if ( ! fBuffer ) for ( vector<CP::TDbiTableRow*>::iterator itr = fRows.begin();
+  if ( ! fBuffer ) for ( std::vector<CP::TDbiTableRow*>::iterator itr = fRows.begin();
         itr != fRows.end();
         ++itr) delete *itr;
   else {
@@ -178,7 +176,7 @@ CP::TDbiResultKey* CP::TDbiResultSetNonAgg::CreateKey() const {
 
 
 
-  string rowName("empty_table");
+  std::string rowName("empty_table");
   const CP::TDbiTableRow* row = this->GetTableRow(0);
   if ( row ) rowName = row->GetName();
   const CP::TDbiValidityRec& vrec = this->GetValidityRec();
@@ -196,7 +194,7 @@ void CP::TDbiResultSetNonAgg::DebugCtor() const {
   DbiTrace( "Creating CP::TDbiResultSetNonAgg" << (void*) this << "  ");
   static const CP::TDbiResultSetNonAgg* that = 0;
   if ( this == that ) {
-    cout << "debug " << (void*) this << endl;
+      std::cout << "debug " << (void*) this << std::endl;
   }
 }
 //.....................................................................
@@ -269,8 +267,8 @@ const CP::TDbiTableRow* CP::TDbiResultSetNonAgg::GetTableRowByIndex(UInt_t index
 ///\endverbatim
 Bool_t CP::TDbiResultSetNonAgg::Owns(const CP::TDbiTableRow* row ) const {
 
- vector<CP::TDbiTableRow*>::const_iterator itr    = fRows.begin();
- vector<CP::TDbiTableRow*>::const_iterator itrEnd = fRows.end();
+ std::vector<CP::TDbiTableRow*>::const_iterator itr    = fRows.begin();
+ std::vector<CP::TDbiTableRow*>::const_iterator itrEnd = fRows.end();
 
  for (; itr != itrEnd; ++itr) if ( *itr == row ) return kTRUE;
 
@@ -282,7 +280,7 @@ Bool_t CP::TDbiResultSetNonAgg::Owns(const CP::TDbiTableRow* row ) const {
 //.....................................................................
 ///  Purpose: Check to see if this Result matches the supplied  CP::TDbiValidityRec.
 Bool_t CP::TDbiResultSetNonAgg::Satisfies(const CP::TDbiValidityRec& vrec,
-                                  const string& sqlQualifiers) {
+                                  const std::string& sqlQualifiers) {
 //
 //
 

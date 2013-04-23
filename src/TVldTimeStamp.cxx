@@ -29,8 +29,7 @@
 
 #include "TVldTimeStamp.hxx"
 #include <TDbiLog.hxx>
-#include <MsgFormat.h>
-using std::endl;
+#include <MsgFormat.hxx>
 #include <climits>
 #include <math.h>
 

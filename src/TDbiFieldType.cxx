@@ -17,9 +17,7 @@
 
 #include "TDbiFieldType.hxx"
 #include <TDbiLog.hxx>
-#include <MsgFormat.h>
-using std::endl;
-using std::ostringstream;
+#include <MsgFormat.hxx>
 
 ClassImp(CP::TDbiFieldType)
 
@@ -134,12 +132,12 @@ CP::TDbiFieldType::TDbiFieldType(const CP::TDbiFieldType& from)
 
 //.....................................................................
 
-CP::TDbiFieldType::TDbiFieldType(const string& sql,
+CP::TDbiFieldType::TDbiFieldType(const std::string& sql,
                            Int_t size )
 {
 //
 //
-//  Purpose:  Constructor from a MySQL type string
+//  Purpose:  Constructor from a MySQL type std::string
 
 
 
@@ -218,7 +216,7 @@ CP::TDbiFieldType::~TDbiFieldType() {
 
 //.....................................................................
 
-string CP::TDbiFieldType::AsString() const {
+std::string CP::TDbiFieldType::AsString() const {
 //
 //
 //  Purpose:  Return field type as a string.
@@ -262,12 +260,12 @@ string CP::TDbiFieldType::AsString() const {
 }
 //.....................................................................
 
-string CP::TDbiFieldType::AsSQLString() const {
+std::string CP::TDbiFieldType::AsSQLString() const {
 //
 //
 //  Purpose:  Return field type as a string suitable for MySQL column.
 
-  ostringstream os;
+    std::ostringstream os;
 
   switch ( fType ) {
 
@@ -489,7 +487,7 @@ return kFALSE;
 
 //.....................................................................
 
-string CP::TDbiFieldType::UndefinedValue() const {
+std::string CP::TDbiFieldType::UndefinedValue() const {
 //
 //
 //  Purpose:  Return value to be used when unknown.

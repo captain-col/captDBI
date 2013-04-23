@@ -22,7 +22,6 @@
 
 #include <string>
 #include <sstream>
-using std::string;
 
 #include "TDbi.hxx"
 #include "TDbiDBProxy.hxx"
@@ -54,9 +53,9 @@ public:
            TDbiCascader& GetCascader() { return *fCascader; }
 const TDbiTableMetaData& GetMetaData() const { return fMetaData; }
 const TDbiTableMetaData& GetMetaValid() const { return fMetaValid; }
-                 string GetRowName() const {
+                 std::string GetRowName() const {
                       return fTableRow ? fTableRow->ClassName() : "Unknown";}
-                 string GetTableName() const { return fTableName;}
+                 std::string GetTableName() const { return fTableName;}
 // State changing member functions
               TDbiCache* GetCache() { return fCache;}
               //
@@ -117,10 +116,10 @@ const TDbiTableMetaData& GetMetaValid() const { return fMetaValid; }
 ///  (which task encoded into the context) into a single semi-colon
 ///  separated string.
 /// \endverbatim                              
-       const TDbiResultSet* Query(const string& context,
+       const TDbiResultSet* Query(const std::string& context,
                               const TDbi::Task& task,
-                              const string& data,
-                              const string& fillOpts);
+                              const std::string& data,
+                              const std::string& fillOpts);
 ///\verbatim
 ///
 ///  Purpose:  Apply non-agregate query to database table and return result.
@@ -223,7 +222,7 @@ const TDbiTableMetaData& GetMetaValid() const { return fMetaValid; }
 ///
 ///  None.
 ///\endverbatim
- 	           void SetSqlCondition(const string& sql);
+ 	           void SetSqlCondition(const std::string& sql);
                  Bool_t TableExists() const { return fExists; }
 
 protected:
@@ -248,7 +247,7 @@ protected:
 ///  o Create table proxy for supplied table name.
 ///\endverbatim
            TDbiTableProxy(TDbiCascader* cascader,
-                         const string& tableName,
+                         const std::string& tableName,
                          const TDbiTableRow* tableRow);
   virtual ~TDbiTableProxy();
 
@@ -287,7 +286,7 @@ private:
 ///
 ///  o Save to cache but only if enabled and suitable.
 ///\endverbatim
- Bool_t SaveToL2Cache(const string& name, TDbiResultSet& res);
+ Bool_t SaveToL2Cache(const std::string& name, TDbiResultSet& res);
 
 // Data members (fMeta* must precede fDBProxy, it has to be created
 //               first - see initialiser list)
@@ -315,7 +314,7 @@ private:
   Bool_t fExists;
 
 /// Table Name
-string  fTableName;
+std::string  fTableName;
 
 /// Pet object used to create new rows.
  TDbiTableRow* fTableRow;

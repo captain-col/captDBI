@@ -6,8 +6,7 @@
 
 #include "TDbiResultKey.hxx"
 #include <TDbiLog.hxx>
-#include <MsgFormat.h>
-using std::endl;
+#include <MsgFormat.hxx>
 
 ClassImp(CP::TDbiResultKey)
 
@@ -21,8 +20,8 @@ CP::TDbiResultKey CP::TDbiResultKey::fgEmptyKey;
 //   Global Functions
 //   ****************
 
-std::ostream& operator<<(std::ostream& os, const CP::TDbiResultKey& key) {
-    os << key.AsString() << endl;
+std::ostream& CP::operator<<(std::ostream& os, const CP::TDbiResultKey& key) {
+    os << key.AsString() << std::endl;
     return os;
 }
 

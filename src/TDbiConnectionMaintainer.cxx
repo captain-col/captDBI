@@ -4,8 +4,7 @@
 #include "TDbiCascader.hxx"
 #include "TDbiConnectionMaintainer.hxx"
 #include <TDbiLog.hxx>
-#include <MsgFormat.h>
-using std::endl;
+#include <MsgFormat.hxx>
 
 ClassImp(CP::TDbiConnectionMaintainer)
 

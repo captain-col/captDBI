@@ -18,15 +18,13 @@
  *
  */
 
+#include "TDbiResultSet.hxx"
+
 #if !defined(__CINT__) || defined(__MAKECINT__)
 #include "Rtypes.h"
 #endif
 #include <string>
-using std::string;
 #include <vector>
-using std::vector;
-
-#include "TDbiResultSet.hxx"
 
 namespace CP {
 class TDbiBinaryFile;
@@ -50,7 +48,7 @@ using TDbiResultSet::Satisfies;
                            const TDbiTableRow* tableRow = 0,
                            const TDbiValidityRec* vrec = 0,
                            Bool_t dropSeqNo = kTRUE,
-                           const string& sqlQualifiers = "");
+                           const std::string& sqlQualifiers = "");
   virtual ~TDbiResultSetNonAgg();
 
 
@@ -67,7 +65,7 @@ using TDbiResultSet::Satisfies;
 
  virtual Bool_t Owns(const TDbiTableRow* row ) const;
          Bool_t Satisfies(const TDbiValidityRec& vrec,
-                          const string& sqlQualifiers = "");
+                          const std::string& sqlQualifiers = "");
  virtual void   Streamer(TDbiBinaryFile& file);
 
 private:

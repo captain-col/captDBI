@@ -24,7 +24,6 @@
 #include <UtilStream.hxx>
 
 #include <string>
-using namespace std;
 
 namespace CP
 // Only for GCC 3.3 and above.  See bug 3797
@@ -189,7 +188,7 @@ std::ostream& TDbiRegistryItemXxx<const char*>::PrintStream(std::ostream& os) co
 template<>
 std::istream& TDbiRegistryItemXxx<const char*>::ReadStream(std::istream& is)
 {
-    string stot = Util::read_quoted_string(is);
+    std::string stot = Util::read_quoted_string(is);
 
     if (!fData) {
         char** ppchar = new char*;

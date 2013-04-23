@@ -10,9 +10,7 @@
 
 #include "UtilString.hxx"
 #include <TDbiLog.hxx>
-#include <MsgFormat.h>
-using std::endl;
-using std::string;
+#include <MsgFormat.hxx>
 
 
 
@@ -66,9 +64,9 @@ void CP::UtilString::StringTok(std::vector<std::string>& ls,
 // Split a long string into a set of shorter strings spliting along
 // divisions makers by the characters listed in the token string
 //======================================================================
-  const string::size_type S     = str.size();
-  const string::size_type toksz = tok.size();
-  string::size_type  i = 0;
+  const std::string::size_type S     = str.size();
+  const std::string::size_type toksz = tok.size();
+  std::string::size_type  i = 0;
 
   while (i < S) {
     // eat leading whitespace
@@ -78,7 +76,7 @@ void CP::UtilString::StringTok(std::vector<std::string>& ls,
     if (i == S)  return;  // nothing left but WS
 
     // find end of word
-    string::size_type  j = i+1;
+    std::string::size_type  j = i+1;
     while ( (j<S) && !(tok.find(str[j])<=toksz) ) {
       ++j;
     }

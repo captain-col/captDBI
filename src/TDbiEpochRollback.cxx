@@ -11,8 +11,7 @@
 #include "TDbi.hxx"
 #include "TDbiEpochRollback.hxx"
 #include <TDbiLog.hxx>
-#include <MsgFormat.h>
-using std::endl;
+#include <MsgFormat.hxx>
 #include "TDbiRegistry.hxx"
 #include "UtilString.hxx"
 #include "TVldTimeStamp.hxx"
@@ -163,15 +162,15 @@ void CP::TDbiEpochRollback::Show() const {
 
  std::ostream& msg=TDbiLog::GetLogStream();
   msg << "\n\nEpochRollback Status:  ";
-  if ( fTableToEpoch.size() == 0 ) msg <<"Not enabled" << endl;
+  if ( fTableToEpoch.size() == 0 ) msg <<"Not enabled" << std::endl;
   else {
-    msg << "Maximum EPOCH limits:- " << endl;
+      msg << "Maximum EPOCH limits:- " << std::endl;
     name_map_t::const_reverse_iterator itr    = fTableToEpoch.rbegin();
     name_map_t::const_reverse_iterator itrEnd = fTableToEpoch.rend();
     for (; itr != itrEnd; ++itr) {
       std::string name = itr->first;
       if ( name.size() < 30 ) name.append(30-name.size(),' ');
-      msg <<"    " << name << "  " << itr->second << endl;
+      msg <<"    " << name << "  " << itr->second << std::endl;
     }
   }
 }

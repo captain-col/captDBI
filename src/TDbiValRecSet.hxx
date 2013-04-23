@@ -35,13 +35,13 @@ class TDbiValRecSet
 public:
 
 // Constructors and destructors.
-           TDbiValRecSet(const string& tableName,UInt_t dbNo,UInt_t seqNo=0);
+           TDbiValRecSet(const std::string& tableName,UInt_t dbNo,UInt_t seqNo=0);
   virtual ~TDbiValRecSet();
 
 // State testing member functions
                UInt_t GetDbNo() const { return fDbNo; }
                UInt_t GetNumRows() const;
-         const string GetTableName() const;
+         const std::string GetTableName() const;
 const TDbiValidityRec* GetTableRow(UInt_t rowNum) const;
 const TDbiValidityRec* GetTableRowBySeqNo(UInt_t seqNo) const;
 
@@ -59,7 +59,7 @@ private:
 
 /// Lookup SeqNo -> TDbiValidityRec
 /// lazy creation - see GetTableRowBySeqNo
-  mutable map<UInt_t,const TDbiValidityRec*>fSeqNoToRec;
+    mutable std::map<UInt_t,const TDbiValidityRec*>fSeqNoToRec;
 
  ClassDef(TDbiValRecSet,0)     //  A set of TDbiValidityRecs
 

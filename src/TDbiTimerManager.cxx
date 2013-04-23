@@ -15,10 +15,9 @@
 
 #include "TDbiTimer.hxx"
 #include "TDbiTimerManager.hxx"
-#include <MsgFormat.h>
+#include <MsgFormat.hxx>
 #include <TDbiLog.hxx>
-#include <MsgFormat.h>
-using std::endl;
+#include <MsgFormat.hxx>
 
 ClassImp(CP::TDbiTimerManager)
 
@@ -119,7 +118,7 @@ CP::TDbiTimer* CP::TDbiTimerManager::Push() {
 
 //.....................................................................
 
-void CP::TDbiTimerManager::RecBegin(string tableName, UInt_t rowSize) {
+void CP::TDbiTimerManager::RecBegin(std::string tableName, UInt_t rowSize) {
 //
 //
 //  Purpose:  Record the start of initial query on supplied table.

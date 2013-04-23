@@ -23,23 +23,20 @@
  *
  */
 
-#include <iosfwd>
-using std::ostream;
-#include <list>
-using std::list;
-#include <map>
-using std::map;
-
 #include "DbiSimFlag.hxx"
+
+#include <iosfwd>
+#include <list>
+#include <map>
 
 namespace CP {
 class TDbiSimFlagAssociation;
 }
 namespace CP{
 class TDbiRegistry;
+std::ostream& operator<<(std::ostream& s, const CP::TDbiSimFlagAssociation& simFlagAss);
 }
 
-ostream& operator<<(ostream& s, const CP::TDbiSimFlagAssociation& simFlagAss);
 
 namespace CP {
 class TDbiSimFlagAssociation
@@ -49,8 +46,8 @@ class TDbiSimFlagAssociation
 public:
 
 // Typedefs for tired fingers.
-  typedef list<CP::DbiSimFlag::SimFlag_t>           SimList_t;
-  typedef map<CP::DbiSimFlag::SimFlag_t,SimList_t > SimMap_t;
+    typedef std::list<CP::DbiSimFlag::SimFlag_t>           SimList_t;
+    typedef std::map<CP::DbiSimFlag::SimFlag_t,SimList_t > SimMap_t;
 
 // Constructors and destructors.
            TDbiSimFlagAssociation();
@@ -59,8 +56,8 @@ public:
 // State testing member functions
 
   SimList_t Get(const CP::DbiSimFlag::SimFlag_t value)const;
-                      void Print(ostream& s)const;
-                      void Show();
+    void Print(std::ostream& s)const;
+    void Show();
 
 ///  Get access to the one and only instance.
   static const TDbiSimFlagAssociation& Instance();

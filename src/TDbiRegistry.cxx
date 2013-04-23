@@ -8,17 +8,14 @@
 #include "TDbiRegistryItem.hxx"
 
 #include <UtilStream.hxx>
-using namespace CP::Util;
 
 #include <TDbiLog.hxx>
-#include <MsgFormat.h>
-using std::endl;
+#include <MsgFormat.hxx>
 
 #include <typeinfo>
 #include <iostream>
 #include <sstream>
 #include <cassert>
-using namespace std;
 
 ClassImp(CP::TDbiRegistry)
 
@@ -170,7 +167,7 @@ ostream& CP::TDbiRegistry::PrettyPrint(ostream& os) const
 
         os << mit->first << " = ";
         mit->second->PrintStream(os);
-        os << endl;
+        os << std::endl;
         ++mit;
     }
     print_depth-=4;
@@ -179,7 +176,7 @@ ostream& CP::TDbiRegistry::PrettyPrint(ostream& os) const
 
 void CP::TDbiRegistry::Print(Option_t* /* option */) const
 {
-    this->PrettyPrint(cout);
+    this->PrettyPrint(std::cout);
 }
 
 
@@ -389,16 +386,16 @@ const type_info& CP::TDbiRegistry::GetType(const char* key) const
     if (mit == fMap.end()) return typeid(void);
     return mit->second->GetType();
 }
-string CP::TDbiRegistry::GetTypeAsString(const char* key) const
+std::string CP::TDbiRegistry::GetTypeAsString(const char* key) const
 {
     tRegMap::const_iterator mit = fMap.find(key);
     if (mit == fMap.end()) return "void";
     return mit->second->GetTypeAsString();
 }
 
-string CP::TDbiRegistry::GetValueAsString(const char* key) const
+std::string CP::TDbiRegistry::GetValueAsString(const char* key) const
 {
-    ostringstream os;
+    std::ostringstream os;
     tRegMap::const_iterator mit = fMap.find(key);
     if (mit == fMap.end()) return "";
     mit->second->PrintStream(os);
@@ -420,7 +417,7 @@ void CP::TDbiRegistry::Streamer(TBuffer& b)
 
             char tmp[1024];
             b >> tmp;
-            string key(tmp);
+            std::string key(tmp);
 
             TDbiRegistryItem *ri;
             b >> ri;
@@ -491,7 +488,7 @@ std::istream& CP::TDbiRegistry::ReadStream(std::istream& is)
         is.putback(c);
         return bail(is);
     }
-    string name = Util::read_quoted_string(is);
+    std::string name = Util::read_quoted_string(is);
     reg.SetName(name.c_str());
 
     while (is.get(c)) {
@@ -503,7 +500,7 @@ std::istream& CP::TDbiRegistry::ReadStream(std::istream& is)
         is.putback(c);
 
         // get the key
-        string key = read_quoted_string(is);
+        std::string key = CP::Util::read_quoted_string(is);
         if (key == "") return bail(is);
 
         // skip the "="
@@ -516,7 +513,7 @@ std::istream& CP::TDbiRegistry::ReadStream(std::istream& is)
         }
 
         // get the type
-        string type;
+        std::string type;
         while (is.get(c)) {
             if (c == ')') break;
             type += c;

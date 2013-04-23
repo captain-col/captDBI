@@ -1,12 +1,5 @@
 // $Id: TDbiLogEntry.cxx,v 1.1 2011/01/18 05:49:20 finch Exp $
 
-#include <iostream>
-#include <sstream>
-
-#include "TString.h"
-#include "TSystem.h"
-#include "TUrl.h"
-
 #include "TDbi.hxx"
 #include "TDbiCascader.hxx"
 #include "TDbiLogEntry.hxx"
@@ -16,10 +9,15 @@
 #include "TDbiTableProxy.hxx"
 #include "TDbiDatabaseManager.hxx"
 #include "TDbiValidityRec.hxx"
-#include <TDbiLog.hxx>
-#include <MsgFormat.h>
-using std::endl;
+#include "TDbiLog.hxx"
+#include "MsgFormat.hxx"
 
+#include <TString.h>
+#include <TSystem.h>
+#include <TUrl.h>
+
+#include <iostream>
+#include <sstream>
 
 ClassImp(CP::TDbiLogEntry)
 
@@ -44,8 +42,8 @@ template class  CP::TDbiWriter<CP::TDbiLogEntry>;
 
 //.....................................................................
 
-CP::TDbiLogEntry::TDbiLogEntry(const string& tableName, /* = "" */
-                         const string& reason,    /* = "" */
+CP::TDbiLogEntry::TDbiLogEntry(const std::string& tableName, /* = "" */
+                         const std::string& reason,    /* = "" */
 	                 Int_t detMask,           /* = full mask */
 	                 Int_t simMask,           /* = full mask */
                          TDbi::Task task,          /* = 0  */
@@ -133,7 +131,7 @@ std::ostream& operator<<(ostream& s, const CP::TDbiLogEntry& logEntry) {
     << " running " << logEntry.GetProcessName()
     << " on " << logEntry.GetHostName()
     << " connected to " << logEntry.GetServerName()
-    << "\n Reason for update:-\n " << logEntry.GetReason() << endl;
+    << "\n Reason for update:-\n " << logEntry.GetReason() << std::endl;
 
   return s;
 
@@ -167,8 +165,8 @@ void CP::TDbiLogEntry::Fill(CP::TDbiInRowStream& rs,
 
 //.....................................................................
 
-void CP::TDbiLogEntry::Recreate(const string& tableName, /* = "" */
-                           const string& reason,    /* = "" */
+void CP::TDbiLogEntry::Recreate(const std::string& tableName, /* = "" */
+                           const std::string& reason,    /* = "" */
 	                   Int_t detMask,           /* = full mask */
 	                   Int_t simMask,           /* = full mask */
                            TDbi::Task task,          /* = 0  */
@@ -209,7 +207,7 @@ void CP::TDbiLogEntry::Recreate(const string& tableName, /* = "" */
 
 //.....................................................................
 
-void CP::TDbiLogEntry::SetReason(const string& reason) {
+void CP::TDbiLogEntry::SetReason(const std::string& reason) {
 //
 //
 //  Purpose: Set reason.
@@ -228,14 +226,14 @@ void CP::TDbiLogEntry::SetReason(const string& reason) {
   // If fReason starts '@' treat remainder as file name
   // to be read into fReason.
   if ( fReason.size() && fReason[0] == '@' ) {
-    string fileName(fReason,1);
+    std::string fileName(fReason,1);
     fReason.clear();
     ifstream reasonFile(fileName.c_str());
     if ( ! reasonFile.is_open() ) {
       DbiSevere( "Cannot read \"Reason File\" " << fileName << "  ");
     }
     else {
-      string line;
+      std::string line;
       while ( ! reasonFile.eof() ) {
         getline(reasonFile,line);
 	if (    line.substr(0,11) == "FIXUP-FILE:"
@@ -257,7 +255,7 @@ void CP::TDbiLogEntry::SetServerName() {
 //
 //  Purpose: Set DB Server name from cascade number.
 
-  string urlStr = CP::TDbiDatabaseManager::Instance().GetCascader().GetURL(fDbNo);
+  std::string urlStr = CP::TDbiDatabaseManager::Instance().GetCascader().GetURL(fDbNo);
   TUrl url(urlStr.c_str());
   fServerName = url.GetHost();
 
@@ -342,37 +340,5 @@ Bool_t CP::TDbiLogEntry::Write(UInt_t dbNo,
   packet.AddDataRow(tblProxy,0,*this);
   packet.SetSeqNo(fSeqNo);
   return packet.Store(fDbNo,replace);
-;
 }
-/*    Template for New Member Function
-
-//.....................................................................
-
-CP::TDbiLogEntry:: {
-//
-//
-//  Purpose:
-//
-//  Arguments:
-//    xxxxxxxxx    in    yyyyyy
-//
-//  Return:
-//
-//  Contact:   N. West
-//
-//  Specification:-
-//  =============
-//
-//  o
-
-//  Program Notes:-
-//  =============
-
-//  None.
-
-
-}
-
-*/
-
 

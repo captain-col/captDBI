@@ -8,8 +8,7 @@
 #include "TDbiValidityRec.hxx"
 #include "TDbiValRecSet.hxx"
 #include <TDbiLog.hxx>
-#include <MsgFormat.h>
-using std::endl;
+#include <MsgFormat.hxx>
 
 ClassImp(CP::TDbiValRecSet)
 
@@ -25,7 +24,7 @@ ClassImp(CP::TDbiValRecSet)
 
 //.....................................................................
 
-CP::TDbiValRecSet::TDbiValRecSet(const string& tableName,UInt_t dbNo,UInt_t seqNo) :
+CP::TDbiValRecSet::TDbiValRecSet(const std::string& tableName,UInt_t dbNo,UInt_t seqNo) :
 fDbNo(dbNo),
 fResult(0)
 {
@@ -131,7 +130,7 @@ UInt_t CP::TDbiValRecSet::GetNumRows() const {
 
 //.....................................................................
 
-const string CP::TDbiValRecSet::GetTableName() const {
+const std::string CP::TDbiValRecSet::GetTableName() const {
 //
 //
 //  Purpose:  Return the table name.
@@ -221,7 +220,7 @@ const CP::TDbiValidityRec* CP::TDbiValRecSet::GetTableRowBySeqNo(UInt_t seqNo
     }
   }
 
-  map<UInt_t,const CP::TDbiValidityRec*>::const_iterator itr = fSeqNoToRec.find(seqNo);
+  std::map<UInt_t,const CP::TDbiValidityRec*>::const_iterator itr = fSeqNoToRec.find(seqNo);
   return ( itr == fSeqNoToRec.end() ) ? 0 : itr->second;
 
 }

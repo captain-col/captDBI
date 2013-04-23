@@ -16,14 +16,13 @@
 #include "TDbiTimerManager.hxx"
 #include "TDbiValidityRecBuilder.hxx"
 #include <TDbiLog.hxx>
-#include <MsgFormat.h>
-using std::endl;
+#include <MsgFormat.hxx>
 #include "TVldRange.hxx"
 #include "UtilString.hxx"
 
 ClassImp(CP::TDbiResultSetAgg)
 
-typedef vector<const CP::TDbiResultSet*>::const_iterator ConstResultItr_t;
+typedef std::vector<const CP::TDbiResultSet*>::const_iterator ConstResultItr_t;
 
 
 //   Definition of static data members
@@ -66,12 +65,12 @@ typedef vector<const CP::TDbiResultSet*>::const_iterator ConstResultItr_t;
 ///
 ///  tableRow is just used to create new subclass CP::TDbiTableRow objects.
 ///\endverbatim
-CP::TDbiResultSetAgg::TDbiResultSetAgg(const string& tableName,
+CP::TDbiResultSetAgg::TDbiResultSetAgg(const std::string& tableName,
                            const CP::TDbiTableRow* tableRow,
                            CP::TDbiCache* cache,
                            const CP::TDbiValidityRecBuilder* vrecBuilder,
                            const CP::TDbiDBProxy* proxy,
-                           const string& sqlQualifiers) :
+                           const std::string& sqlQualifiers) :
 CP::TDbiResultSet(0,0,sqlQualifiers),
 fSize(0)
 {
@@ -87,15 +86,15 @@ fSize(0)
 // Don't use StringTok - it eats null strings
 // e.g. abc;;def gives 2 substrings.
 
-  string::size_type loc  = sqlQualifiers.find(';');
-  string::size_type loc2 = sqlQualifiers.find(';',loc+1);
-  string sqlData  = string(sqlQualifiers,loc+1,loc2-loc-1);
-  string fillOpts = string(sqlQualifiers,loc2+1);
+  std::string::size_type loc  = sqlQualifiers.find(';');
+  std::string::size_type loc2 = sqlQualifiers.find(';',loc+1);
+  std::string sqlData  = std::string(sqlQualifiers,loc+1,loc2-loc-1);
+  std::string fillOpts = std::string(sqlQualifiers,loc2+1);
 
 //Loop over all rows looking to see if they are already in
 //the cache, and if not, recording their associated sequence numbers
 
-  vector<UInt_t> reqSeqNos;  // Sequence numbers required from DB.
+  std::vector<UInt_t> reqSeqNos;  // Sequence numbers required from DB.
   seqToRow_t seqToRow;       // Map SeqNo - > RowNo.
 //  Set up a Default database number, it will be updated if anything
 //  needs to be read from the database.
@@ -340,7 +339,7 @@ const CP::TDbiValidityRec& CP::TDbiResultSetAgg::GetValidityRec(
 }
 //.....................................................................
 ///  Purpose:  Return true if result satisfies extended context query.
-Bool_t CP::TDbiResultSetAgg::Satisfies(const string& sqlQualifiers)  {
+Bool_t CP::TDbiResultSetAgg::Satisfies(const std::string& sqlQualifiers)  {
 //
 //
 
@@ -366,8 +365,8 @@ void CP::TDbiResultSetAgg::Streamer(CP::TDbiBinaryFile& bf) {
 
 //  Output constituent non-gap CP::TDbiResultSetNonAgg objects.
 
-  vector<const CP::TDbiResultSet*>::const_iterator itr = fResults.begin();
-  vector<const CP::TDbiResultSet*>::const_iterator end = fResults.end();
+    std::vector<const CP::TDbiResultSet*>::const_iterator itr = fResults.begin();
+    std::vector<const CP::TDbiResultSet*>::const_iterator end = fResults.end();
 
   UInt_t numNonAgg = 0;
   for (; itr != end; ++itr) {
@@ -382,36 +381,4 @@ void CP::TDbiResultSetAgg::Streamer(CP::TDbiBinaryFile& bf) {
     if ( rna && ! rna->GetValidityRecGlobal().IsGap() ) bf << *rna;
   }
 }
-
-/*    Template for New Member Function
-
-//.....................................................................
-
-CP::TDbiResultSetAgg:: {
-//
-//
-//  Purpose:
-//
-//  Arguments:
-//    xxxxxxxxx    in    yyyyyy
-//
-//  Return:
-//
-//  Contact:   N. West
-//
-//  Specification:-
-//  =============
-//
-//  o
-
-//  Program Notes:-
-//  =============
-
-//  None.
-
-
-}
-
-*/
-
 

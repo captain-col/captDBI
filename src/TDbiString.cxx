@@ -4,9 +4,7 @@
 
 #include "TDbiString.hxx"
 #include <TDbiLog.hxx>
-#include <MsgFormat.h>
-using std::endl;
-using std::ostringstream;
+#include <MsgFormat.hxx>
 
 ClassImp(CP::TDbiString)
 
@@ -143,7 +141,7 @@ CP::TDbiString::~TDbiString() {
 }
 
 #define OUT(t,v)               \
-    ostringstream out;         \
+    std::ostringstream out;         \
     out << v;                  \
     fString.append(out.str()); \
     return *this;

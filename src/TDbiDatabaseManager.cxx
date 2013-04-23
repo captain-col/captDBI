@@ -15,8 +15,7 @@
 #include "TDbiDatabaseManager.hxx"
 #include "TDbiTableProxy.hxx"
 #include <TDbiLog.hxx>
-#include <MsgFormat.h>
-using std::endl;
+#include <MsgFormat.hxx>
 #include "UtilString.hxx"
 
 ClassImp(CP::TDbiDatabaseManager)
@@ -161,9 +160,9 @@ void CP::TDbiDatabaseManager::ApplySqlCondition(CP::TDbiTableProxy* proxy) const
 //  Contact:   N. West
 //
 
-  string sqlFull = fSqlCondition;
-  const string tableName(proxy->GetTableName());
-  const string& date = fRollbackDates.GetDate(tableName);
+  std::string sqlFull = fSqlCondition;
+  const std::string tableName(proxy->GetTableName());
+  const std::string& date = fRollbackDates.GetDate(tableName);
   if ( date.size() ) {
     if ( sqlFull.size() ) sqlFull += " and ";
     sqlFull += fRollbackDates.GetType(tableName);
@@ -171,7 +170,7 @@ void CP::TDbiDatabaseManager::ApplySqlCondition(CP::TDbiTableProxy* proxy) const
     sqlFull += date;
     sqlFull += "\'";
   }
-  const string& epoch_condition = fEpochRollback.GetEpochCondition(tableName);
+  const std::string& epoch_condition = fEpochRollback.GetEpochCondition(tableName);
   if ( epoch_condition.size() ) {
     if ( sqlFull.size() ) sqlFull += " and ";
     sqlFull += epoch_condition;
@@ -516,7 +515,7 @@ void CP::TDbiDatabaseManager::ShowStatistics() const {
       << "Table Name                             "
       << "    Current   Maximum     Total     Total\n"
       << "                                       "
-      << "       Size      Size   Adopted    Reused" << endl;
+      << "       Size      Size   Adopted    Reused" << std::endl;
 
 // Loop over all owned objects.
 
@@ -529,9 +528,9 @@ void CP::TDbiDatabaseManager::ShowStatistics() const {
     msg << name;
 //  Only want to look at cache so by-pass constness.
     const_cast<CP::TDbiTableProxy*>(tp)->GetCache()->ShowStatistics(msg);
-   msg << endl;
+   msg << std::endl;
   }
-  msg << "\n" << endl;
+  msg << "\n" << std::endl;
 
 //  Only want to look at cascader so by-pass constness.
 

@@ -41,17 +41,17 @@ public:
 // State testing member functions
 virtual
  const TDbiFieldType& ColFieldType(UInt_t col) const;
-virtual       string ColName(UInt_t col) const;
+virtual       std::string ColName(UInt_t col) const;
 virtual
  const TDbiFieldType& CurColFieldType() const;
-virtual       string CurColName() const;
+virtual       std::string CurColName() const;
 virtual       UInt_t CurColNum() const { return fCurCol;}
        Bool_t HasEpoch() const;
        Bool_t HasRowCounter() const { return fHasRowCounter; }
        Bool_t IsVLDTable() const { return fIsVLDTable; }
 virtual       UInt_t NumCols() const;
-virtual       string TableName() const;
-virtual       string TableNameTc() const;
+virtual       std::string TableName() const;
+virtual       std::string TableNameTc() const;
 virtual const TDbiTableMetaData*
               MetaData() const { return fMetaData; }
 // State changing member functions

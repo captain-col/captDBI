@@ -10,16 +10,10 @@
 #include "TDbiDatabaseManager.hxx"
 #include "TDbiWriter.hxx"
 #include <TDbiLog.hxx>
-#include <MsgFormat.h>
+#include <MsgFormat.hxx>
 #include "TDbiRegistry.hxx"
 #include "TDbiCfg.hxx"
 #include "TDbiCascader.hxx"
-using std::endl;
-using std::istringstream;
-using std::ostringstream;
-using std::setw;
-using std::setfill;
-using std::setprecision;
 
 ClassImp(CP::TDbiConfigStream)
 
@@ -68,7 +62,7 @@ fCFSet(0)
 
 //.....................................................................
 
-CP::TDbiConfigStream::TDbiConfigStream(const string& SoftName,
+CP::TDbiConfigStream::TDbiConfigStream(const std::string& SoftName,
                                  const std::string& ConfigName,
                                  CP::TVldContext vc,
                                  TDbi::Task task,
@@ -205,8 +199,8 @@ CP::TDbiConfigStream::~TDbiConfigStream() {
 
   const CP::TDbiConfigSet* cfSet = cfStream.GetConfigSet();
 
-  if ( cfSet )  os << "CP::TDbiConfigSet contains: " << *cfSet << endl;
-  else          os << "CP::TDbiConfigSet is empty! " << endl;
+  if ( cfSet )  os << "CP::TDbiConfigSet contains: " << *cfSet << std::endl;
+  else          os << "CP::TDbiConfigSet is empty! " << std::endl;
   return os;
 }
 
@@ -254,7 +248,7 @@ const CP::TDbiConfigStream& CP::TDbiConfigStream::operator>>(TDbiRegistry* reg) 
 //  Handle configuration tables.
 
     if ( numParams == 3 && fCFSet->GetParamName(2) == "CONFIG_DATA" ) {
-      istringstream is(fCFSet->GetParamValue(2));
+      std::istringstream is(fCFSet->GetParamValue(2));
       reg->ReadStream(is);
     }
     else {
@@ -296,7 +290,7 @@ CP::TDbiConfigStream& CP::TDbiConfigStream::operator<<(const TDbiRegistry* reg) 
 
   CP::TDbiFieldType stringType(TDbi::kString);
 
-  ostringstream os;
+  std::ostringstream os;
   reg->PrintStream(os);
   fCFSetModified.Clear();
   fCFSetModified.PushBack("SOFTW_NAME", fSoftwName,  stringType);

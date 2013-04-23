@@ -1,7 +1,5 @@
 #include "UtilStream.hxx"
 
-using namespace std;
-
 void CP::Util::eat_whitespace(std::istream& is)
 {
     char c;
@@ -21,7 +19,7 @@ std::string CP::Util::read_quoted_string(std::istream& is)
 
     if (!is.get(c)) return "";
     if (c == '\'') {
-        string stot;
+        std::string stot;
         while (is.get(c)) {
             if (c == '\'') break;
             stot += c;

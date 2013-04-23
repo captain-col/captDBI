@@ -34,11 +34,10 @@
  *
  */
 
-#include <string>
-using std::string;
-#include <vector>
-
 #include "TDbiResultSet.hxx"
+
+#include <string>
+#include <vector>
 
 namespace CP {
 class TDbiCache;
@@ -60,12 +59,12 @@ public:
 using TDbiResultSet::Satisfies;
 
 // Constructors and destructors.
-           TDbiResultSetAgg(const string& tableName = "Unknown",
+           TDbiResultSetAgg(const std::string& tableName = "Unknown",
                         const TDbiTableRow* tableRow = 0,
                         TDbiCache* cache = 0,
                         const TDbiValidityRecBuilder* vrecBuilder = 0,
                         const TDbiDBProxy* proxy=0,
-                        const string& sqlQualifiers = "" );
+                        const std::string& sqlQualifiers = "" );
   virtual ~TDbiResultSetAgg();
 
 // State testing member functions
@@ -81,7 +80,7 @@ using TDbiResultSet::Satisfies;
 
 //  State changing member functions.
 
- virtual     Bool_t Satisfies(const string& sqlQualifiers);
+ virtual     Bool_t Satisfies(const std::string& sqlQualifiers);
  virtual void Streamer(TDbiBinaryFile& bf);
 
 

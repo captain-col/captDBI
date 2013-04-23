@@ -71,7 +71,7 @@ void CP::TDemo_DB_Table::Fill(CP::TResultInputStream& ris) {
 
   UInt_t id;
   ris >> id >> fIParm1 >> fIParm2 >> fIParm3 >> fFParm1 >> fFParm2 >> fFParm3;
-  fChannelId = TTFBChannelId(id);
+  fChannelId = TChannelId(id);
 
 }
 
