@@ -20,13 +20,9 @@
 
 namespace CP {
     class TDbiTableMetaData;
-}
 
-namespace CP {
     class TDbiTimer {
-
     public:
-
 // Constructors and destructors.
         TDbiTimer();
         virtual ~TDbiTimer();
@@ -62,8 +58,4 @@ namespace CP {
 
     };
 };
-
-
 #endif // DBITIMER
-
-

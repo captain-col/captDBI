@@ -46,9 +46,7 @@ namespace CP {
     class TDbiInRowStream;
     class TDbiTableRow;
     class TDbiValidityRecBuilder;
-}
 
-namespace CP {
     class TDbiResultSetAgg : public TDbiResultSet {
 
 
@@ -89,17 +87,17 @@ namespace CP {
 
 // Data members
 
-/// Array of TDbiResultSets (vector<TDbiResultSet*>).
-/// The array index is NOT the aggregate number; it simply matches
-/// the rows are supplied by the TDbiValidityRecBuilder with first
-/// row of TDbiValidityRecBuilder excluded  i.e. row n of builder
-/// creates a TDbiResultSet pointed to by fResults[n-1];
+        /// Array of TDbiResultSets (vector<TDbiResultSet*>).
+        /// The array index is NOT the aggregate number; it simply matches
+        /// the rows are supplied by the TDbiValidityRecBuilder with first
+        /// row of TDbiValidityRecBuilder excluded  i.e. row n of builder
+        /// creates a TDbiResultSet pointed to by fResults[n-1];
         std::vector<const TDbiResultSet*>   fResults;
 
-/// Look-up: Row no. -> TableRow
+        /// Look-up: Row no. -> TableRow
         std::vector<const TDbiTableRow*> fRowKeys;
 
-/// Current set size.
+        /// Current set size.
         UInt_t fSize;
 
         ClassDef(TDbiResultSetAgg,0)     // Results table of aggregated data.

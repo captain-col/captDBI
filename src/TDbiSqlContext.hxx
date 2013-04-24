@@ -75,8 +75,4 @@ namespace CP {
 
     };
 };
-
-
 #endif // DBISQLCONTEXT
-
-

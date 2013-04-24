@@ -37,7 +37,6 @@ namespace CP {
     std::ostream& operator<<(std::ostream& os, const CP::TVldContext& vldts);
 
     class TVldContext : public TObject {
-
     public:
 
         TVldContext();                        // necessary for streamer io

@@ -96,8 +96,10 @@ namespace CP {
 
     protected:
 
-        Int_t              fDetectorMask; /// or's of CP::DbiDetector::Detector_t
-        Int_t              fSimMask;      /// or's of data/mc conditions
+        /// or's of CP::DbiDetector::Detector_t
+        Int_t              fDetectorMask; 
+        /// or's of data/mc conditions
+        Int_t              fSimMask;  
         TVldTimeStamp       fTimeStart;
         TVldTimeStamp       fTimeEnd;
         TString            fDataSource;

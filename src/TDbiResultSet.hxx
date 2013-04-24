@@ -38,15 +38,10 @@ namespace CP {
     class TDbiResultSet;
     class TDbiInRowStream;
     class TDbiTableRow;
-}
-namespace CP {
     class TVldContext;
     CP::TDbiBinaryFile& operator<<(CP::TDbiBinaryFile& bf, const CP::TDbiResultSet& res);
     CP::TDbiBinaryFile& operator>>(CP::TDbiBinaryFile& bf, CP::TDbiResultSet& res);
 
-};
-
-namespace CP {
     class TDbiResultSet {
 
     public:

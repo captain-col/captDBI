@@ -26,9 +26,7 @@
 namespace CP {
     class TDbiResultSet;
     class TDbiValidityRec;
-}
 
-namespace CP {
     class TDbiValRecSet {
 
     public:
@@ -66,7 +64,4 @@ namespace CP {
 
     };
 };
-
-
 #endif  // DBIVALRECSET
-

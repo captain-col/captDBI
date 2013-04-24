@@ -1,6 +1,4 @@
 #ifndef DBIRESULTSETHANDLE_H
-// this will switch users code from using TDbiResultSetHandle to CP::TDbiResultSetHandle
-#define USE_NEW_DBI_API
 #define DBIRESULTSETHANDLE_H
 
 /**
@@ -28,7 +26,7 @@
 
 #include "TDbi.hxx"
 #include "TDbiResultSet.hxx"
-#include "TDbiDatabaseManager.hxx"  //Only for cleaner
+#include "TDbiDatabaseManager.hxx"
 #include "TDbiValidityRec.hxx"
 #include "TVldContext.hxx"
 
@@ -40,9 +38,7 @@ namespace CP {
     class TDbiResultKey;
     class TDbiSqlContext;
     class TDbiTableProxy;
-}
 
-namespace CP {
     template <class T> class TDbiResultSetHandle {
 
     public:

@@ -1,11 +1,5 @@
 #ifndef DBISTATEMENT
 #define DBISTATEMENT
-
-
-//////////////////////////////////////////////////////////////////////////
-////////////////////////////     ROOT API     ////////////////////////////
-//////////////////////////////////////////////////////////////////////////
-
 /**
  *
  * $Id: TDbiStatement.hxx,v 1.1 2011/01/18 05:49:20 finch Exp $
@@ -26,50 +20,48 @@
  *
  */
 
-#include <list>
+#include "TDbi.hxx"
+#include "TDbiExceptionLog.hxx"
+#include "TDbiConnection.hxx"
 
 #include "TList.h"
 #include "TString.h"
 #include "TSQLStatement.h"
 
-#include "TDbi.hxx"
-#include "TDbiExceptionLog.hxx"
-#include "TDbiConnection.hxx"
+#include <list>
 
 namespace CP {
     class TDbiException;
-}
 
-namespace CP {
     class TDbiStatement {
 
     public:
 
-// Constructors and destructors.
+        /// Constructors and destructors.
         TDbiStatement(TDbiConnection& conDb);
         virtual ~TDbiStatement();
 
-// State testing member functions
+        /// State testing member functions
 
-// Exception log handling.
+        /// Exception log handling.
 
-/// Print accumulated exceptions at supplied Msg level,
-/// add them to the Global Exception Log if level >= kWarning
-/// and return true if there are any.
+        /// Print accumulated exceptions at supplied Msg level,
+        /// add them to the Global Exception Log if level >= kWarning
+        /// and return true if there are any.
         Bool_t PrintExceptions(Int_t level = 3) const;
 
         const TDbiExceptionLog& GetExceptionLog() const {
             return fExceptionLog;
         }
 
-// State changing member functions
+        /// State changing member functions
 
-// Database I/O
+        /// Database I/O
 
-/// Give caller a TSQLStatement of results (Process() and StoreResult() already performed.).
+        /// Give caller a TSQLStatement of results (Process() and StoreResult() already performed.).
         TSQLStatement* ExecuteQuery(const TString& sql="");
 
-/// Apply an update and return success/fail.
+        /// Apply an update and return success/fail.
         Bool_t ExecuteUpdate(const TString& sql="");
 
     private:
@@ -93,21 +85,17 @@ namespace CP {
 
         TSQLStatement* CreateProcessedStatement(const TString& sql="");
 
-// Data members
+        /// Data members
 
-///Connection associated with this statement.
+        ///Connection associated with this statement.
         TDbiConnection& fConDb;
 
-/// A log of reported exceptions.
-/// Cleared by calling ExecuteQuery, ExecuteUpdate
+        /// A log of reported exceptions.
+        /// Cleared by calling ExecuteQuery, ExecuteUpdate
         TDbiExceptionLog fExceptionLog;
 
         ClassDef(TDbiStatement,0)     // Managed TSQL_Statement
 
     };
 };
-
-
 #endif // DBISTATEMENT
-
-

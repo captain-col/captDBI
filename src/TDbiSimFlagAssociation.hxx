@@ -31,14 +31,10 @@
 
 namespace CP {
     class TDbiSimFlagAssociation;
-}
-namespace CP {
     class TDbiRegistry;
-    std::ostream& operator<<(std::ostream& s, const CP::TDbiSimFlagAssociation& simFlagAss);
-}
+    std::ostream& operator<<(std::ostream& s, 
+                             const CP::TDbiSimFlagAssociation& simFlagAss);
 
-
-namespace CP {
     class TDbiSimFlagAssociation {
 
 
@@ -84,7 +80,4 @@ namespace CP {
 
     };
 };
-
-
 #endif // DBISIMFLAGASSOCIATION
-

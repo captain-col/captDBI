@@ -1,6 +1,5 @@
 #ifndef DBIROWSTREAM_H
 #define DBIROWSTREAM_H
-
 /**
  *
  * $Id: TDbiRowStream.hxx,v 1.1 2011/01/18 05:49:20 finch Exp $
@@ -19,16 +18,13 @@
  *
  *
  */
+#include "TDbiFieldType.hxx"
 
 #include <string>
 
-#include "TDbiFieldType.hxx"
-
 namespace CP {
     class TDbiTableMetaData;
-}
 
-namespace CP {
     class TDbiRowStream {
 
     public:
@@ -99,7 +95,4 @@ namespace CP {
 
     };
 };
-
-
 #endif  // DBIROWSTREAM_H
-

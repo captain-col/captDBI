@@ -30,12 +30,8 @@ namespace CP {
     class TDbiBinaryFile;
     class TDbiInRowStream;
     class TDbiTableRow;
-}
 
-namespace CP {
-    class TDbiResultSetNonAgg : public TDbiResultSet
-
-    {
+    class TDbiResultSetNonAgg : public TDbiResultSet {
 
     public:
 

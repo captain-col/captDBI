@@ -6,8 +6,7 @@
 namespace CP {
     class TEventContext;
 
-/// This is the base class for all results sets of rows of type T
-
+    /// This is the base class for all results sets of rows of type T
     template <class T> class TResultSetHandle : public TDbiResultSetHandle<T> {
 
     public:
@@ -23,8 +22,5 @@ namespace CP {
         ClassDef(TResultSetHandle,1);
 
     };
-
 };
-
-
 #endif

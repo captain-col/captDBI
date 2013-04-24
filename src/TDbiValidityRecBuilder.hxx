@@ -24,23 +24,18 @@
  *
  */
 
-#include <string>
-#include <map>
-#include <vector>
-
 #include "TDbi.hxx"
 #include "TDbiValidityRec.hxx"
 #include "TVldContext.hxx"
 
+#include <string>
+#include <map>
+#include <vector>
 
 namespace CP {
     class TDbiDBProxy;
-}
 
-namespace CP {
     class TDbiValidityRecBuilder {
-
-
     public:
 
 // Typedefs and enums
@@ -123,7 +118,5 @@ namespace CP {
 
     };
 };
-
-
 #endif  // DBIVALIDITYRECBUILDER_H
 

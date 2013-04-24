@@ -1,6 +1,5 @@
 #ifndef DBISQLVALPACKET
 #define DBISQLVALPACKET
-
 /**
  *
  *
@@ -21,7 +20,6 @@
  *
  */
 
-
 #if !defined(__CINT__) || defined(__MAKECINT__)
 #include "Rtypes.h"
 #endif
@@ -38,12 +36,8 @@
 namespace CP {
     class TDbiTableRow;
     class TDbiValidityRec;
-}
-namespace CP {
     class TVldRange;
-};
 
-namespace CP {
     class TDbiSqlValPacket {
 
     public:

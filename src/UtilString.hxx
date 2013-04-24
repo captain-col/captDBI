@@ -21,17 +21,11 @@
  */
 #ifndef UTILSTRING_H
 #define UTILSTRING_H
-#ifndef VECTOR
 #include <vector>
-#define VECTOR
-#endif
-#ifndef STRING
 #include <string>
-#define STRING
-#endif
 #include <sstream>
-namespace CP {
 
+namespace CP {
     namespace UtilString {
         bool atob(const char* s);
         bool atob(const char* s, bool& isvalid);

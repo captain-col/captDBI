@@ -20,20 +20,18 @@
  *
  */
 
-#include <map>
-#include <string>
-
 #ifndef ROOT_Rtypes
 #if !defined(__CINT__) || defined(__MAKECINT__)
 #include "Rtypes.h"
 #endif
 #endif
 
-namespace CP {
-    class TDbiRegistry;
-}
+#include <map>
+#include <string>
 
 namespace CP {
+    class TDbiRegistry;
+
     class TDbiRollbackDates {
 
     public:
@@ -71,7 +69,4 @@ namespace CP {
 
     };
 };
-
-
 #endif  // DBIROLLBACKDATES_H
-

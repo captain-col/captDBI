@@ -43,9 +43,7 @@ namespace CP {
     class TDbiInRowStream;
     class TDbiTableProxy;
     class TDbiValidityRec;
-}
 
-namespace CP {
     class TDbiTableRow : public TObject {
 
     public:
@@ -56,7 +54,8 @@ namespace CP {
         virtual ~TDbiTableRow();
 
 // State testing member functions
-/// Replace this with a function returning true in order to use the level 2 disk cache.
+/// Replace this with a function returning true in order to use the level 2
+/// disk cache.
         virtual       Bool_t CanL2Cache() const {
             return kFALSE;
         }
@@ -97,7 +96,4 @@ namespace CP {
 
     };
 };
-
-
 #endif  // TDBITABLEROW_H
-

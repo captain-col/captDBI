@@ -18,9 +18,7 @@
 namespace CP {
     class TDbiTableMetaData;
     class TDbiTimer;
-}
 
-namespace CP {
     class TDbiTimerManager {
 
     public:

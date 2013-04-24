@@ -35,10 +35,7 @@ namespace CP {
     class TDbiTableProxy;
     class TDbiValidityRec;
     std::ostream& operator<<(std::ostream& s, const CP::TDbiValidityRec& vRec);
-}
 
-
-namespace CP {
     class TDbiValidityRec : public TDbiTableRow {
 
 
@@ -178,7 +175,4 @@ namespace CP {
 
     };
 };
-
-
 #endif  // TDBIVALIDITYREC_H
-
