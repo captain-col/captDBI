@@ -44,7 +44,8 @@ CP::TDbiExceptionLog::~TDbiExceptionLog() {
 
 //.....................................................................
 
-std::ostream& operator<<(std::ostream& os, const CP::TDbiExceptionLog& el) {
+std::ostream& CP::operator<<(std::ostream& os, 
+                             const CP::TDbiExceptionLog& el) {
 
   if ( el.IsEmpty() ) {
       os << "The database exception log is empty" << std::endl;

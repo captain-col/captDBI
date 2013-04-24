@@ -39,7 +39,8 @@ const CP::TDbiSimFlagAssociation* CP::TDbiSimFlagAssociation::fgInstance = 0;
 // Definition of global functions (alphabetical order)
 // ***************************************************
 
-ostream& operator<<(ostream& s, const CP::TDbiSimFlagAssociation& simFlagAss) {
+std::ostream& CP::operator<<(std::ostream& s, 
+                             const CP::TDbiSimFlagAssociation& simFlagAss) {
   simFlagAss.Print(s);
   return s;
 }
@@ -125,7 +126,7 @@ const CP::TDbiSimFlagAssociation& CP::TDbiSimFlagAssociation::Instance() {
 }
 //.....................................................................
 
-void CP::TDbiSimFlagAssociation::Print(ostream& s)const {
+void CP::TDbiSimFlagAssociation::Print(std::ostream& s)const {
 //
 //
 //  Purpose:  Print self.

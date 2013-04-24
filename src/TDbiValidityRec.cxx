@@ -35,7 +35,8 @@ template class  CP::TDbiResultSetHandle<CP::TDbiValidityRec>;
 
 //.....................................................................
 
-ostream& CP::operator<<(ostream& os, const CP::TDbiValidityRec& vRec) {
+std::ostream& CP::operator<<(std::ostream& os, 
+                             const CP::TDbiValidityRec& vRec) {
 //
 //
 //  Purpose:  Output validity record to ostream.

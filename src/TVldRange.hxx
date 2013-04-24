@@ -92,6 +92,9 @@ class TVldRange : public TObject {
 
    ClassDef(CP::TVldRange,1)  // TVldRange version 1
 };
-}; std::ostream& operator<<(std::ostream& os, const CP::TVldRange& vldts);
+
+    std::ostream& operator<<(std::ostream& os, const CP::TVldRange& vldts);
+
+}; 
 
 #endif // VLDRANGE_H

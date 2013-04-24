@@ -19,7 +19,7 @@
 ClassImp(CP::TVldContext)
 
 //_____________________________________________________________________________
-std::ostream& operator<<(std::ostream& os, const CP::TVldContext& vldc)
+std::ostream& CP::operator<<(std::ostream& os, const CP::TVldContext& vldc)
 {
    if (os.good()) {
       if (os.tie()) os.tie()->flush(); // instead of opfx

@@ -80,7 +80,7 @@ CP::TDbiException::~TDbiException() {
 
 //.....................................................................
 /// Append message describing this exception to the std::ostream 'os'.
-std::ostream& operator<<(std::ostream& os, const CP::TDbiException& e) {
+std::ostream& CP::operator<<(std::ostream& os, const CP::TDbiException& e) {
 
   os << "Error " << e.GetErrorCode()
      << " (" << e.GetMessage() << ")"  << std::endl;

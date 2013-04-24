@@ -34,7 +34,7 @@
 
 namespace CP {
 class TVldContext;
-std::ostream& operator<<(std::ostream& os, const CP::TVldContext& vldts);
+    std::ostream& operator<<(std::ostream& os, const CP::TVldContext& vldts);
 
 class TVldContext : public TObject {
 

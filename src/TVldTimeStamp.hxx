@@ -58,6 +58,7 @@
 
 namespace CP {
 class TVldTimeStamp;
+    std::ostream& operator<<(std::ostream& os, const CP::TVldTimeStamp& vldts);
 
 class TVldTimeStamp {
 
@@ -259,7 +260,7 @@ class TVldTimeStamp {
 
    ClassDef(CP::TVldTimeStamp,2)
 };
-}; std::ostream& operator<<(std::ostream& os, const CP::TVldTimeStamp& vldts);
+}; 
 
 #ifndef __CINT__
 //=============================================================================

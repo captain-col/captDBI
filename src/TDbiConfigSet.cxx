@@ -62,7 +62,7 @@ CP::TDbiConfigSet::~TDbiConfigSet() {
 ///
 ///  o Output configuration set to message stream.
 ///\endverbatim
-ostream& operator<<(ostream& s, const CP::TDbiConfigSet& cfSet) {
+std::ostream& CP::operator<<(std::ostream& s, const CP::TDbiConfigSet& cfSet) {
 
 //  Program Notes:-
 //  =============

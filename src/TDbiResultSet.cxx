@@ -23,7 +23,8 @@ ClassImp(CP::TDbiResultSet)
 
 //.....................................................................
 
-CP::TDbiBinaryFile& operator<<(CP::TDbiBinaryFile& bf, const CP::TDbiResultSet& res) {
+CP::TDbiBinaryFile& CP::operator<<(CP::TDbiBinaryFile& bf,
+                                   const CP::TDbiResultSet& res) {
 
 // Writing is a const operation, but uses a non-const method, so cast away const.
 
@@ -34,7 +35,8 @@ CP::TDbiBinaryFile& operator<<(CP::TDbiBinaryFile& bf, const CP::TDbiResultSet& 
 
 //.....................................................................
 
-CP::TDbiBinaryFile& operator>>(CP::TDbiBinaryFile& bf, CP::TDbiResultSet& res) {
+CP::TDbiBinaryFile& CP::operator>>(CP::TDbiBinaryFile& bf, 
+                                   CP::TDbiResultSet& res) {
 
   res.Streamer(bf);
   return bf;

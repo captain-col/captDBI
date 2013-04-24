@@ -173,7 +173,8 @@ CP::TDbiConfigStream::~TDbiConfigStream() {
 //.....................................................................
 
 
-  ostream& operator<<(ostream& os, const CP::TDbiConfigStream& cfStream) {
+std::ostream& CP::operator<<(std::ostream& os, 
+                             const CP::TDbiConfigStream& cfStream) {
 
 //
 //

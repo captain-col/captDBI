@@ -20,7 +20,7 @@
 ClassImp(CP::TVldRange)
 
 //_____________________________________________________________________________
-std::ostream& operator<<(std::ostream& os, const CP::TVldRange& vldr)
+std::ostream& CP::operator<<(std::ostream& os, const CP::TVldRange& vldr)
 {
   return os << vldr.AsString();
 }

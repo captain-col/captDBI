@@ -148,8 +148,7 @@ void CP::TDbiRegistry::Dump(void) const
 
 }
 
-ostream& CP::TDbiRegistry::PrettyPrint(ostream& os) const
-{
+std::ostream& CP::TDbiRegistry::PrettyPrint(ostream& os) const {
     static int print_depth = 0;
 
     // print (to cout) the registry

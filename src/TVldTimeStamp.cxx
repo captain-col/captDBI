@@ -49,7 +49,7 @@ ClassImp(CP::TVldTimeStamp)
 const Int_t kNsPerSec = 1000000000;
 
 //_____________________________________________________________________________
-std::ostream& operator<<(std::ostream& os, const CP::TVldTimeStamp& ts)
+std::ostream& CP::operator<<(std::ostream& os, const CP::TVldTimeStamp& ts)
 {
    if (os.good()) {
       if (os.tie()) os.tie()->flush(); // instead of opfx

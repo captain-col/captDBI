@@ -21,11 +21,15 @@ use ROOT v* LCG_Interfaces
 # Build methods to include.
 document version version *.cxx *.hxx *_LinkDef.h
 
+# Build the linkdef output.
+document linkdef linkdef *.hxx *_LinkDef.h
+macro_append linkdef_dependencies " version "
+
 document doxygen doxygen -group=documentation *.cxx *.hxx   ../doc/*.dox
 
 # The library to be build
 library captDBI *.cxx *.hxx $(bin)dict/*.cxx
-macro_append captDBI_dependencies " version "
+macro_append captDBI_dependencies " linkdef "
 
 # Build information used by packages that use this one.
 macro captDBI_cppflags " -DCAPTDBI_USED "

@@ -30,14 +30,15 @@
 
 namespace CP {
     class TDbiCascader;
-    ostream& operator<<(ostream& os, const CP::TDbiCascader& cascader) ;
+    std::ostream& operator<<(std::ostream& os,
+                             const CP::TDbiCascader& cascader) ;
 }
 class TSQL_Statement;
 
 class CP::TDbiCascader {
 
     friend class TDbiDatabaseManager;  //Only it can create
-    friend ostream& operator<<(ostream& s, const CP::TDbiCascader& cascader);
+    friend std::ostream& operator<<(std::ostream& s, const CP::TDbiCascader& cascader);
 
 public:
 

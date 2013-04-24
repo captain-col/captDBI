@@ -34,7 +34,7 @@ namespace CP {
 class TDbiBinaryFile;
 class TDbiTableProxy;
 class TDbiValidityRec;
-ostream& operator<<(ostream& s, const CP::TDbiValidityRec& vRec);
+    std::ostream& operator<<(std::ostream& s, const CP::TDbiValidityRec& vRec);
 }
 
 

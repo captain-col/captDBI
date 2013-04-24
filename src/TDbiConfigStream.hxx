@@ -33,7 +33,8 @@ class TDbiFieldType;
 }
 namespace CP{
 class TDbiRegistry;
-ostream& operator<<(ostream& s, const CP::TDbiConfigStream& cfStream);
+    std::ostream& operator<<(std::ostream& s, 
+                             const CP::TDbiConfigStream& cfStream);
 }
 #include <iosfwd>
 

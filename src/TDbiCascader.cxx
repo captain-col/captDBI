@@ -223,7 +223,8 @@ CP::TDbiCascader::~TDbiCascader() {
 ///
 ///  None.
 ///\endverbatim
-ostream& CP::operator<<(ostream& os, const CP::TDbiCascader& cascader) {
+std::ostream& CP::operator<<(std::ostream& os, 
+                             const CP::TDbiCascader& cascader) {
 
 
   os << "CP::TDbiCascader Status:- " << std::endl

@@ -463,7 +463,7 @@ void CP::TDbiCache::SetStale() {
 ///
 ///  None.
 ///\endverbatim
-ostream& CP::TDbiCache::ShowStatistics(ostream& msg) const {
+std::ostream& CP::TDbiCache::ShowStatistics(std::ostream& msg) const {
 
   MsgFormat ifmt("%10i");
 

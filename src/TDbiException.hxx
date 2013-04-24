@@ -26,14 +26,14 @@
 #include "Rtypes.h"
 
 namespace CP {
-class TDbiException;
+    class TDbiException;
+    std::ostream& operator<<(std::ostream& s, const CP::TDbiException& e);
 }
 class TSQLServer;
 class TSQLStatement;
 
 class ostreamx;
 
-std::ostream& operator<<(std::ostream& s, const CP::TDbiException& e);
 
 namespace CP {
 class TDbiException
