@@ -52,35 +52,36 @@ ClassImp(CP::TDbiTableProxy)
 ///  =============
 ///
 CP::TDbiTableProxy::TDbiTableProxy(CP::TDbiCascader* cascader,
-                             const std::string& tableName,
-                             const CP::TDbiTableRow* tableRow) :
-fCascader(cascader),
-fMetaData(tableName),
-fMetaValid(tableName+"VLD"),
-fCanL2Cache(kFALSE),
-fCache(0),
-fDBProxy(*cascader,tableName,&fMetaData,&fMetaValid,this),
-fExists(0),
-fTableName(tableName),
-fTableRow(tableRow->CreateTableRow())
-{
+                                   const std::string& tableName,
+                                   const CP::TDbiTableRow* tableRow) :
+    fCascader(cascader),
+    fMetaData(tableName),
+    fMetaValid(tableName+"VLD"),
+    fCanL2Cache(kFALSE),
+    fCache(0),
+    fDBProxy(*cascader,tableName,&fMetaData,&fMetaValid,this),
+    fExists(0),
+    fTableName(tableName),
+    fTableRow(tableRow->CreateTableRow()) {
 //one.
 
 
-  fCache = new CP::TDbiCache(*this,fTableName);
-  this->RefreshMetaData();
-  fExists = fDBProxy.TableExists();
-  fCanL2Cache = tableRow->CanL2Cache();
-  if ( fCanL2Cache )
-    DbiInfo( "CP::TDbiTableProxy: Can use L2 cache for table " << this->GetRowName() << "  ");
-  else
-    DbiInfo( "CP::TDbiTableProxy:  L2 cache not allowed for table " << this->GetRowName() << "  ");
-   
-  DbiTrace( "Creating CP::TDbiTableProxy "
-			  << fTableName.c_str() << " at " << this
-                          << ( fExists ? " (table exists)"
-                                       : " (table missing)" )
-			  << "  ");
+    fCache = new CP::TDbiCache(*this,fTableName);
+    this->RefreshMetaData();
+    fExists = fDBProxy.TableExists();
+    fCanL2Cache = tableRow->CanL2Cache();
+    if (fCanL2Cache) {
+        DbiInfo("CP::TDbiTableProxy: Can use L2 cache for table " << this->GetRowName() << "  ");
+    }
+    else {
+        DbiInfo("CP::TDbiTableProxy:  L2 cache not allowed for table " << this->GetRowName() << "  ");
+    }
+
+    DbiTrace("Creating CP::TDbiTableProxy "
+             << fTableName.c_str() << " at " << this
+             << (fExists ? " (table exists)"
+                 : " (table missing)")
+             << "  ");
 }
 
 //.....................................................................
@@ -109,11 +110,11 @@ CP::TDbiTableProxy::~TDbiTableProxy() {
 //  None.
 
 
-    DbiTrace( "Destroying CP::TDbiTableProxy "
-			    << fTableName << " at " << this
-			    << "  ");
-  delete fCache;
-  delete fTableRow;
+    DbiTrace("Destroying CP::TDbiTableProxy "
+             << fTableName << " at " << this
+             << "  ");
+    delete fCache;
+    delete fTableRow;
 
 }
 //.....................................................................
@@ -121,21 +122,21 @@ CP::TDbiTableProxy::~TDbiTableProxy() {
 Bool_t CP::TDbiTableProxy::CanReadL2Cache() const {
 //
 
-  return fCanL2Cache && CP::TDbiBinaryFile::CanReadL2Cache();
+    return fCanL2Cache && CP::TDbiBinaryFile::CanReadL2Cache();
 
 }
 Bool_t CP::TDbiTableProxy::CanWriteL2Cache() const {
 //
 
-  return fCanL2Cache && CP::TDbiBinaryFile::CanWriteL2Cache();
+    return fCanL2Cache && CP::TDbiBinaryFile::CanWriteL2Cache();
 
 }
 
 //.....................................................................
 
 const CP::TDbiResultSet* CP::TDbiTableProxy::Query(const CP::TVldContext& vc,
-                                      const TDbi::Task& task,
-                                      Bool_t findFullTimeWindow) {
+                                                   const TDbi::Task& task,
+                                                   Bool_t findFullTimeWindow) {
 //
 //
 //  Purpose:  Apply context specific query to database table and return result.
@@ -163,28 +164,30 @@ const CP::TDbiResultSet* CP::TDbiTableProxy::Query(const CP::TVldContext& vc,
 
 //  See if there is one already in the cache for universal aggregate no.
 
-  if ( const CP::TDbiResultSet* result = fCache->Search(vc,task)
-     ) return result;
+    if (const CP::TDbiResultSet* result = fCache->Search(vc,task)
+       ) {
+        return result;
+    }
 
-  CP::TDbiConnectionMaintainer cm(fCascader);  //Stack object to hold connections
+    CP::TDbiConnectionMaintainer cm(fCascader);  //Stack object to hold connections
 
 // Make Global Exception Log bookmark
-  UInt_t startGEL = CP::TDbiExceptionLog::GetGELog().Size()+1;
+    UInt_t startGEL = CP::TDbiExceptionLog::GetGELog().Size()+1;
 
 // Build a complete set of effective validity record from the database.
-  CP::TDbiValidityRecBuilder builder(fDBProxy,vc,task,-1,findFullTimeWindow);
+    CP::TDbiValidityRecBuilder builder(fDBProxy,vc,task,-1,findFullTimeWindow);
 
 // Deal with non-aggregated data.
 
-  if ( builder.NonAggregated() ) {
+    if (builder.NonAggregated()) {
 
-    CP::TDbiValidityRec effVRec = builder.GetValidityRec(0);
+        CP::TDbiValidityRec effVRec = builder.GetValidityRec(0);
 //  Force off const - we haven't finished with CP::TDbiResultSet yet!
-    CP::TDbiResultSet* result = const_cast<CP::TDbiResultSet*>(Query(effVRec));
+        CP::TDbiResultSet* result = const_cast<CP::TDbiResultSet*>(Query(effVRec));
 //  Record latest entries from Global Exception Log.
-    result->CaptureExceptionLog(startGEL);
-    return result;
-  }
+        result->CaptureExceptionLog(startGEL);
+        return result;
+    }
 
 // Deal with aggregated data.
 
@@ -195,40 +198,46 @@ const CP::TDbiResultSet* CP::TDbiTableProxy::Query(const CP::TVldContext& vc,
 // we don't want to waste time loading in a full set only to throw
 // it away again.
 
-  if ( this->CanReadL2Cache() ) {
-    UInt_t numPresent  = 0;
-    UInt_t numRequired = 0;
-    Int_t maxRow = builder.GetNumValidityRec() - 1;
-    for ( Int_t rowNo = 1; rowNo <= maxRow; ++rowNo ) {
-      const CP::TDbiValidityRec& vrec = builder.GetValidityRec(rowNo);
-      if ( fCache->Search(vrec) ) ++numPresent;
-      else if ( ! vrec.IsGap() ) ++numRequired;
+    if (this->CanReadL2Cache()) {
+        UInt_t numPresent  = 0;
+        UInt_t numRequired = 0;
+        Int_t maxRow = builder.GetNumValidityRec() - 1;
+        for (Int_t rowNo = 1; rowNo <= maxRow; ++rowNo) {
+            const CP::TDbiValidityRec& vrec = builder.GetValidityRec(rowNo);
+            if (fCache->Search(vrec)) {
+                ++numPresent;
+            }
+            else if (! vrec.IsGap()) {
+                ++numRequired;
+            }
+        }
+        if (numRequired < numPresent) DbiInfo("Skipping search of L2 cache; already have "
+                                                  << numPresent << " aggregates, and only require a further "
+                                                  << numRequired << "  ");
+        else {
+            this->RestoreFromL2Cache(builder);
+        }
     }
-    if ( numRequired < numPresent ) DbiInfo(  "Skipping search of L2 cache; already have "
-      << numPresent << " aggregates, and only require a further "
-      << numRequired << "  ");
-    else this->RestoreFromL2Cache(builder);
-  }
 
-  CP::TDbiResultSet* result = new CP::TDbiResultSetAgg(fTableName,
-                                       fTableRow,
-                                       fCache,
-                                       &builder,
-                                       &fDBProxy);
+    CP::TDbiResultSet* result = new CP::TDbiResultSetAgg(fTableName,
+                                                         fTableRow,
+                                                         fCache,
+                                                         &builder,
+                                                         &fDBProxy);
 // Record latest entries from Global Exception Log.
-  result->CaptureExceptionLog(startGEL);
+    result->CaptureExceptionLog(startGEL);
 
-  fCache->Adopt(result);
-  this->SaveToL2Cache(builder.GetL2CacheName(),*result);
-  return result;
+    fCache->Adopt(result);
+    this->SaveToL2Cache(builder.GetL2CacheName(),*result);
+    return result;
 
 }
 //.....................................................................
 
 const CP::TDbiResultSet* CP::TDbiTableProxy::Query(const std::string& context,
-                                      const TDbi::Task& task,
-                                      const std::string& data,
-                                      const std::string&fillOpts) {
+                                                   const TDbi::Task& task,
+                                                   const std::string& data,
+                                                   const std::string& fillOpts) {
 //
 //
 //  Purpose:  Apply extended context query to database table and return result.
@@ -257,42 +266,46 @@ const CP::TDbiResultSet* CP::TDbiTableProxy::Query(const std::string& context,
 //  (which task encoded into the context) into a single semi-colon
 //  separated string.
 
-  std::ostringstream os;
-  os << context;
-  if ( task != TDbi::kAnyTask
-       ) os << " and  Task = " << task;
-  os <<  ';' << data << ';' << fillOpts;
-  std::string sqlQualifiers = os.str();
+    std::ostringstream os;
+    os << context;
+    if (task != TDbi::kAnyTask
+       ) {
+        os << " and  Task = " << task;
+    }
+    os <<  ';' << data << ';' << fillOpts;
+    std::string sqlQualifiers = os.str();
 
-  DbiVerbose(  "Extended query: sqlQualifiers: " << sqlQualifiers << "  ");
+    DbiVerbose("Extended query: sqlQualifiers: " << sqlQualifiers << "  ");
 
 //  See if there is one already in the cache.
 
-  if ( const CP::TDbiResultSet* result = fCache->Search(sqlQualifiers)
-     ) return result;
+    if (const CP::TDbiResultSet* result = fCache->Search(sqlQualifiers)
+       ) {
+        return result;
+    }
 
-  CP::TDbiConnectionMaintainer cm(fCascader);  //Stack object to hold connections
+    CP::TDbiConnectionMaintainer cm(fCascader);  //Stack object to hold connections
 
 // Make Global Exception Log bookmark
-  UInt_t startGEL = CP::TDbiExceptionLog::GetGELog().Size()+1;
+    UInt_t startGEL = CP::TDbiExceptionLog::GetGELog().Size()+1;
 
 // Build a complete set of effective validity records from the database.
-  CP::TDbiValidityRecBuilder builder(fDBProxy,context,task);
+    CP::TDbiValidityRecBuilder builder(fDBProxy,context,task);
 
 // For extended context queries, CP::TDbiValidityRecBuilder will always
 // assemble a result that has to be represented by a CP::TDbiResultSetAgg
 
-  CP::TDbiResultSet* result = new CP::TDbiResultSetAgg(fTableName,
-                                       fTableRow,
-                                       fCache,
-                                       &builder,
-                                       &fDBProxy,
-                                       sqlQualifiers);
+    CP::TDbiResultSet* result = new CP::TDbiResultSetAgg(fTableName,
+                                                         fTableRow,
+                                                         fCache,
+                                                         &builder,
+                                                         &fDBProxy,
+                                                         sqlQualifiers);
 // Record latest entries from Global Exception Log.
-  result->CaptureExceptionLog(startGEL);
+    result->CaptureExceptionLog(startGEL);
 
-  fCache->Adopt(result);
-  return result;
+    fCache->Adopt(result);
+    return result;
 
 }
 //.....................................................................
@@ -308,43 +321,43 @@ const CP::TDbiResultSet* CP::TDbiTableProxy::Query(UInt_t seqNo,UInt_t dbNo) {
 //
 //  Return:    Query result (never zero even if query fails).
 
-  CP::TDbiConnectionMaintainer cm(fCascader);  //Stack object to hold connections
+    CP::TDbiConnectionMaintainer cm(fCascader);  //Stack object to hold connections
 
 // Make Global Exception Log bookmark
-  UInt_t startGEL = CP::TDbiExceptionLog::GetGELog().Size()+1;
+    UInt_t startGEL = CP::TDbiExceptionLog::GetGELog().Size()+1;
 
-  // Apply SEQNO query to cascade member.
-  CP::TDbiInRowStream* rs = fDBProxy.QueryValidity(seqNo,dbNo);
-  CP::TDbiValidityRec tr;
-  CP::TDbiResultSetNonAgg result(rs,&tr,0,kFALSE);
-  delete rs;
+    // Apply SEQNO query to cascade member.
+    CP::TDbiInRowStream* rs = fDBProxy.QueryValidity(seqNo,dbNo);
+    CP::TDbiValidityRec tr;
+    CP::TDbiResultSetNonAgg result(rs,&tr,0,kFALSE);
+    delete rs;
 
-  // If query failed, return an empty result.
-  if ( result.GetNumRows() == 0 ) {
-    CP::TDbiResultSetNonAgg* empty = new CP::TDbiResultSetNonAgg();
+    // If query failed, return an empty result.
+    if (result.GetNumRows() == 0) {
+        CP::TDbiResultSetNonAgg* empty = new CP::TDbiResultSetNonAgg();
 //  Record latest entries from Global Exception Log.
-    empty->CaptureExceptionLog(startGEL);
-    fCache->Adopt(empty);
-    return empty;
-  }
+        empty->CaptureExceptionLog(startGEL);
+        fCache->Adopt(empty);
+        return empty;
+    }
 
 // Otherwise perform a validity rec query, but don't
 // allow result to be used; it's validity has not been trimmed
 // by neighbouring records.
 
-  const CP::TDbiValidityRec* vrec
-       = dynamic_cast<const CP::TDbiValidityRec*>(result.GetTableRow(0));
+    const CP::TDbiValidityRec* vrec
+    = dynamic_cast<const CP::TDbiValidityRec*>(result.GetTableRow(0));
 //  Force off const - we haven't finished with CP::TDbiResultSet yet!
-  CP::TDbiResultSet* res = const_cast<CP::TDbiResultSet*>(Query(*vrec,kFALSE));
+    CP::TDbiResultSet* res = const_cast<CP::TDbiResultSet*>(Query(*vrec,kFALSE));
 // Record latest entries from Global Exception Log.
-  res->CaptureExceptionLog(startGEL);
-  return res;
+    res->CaptureExceptionLog(startGEL);
+    return res;
 
 }
 //.....................................................................
 
 const CP::TDbiResultSet* CP::TDbiTableProxy::Query(const CP::TDbiValidityRec& vrec,
-                                      Bool_t canReuse /* = kTRUE */) {
+                                                   Bool_t canReuse /* = kTRUE */) {
 //
 //
 //  Purpose:  Apply non-agregate query to database table and return result.
@@ -366,59 +379,65 @@ const CP::TDbiResultSet* CP::TDbiTableProxy::Query(const CP::TDbiValidityRec& vr
 
 // See if it can be recovered from the level 2 disk cache.
 
-  CP::TDbiConnectionMaintainer cm(fCascader);  //Stack object to hold connections
+    CP::TDbiConnectionMaintainer cm(fCascader);  //Stack object to hold connections
 
 // Make Global Exception Log bookmark
-  UInt_t startGEL = CP::TDbiExceptionLog::GetGELog().Size()+1;
+    UInt_t startGEL = CP::TDbiExceptionLog::GetGELog().Size()+1;
 
-  if ( canReuse ) {
-    CP::TDbiValidityRecBuilder builder(vrec,this->GetTableName());
-    if ( this->RestoreFromL2Cache(builder) ) {
-      const CP::TDbiResultSet* res = fCache->Search(vrec);
-      if ( res ) return res;
+    if (canReuse) {
+        CP::TDbiValidityRecBuilder builder(vrec,this->GetTableName());
+        if (this->RestoreFromL2Cache(builder)) {
+            const CP::TDbiResultSet* res = fCache->Search(vrec);
+            if (res) {
+                return res;
+            }
+        }
     }
-  }
 
-  unsigned int seqNo = vrec.GetSeqNo();
-  CP::TDbiResultSet* result = 0;
+    unsigned int seqNo = vrec.GetSeqNo();
+    CP::TDbiResultSet* result = 0;
 
 //  If no records, create an empty CP::TDbiResultSet.
-  if ( ! seqNo ) {
-    result = new CP::TDbiResultSetNonAgg(0,0,&vrec);
-  }
+    if (! seqNo) {
+        result = new CP::TDbiResultSetNonAgg(0,0,&vrec);
+    }
 
 //  If query does not apply to this table, report error and
 //  produce an empty CP::TDbiResultSet.
 
-  else if (vrec.GetTableProxy()->GetTableName() != GetTableName() ) {
-       DbiSevere(  "Unable to satisfy CP::TDbiValidityRec keyed query:" << "  "
-       << vrec
-       << " was filled by " << vrec.GetTableProxy()->GetTableName()
-       << " not by this CP::TDbiTableProxy ("
-       << GetTableName() << ")" << "  ");
-    result = new CP::TDbiResultSetNonAgg(0,0,&vrec);
-  }
+    else if (vrec.GetTableProxy()->GetTableName() != GetTableName()) {
+        DbiSevere("Unable to satisfy CP::TDbiValidityRec keyed query:" << "  "
+                  << vrec
+                  << " was filled by " << vrec.GetTableProxy()->GetTableName()
+                  << " not by this CP::TDbiTableProxy ("
+                  << GetTableName() << ")" << "  ");
+        result = new CP::TDbiResultSetNonAgg(0,0,&vrec);
+    }
 
-  else {
+    else {
 
 
 // Apply query, and build DiResult from its CP::TDbiInRowStream.
 
-    CP::TDbiInRowStream* rs = fDBProxy.QuerySeqNo(seqNo,vrec.GetDbNo());
-    result = new CP::TDbiResultSetNonAgg(rs,fTableRow,&vrec);
-    delete rs;
-  }
+        CP::TDbiInRowStream* rs = fDBProxy.QuerySeqNo(seqNo,vrec.GetDbNo());
+        result = new CP::TDbiResultSetNonAgg(rs,fTableRow,&vrec);
+        delete rs;
+    }
 
 // Record latest entries from Global Exception Log.
-  result->CaptureExceptionLog(startGEL);
+    result->CaptureExceptionLog(startGEL);
 
 //  Cache in memory and on disk if required and return the results.
 
-  fCache->Adopt(result);
-  if ( canReuse ) this->SaveToL2Cache(vrec.GetL2CacheName(),*result);
-  else result->SetCanReuse(kFALSE);
+    fCache->Adopt(result);
+    if (canReuse) {
+        this->SaveToL2Cache(vrec.GetL2CacheName(),*result);
+    }
+    else {
+        result->SetCanReuse(kFALSE);
+    }
 
-  return result;
+    return result;
 
 }
 
@@ -430,15 +449,14 @@ void CP::TDbiTableProxy::RefreshMetaData() {
 //  Purpose:  Refresh meta data for table.
 //
 
-  fDBProxy.StoreMetaData(fMetaData);
-  fDBProxy.StoreMetaData(fMetaValid);
+    fDBProxy.StoreMetaData(fMetaData);
+    fDBProxy.StoreMetaData(fMetaValid);
 
 }
 //.....................................................................
 
 CP::TVldTimeStamp CP::TDbiTableProxy::QueryOverlayCreationDate(const CP::TDbiValidityRec& vrec,
-					             UInt_t dbNo)
-{
+        UInt_t dbNo) {
 //
 //  Purpose:  Determine a suitable Creation Date so that this validity
 //            record, if written to the selected DB, will overlay
@@ -480,41 +498,41 @@ CP::TVldTimeStamp CP::TDbiTableProxy::QueryOverlayCreationDate(const CP::TDbiVal
 // than a few minutes apart)
 
 
-  //  Create a context that corresponds to the start time of the validity
-  //  range.  Note that it is O.K. to use SimFlag and Detector masks
-  //  even though this could make the context ambiguous because the
-  //  context is only to be used to query the database and the SimFlag and
-  //  Detector values will be ORed against existing data so will match
-  //  all possible data that this validity range could overlay which is
-  //  just what we want.
+    //  Create a context that corresponds to the start time of the validity
+    //  range.  Note that it is O.K. to use SimFlag and Detector masks
+    //  even though this could make the context ambiguous because the
+    //  context is only to be used to query the database and the SimFlag and
+    //  Detector values will be ORed against existing data so will match
+    //  all possible data that this validity range could overlay which is
+    //  just what we want.
 
-  const CP::TVldRange& vr(vrec.GetVldRange());
-  CP::TVldContext vc((CP::DbiDetector::Detector_t) vr.GetDetectorMask(),
-                  (CP::DbiSimFlag::SimFlag_t) vr.GetSimMask(),
-                                       vr.GetTimeStart());
+    const CP::TVldRange& vr(vrec.GetVldRange());
+    CP::TVldContext vc((CP::DbiDetector::Detector_t) vr.GetDetectorMask(),
+                       (CP::DbiSimFlag::SimFlag_t) vr.GetSimMask(),
+                       vr.GetTimeStart());
 
-  CP::TDbiConnectionMaintainer cm(fCascader);  //Stack object to hold connections
+    CP::TDbiConnectionMaintainer cm(fCascader);  //Stack object to hold connections
 
-  // Build a complete set of effective validity records from the
-  // selected database.
-  CP::TDbiValidityRecBuilder builder(fDBProxy,vc,vrec.GetTask(),dbNo);
+    // Build a complete set of effective validity records from the
+    // selected database.
+    CP::TDbiValidityRecBuilder builder(fDBProxy,vc,vrec.GetTask(),dbNo);
 
-  // Pick up the validity record for the current aggregate.
-  const CP::TDbiValidityRec& vrecOvlay(builder.GetValidityRecFromAggNo(vrec.GetAggregateNo()));
+    // Pick up the validity record for the current aggregate.
+    const CP::TDbiValidityRec& vrecOvlay(builder.GetValidityRecFromAggNo(vrec.GetAggregateNo()));
 
-  // If its a gap i.e. nothing is overlayed, return the start time, otherwise
-  // return its Creation Date plus one minute.
-  CP::TVldTimeStamp ovlayTS(vr.GetTimeStart());
-  if ( ! vrecOvlay.IsGap() ) {
-    time_t overlaySecs = vrecOvlay.GetCreationDate().GetSec();
-    ovlayTS = CP::TVldTimeStamp(overlaySecs + 60,0);
-  }
+    // If its a gap i.e. nothing is overlayed, return the start time, otherwise
+    // return its Creation Date plus one minute.
+    CP::TVldTimeStamp ovlayTS(vr.GetTimeStart());
+    if (! vrecOvlay.IsGap()) {
+        time_t overlaySecs = vrecOvlay.GetCreationDate().GetSec();
+        ovlayTS = CP::TVldTimeStamp(overlaySecs + 60,0);
+    }
 
-  DbiDebug( "Looking for overlay creation date for: "
-		   << vrec << "found it would overlap: "
-		   << vrecOvlay << " so overlay creation date set to "
-		   << ovlayTS.AsString("s") << "  ");
-  return ovlayTS;
+    DbiDebug("Looking for overlay creation date for: "
+             << vrec << "found it would overlap: "
+             << vrecOvlay << " so overlay creation date set to "
+             << ovlayTS.AsString("s") << "  ");
+    return ovlayTS;
 
 }
 //.....................................................................
@@ -530,69 +548,77 @@ Bool_t CP::TDbiTableProxy::RestoreFromL2Cache(const CP::TDbiValidityRecBuilder& 
 //
 //  o Restore to cache but only if enabled and exists.
 
-  const std::string name(builder.GetL2CacheName());
-  DbiDebug( "Request to restore query result  " << name
-			 << "  ");
-  if ( ! this->CanReadL2Cache() ) return kFALSE;
-  std::string cacheFileName;
-  if (  name != ""
-   ) cacheFileName =  this->GetTableName() + "_"
-                    + this->GetRowName() + "_"
-                    +  name + ".dbi_cache";
-  CP::TDbiBinaryFile bf(cacheFileName.c_str());
-  if ( ! bf.IsOK() ) {
-    DbiDebug( "Caching disabled or cannot open "
-              << bf.GetFileName() << "  ");
-    return kFALSE;
-  }
+    const std::string name(builder.GetL2CacheName());
+    DbiDebug("Request to restore query result  " << name
+             << "  ");
+    if (! this->CanReadL2Cache()) {
+        return kFALSE;
+    }
+    std::string cacheFileName;
+    if (name != ""
+       ) cacheFileName =  this->GetTableName() + "_"
+                              + this->GetRowName() + "_"
+                              +  name + ".dbi_cache";
+    CP::TDbiBinaryFile bf(cacheFileName.c_str());
+    if (! bf.IsOK()) {
+        DbiDebug("Caching disabled or cannot open "
+                 << bf.GetFileName() << "  ");
+        return kFALSE;
+    }
 
-  static bool warnOnce = true;
-  if ( warnOnce ) {
-    DbiWarn( "\n\n\n"
-     << " WARNING:  Reading from the Level 2 cache has been activated.\n"
-     << " *******   This should only be used for development and never for production !!!\n\n\n");
-    warnOnce = false;
-  }
+    static bool warnOnce = true;
+    if (warnOnce) {
+        DbiWarn("\n\n\n"
+                << " WARNING:  Reading from the Level 2 cache has been activated.\n"
+                << " *******   This should only be used for development and never for production !!!\n\n\n");
+        warnOnce = false;
+    }
 
-  DbiInfo( "Restoring query result from " << bf.GetFileName() << "  ");
-  CP::TDbiTimerManager::gTimerManager.RecMainQuery();
+    DbiInfo("Restoring query result from " << bf.GetFileName() << "  ");
+    CP::TDbiTimerManager::gTimerManager.RecMainQuery();
 
-  CP::TDbiResultSet* result    = 0;
-  unsigned numRowsRest = 0;
-  unsigned numRowsIgn  = 0;
-  UInt_t numNonAgg     = 0;
-  bf >> numNonAgg;
+    CP::TDbiResultSet* result    = 0;
+    unsigned numRowsRest = 0;
+    unsigned numRowsIgn  = 0;
+    UInt_t numNonAgg     = 0;
+    bf >> numNonAgg;
 
-  while ( numNonAgg-- ) {
-    if ( ! bf.IsOK() ) break;
-    if ( ! result ) result = new CP::TDbiResultSetNonAgg;
-    bf >> *result;
+    while (numNonAgg--) {
+        if (! bf.IsOK()) {
+            break;
+        }
+        if (! result) {
+            result = new CP::TDbiResultSetNonAgg;
+        }
+        bf >> *result;
 
 //  The original query may have had a validity range truncated by
 //  the time window, so replace its CP::TDbiValidityRec with the one
 //  just obtained from the database.
-    const CP::TDbiValidityRec& vrec = result->GetValidityRec();
-    UInt_t seqNo = vrec.GetSeqNo();
-    DbiDebug( "Fix up L2 cache CP::TDbiValidityRec, by replacing: " << vrec
-			   << "    with: " << builder.GetValidityRecFromSeqNo(seqNo) << "  ");
+        const CP::TDbiValidityRec& vrec = result->GetValidityRec();
+        UInt_t seqNo = vrec.GetSeqNo();
+        DbiDebug("Fix up L2 cache CP::TDbiValidityRec, by replacing: " << vrec
+                 << "    with: " << builder.GetValidityRecFromSeqNo(seqNo) << "  ");
 //  Sneaky end-run round const to fix-up CP::TDbiValidityRec.
-    (const_cast<CP::TDbiValidityRec&>(vrec)) = builder.GetValidityRecFromSeqNo(seqNo);
+        (const_cast<CP::TDbiValidityRec&>(vrec)) = builder.GetValidityRecFromSeqNo(seqNo);
 
 //  Adopt only if not already in memory cache.
-    if ( ! fCache->Search(vrec) ) {
-      numRowsRest += result->GetNumRows();
-      fCache->Adopt(result);
-      result = 0;
+        if (! fCache->Search(vrec)) {
+            numRowsRest += result->GetNumRows();
+            fCache->Adopt(result);
+            result = 0;
+        }
+        else {
+            numRowsIgn += result->GetNumRows();
+        }
     }
-    else numRowsIgn += result->GetNumRows();
-  }
-  DbiInfo( "   a total of " << numRowsRest << " were restored ("
-			<< numRowsIgn << " ignored - already in memory)" << "  ");
+    DbiInfo("   a total of " << numRowsRest << " were restored ("
+            << numRowsIgn << " ignored - already in memory)" << "  ");
 
-  delete result;
-  result = 0;
+    delete result;
+    result = 0;
 
-  return numRowsRest > 0;
+    return numRowsRest > 0;
 
 }
 //.....................................................................
@@ -607,36 +633,38 @@ Bool_t CP::TDbiTableProxy::SaveToL2Cache(const std::string& name, CP::TDbiResult
 //
 //  o Save to cache but only if enabled and suitable.
 
-  DbiDebug( "Request to save query result as " << name
-                         << " ; row supports L2 cache ?"<<fCanL2Cache
-                         << " ; binary file can write L2 Cache?"<< CP::TDbiBinaryFile::CanWriteL2Cache()
-			 << " ; data from DB? " << res.ResultsFromDb()
-			 << " ; can be saved? " << res.CanSave() << "  ");
-  if ( ! this->CanWriteL2Cache() || ! res.ResultsFromDb() || ! res.CanSave() ) return kFALSE;
-
-  std::string cacheFileName;
-  if (  name != ""
-   ) cacheFileName =  this->GetTableName() + "_"
-                    + this->GetRowName() + "_"
-                    +  name + ".dbi_cache";
-  CP::TDbiBinaryFile bf(cacheFileName.c_str(),kFALSE);
-  if ( bf.IsOK() ) {
-    DbiInfo( "Saving query result (" << res.GetNumRows()
-			  << " rows) to " << bf.GetFileName() << "  ");
-     CP::TDbiTimerManager::gTimerManager.RecMainQuery();
-
-    // if writing a CP::TDbiResultSetNonAgg, add leading count of 1. (if writing
-    // a CP::TDbiResultSetAgg it will writes its one leading count.
-    if ( dynamic_cast<CP::TDbiResultSetNonAgg*>(&res) ) {
-      UInt_t numNonAgg = 1;
-      bf << numNonAgg;
+    DbiDebug("Request to save query result as " << name
+             << " ; row supports L2 cache ?"<<fCanL2Cache
+             << " ; binary file can write L2 Cache?"<< CP::TDbiBinaryFile::CanWriteL2Cache()
+             << " ; data from DB? " << res.ResultsFromDb()
+             << " ; can be saved? " << res.CanSave() << "  ");
+    if (! this->CanWriteL2Cache() || ! res.ResultsFromDb() || ! res.CanSave()) {
+        return kFALSE;
     }
-    bf << res;
-    return kTRUE;
-  }
-  DbiDebug( "Caching disabled or cannot open "
-			 << bf.GetFileName() << "  ");
-  return kFALSE;
+
+    std::string cacheFileName;
+    if (name != ""
+       ) cacheFileName =  this->GetTableName() + "_"
+                              + this->GetRowName() + "_"
+                              +  name + ".dbi_cache";
+    CP::TDbiBinaryFile bf(cacheFileName.c_str(),kFALSE);
+    if (bf.IsOK()) {
+        DbiInfo("Saving query result (" << res.GetNumRows()
+                << " rows) to " << bf.GetFileName() << "  ");
+        CP::TDbiTimerManager::gTimerManager.RecMainQuery();
+
+        // if writing a CP::TDbiResultSetNonAgg, add leading count of 1. (if writing
+        // a CP::TDbiResultSetAgg it will writes its one leading count.
+        if (dynamic_cast<CP::TDbiResultSetNonAgg*>(&res)) {
+            UInt_t numNonAgg = 1;
+            bf << numNonAgg;
+        }
+        bf << res;
+        return kTRUE;
+    }
+    DbiDebug("Caching disabled or cannot open "
+             << bf.GetFileName() << "  ");
+    return kFALSE;
 
 }
 //.....................................................................
@@ -663,7 +691,7 @@ void CP::TDbiTableProxy::SetSqlCondition(const std::string& sql) {
 
 //  None.
 
-  fDBProxy.SetSqlCondition(sql);
+    fDBProxy.SetSqlCondition(sql);
 
 }
 

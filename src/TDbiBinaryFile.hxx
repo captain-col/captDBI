@@ -52,10 +52,18 @@ public:
     ~TDbiBinaryFile();
 
     /// State testing.
-    std::string  GetFileName() const { return fFileName; }
-    Bool_t  IsOK() const { return ! fHasErrors;}
-    Bool_t  IsReading() const { return this->IsOK() && fReading; }
-    Bool_t  IsWriting() const { return this->IsOK() && ! fReading; }
+    std::string  GetFileName() const {
+        return fFileName;
+    }
+    Bool_t  IsOK() const {
+        return ! fHasErrors;
+    }
+    Bool_t  IsReading() const {
+        return this->IsOK() && fReading;
+    }
+    Bool_t  IsWriting() const {
+        return this->IsOK() && ! fReading;
+    }
 
     /// State changing.
 
@@ -110,7 +118,7 @@ public:
     ///
     ///  For the format of record see the operator <<.
     ///\endverbatim
-    CP::TDbiBinaryFile& operator >>  (std::vector<CP::TDbiTableRow*>& arr);
+    CP::TDbiBinaryFile& operator >> (std::vector<CP::TDbiTableRow*>& arr);
     ///\verbatim
     ///
     ///  Purpose: Write a vector of objects inheriting from CP::TDbiTableRow.
@@ -130,27 +138,31 @@ public:
     ///
     ///  Int_t     EndMarker  End of record marker = 0xddbbccaa
     ///\endverbatim
-    CP::TDbiBinaryFile& operator <<  (std::vector<CP::TDbiTableRow*>& arr);
-    char* ReleaseArrayBuffer() { char* buff = fArrayBuffer;
+    CP::TDbiBinaryFile& operator << (std::vector<CP::TDbiTableRow*>& arr);
+    char* ReleaseArrayBuffer() {
+        char* buff = fArrayBuffer;
         fArrayBuffer = 0;
-        return buff; }
+        return buff;
+    }
 
     /// Global control of all created TDbiBinaryFile objects.
 
     static Bool_t CanReadL2Cache()  {
-        return fgWorkDir.size() && fgReadAccess; 
+        return fgWorkDir.size() && fgReadAccess;
     }
     static Bool_t CanWriteL2Cache() {
-        return fgWorkDir.size() && fgWriteAccess; 
+        return fgWorkDir.size() && fgWriteAccess;
     }
-    static   void SetWorkDir(const std::string& dir) { 
+    static   void SetWorkDir(const std::string& dir) {
         fgWorkDir = dir;
-        if ( fgWorkDir[fgWorkDir.size()-1] != '/' ) fgWorkDir += '/';
+        if (fgWorkDir[fgWorkDir.size()-1] != '/') {
+            fgWorkDir += '/';
+        }
     }
-    static   void SetReadAccess(Bool_t access = kTRUE) { 
-        fgReadAccess = access; 
+    static   void SetReadAccess(Bool_t access = kTRUE) {
+        fgReadAccess = access;
     }
-    static   void SetWriteAccess(Bool_t access = kTRUE) { 
+    static   void SetWriteAccess(Bool_t access = kTRUE) {
         fgWriteAccess = access;
     }
 
@@ -183,5 +195,5 @@ private:
 
 };
 
-#endif  
+#endif
 

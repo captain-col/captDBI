@@ -1,7 +1,7 @@
 #ifndef TDbiConnection_hxx_seen
 #define TDbiConnection_hxx_seen
 
-/// \file 
+/// \file
 
 //////////////////////////////////////////////////////////////////////////
 ////////////////////////////     ROOT API     ////////////////////////////
@@ -37,7 +37,7 @@ namespace CP {
 
 class CP::TDbiConnection {
 public:
-    
+
     /// Constructors and destructors.
     /// Passed in:
     ///    * url - address of sql server
@@ -54,22 +54,34 @@ public:
                    int maxConnects=20);
     virtual ~TDbiConnection();
 
-    const std::string& GetDbName() const { return fDbName; }
-    const std::string& GetPassword() const { return fPassword; }
+    const std::string& GetDbName() const {
+        return fDbName;
+    }
+    const std::string& GetPassword() const {
+        return fPassword;
+    }
     const std::string& GetUrl() const;
-    const std::string& GetUser() const { return fUser; }
-    Bool_t IsClosed() const { return ! fServer; }
-    Bool_t IsTemporary() const { return fIsTemporary; }
+    const std::string& GetUser() const {
+        return fUser;
+    }
+    Bool_t IsClosed() const {
+        return ! fServer;
+    }
+    Bool_t IsTemporary() const {
+        return fIsTemporary;
+    }
     Bool_t TableExists(const std::string& tableName) const;
-                
+
     bool SupportsTmpTbls(); // (T2K Extension)
 
     /// Exception log handling
-    const TDbiExceptionLog& GetExceptionLog() const { 
-        return fExceptionLog; 
+    const TDbiExceptionLog& GetExceptionLog() const {
+        return fExceptionLog;
     }
 
-    void ClearExceptionLog() { fExceptionLog.Clear(); }
+    void ClearExceptionLog() {
+        fExceptionLog.Clear();
+    }
 
     /// Print exceptions at level of above and return true if any
     Bool_t PrintExceptionLog(Int_t level = 3) const;
@@ -82,17 +94,25 @@ public:
 
     /// Methods used when "borrowing" the server (use same as for
     /// Statement).
-    void Connect()    { this->ConnectStatement(); }
-    void DisConnect() { this->DisConnectStatement(); }
+    void Connect()    {
+        this->ConnectStatement();
+    }
+    void DisConnect() {
+        this->DisConnectStatement();
+    }
 
     /// Increment number of statements relying on this connection
-    void ConnectStatement() { ++fNumConnectedStatements; }
+    void ConnectStatement() {
+        ++fNumConnectedStatements;
+    }
 
     /// Decrement number of statements relying on this connection and
     /// close if idle
     void DisConnectStatement() {
         --fNumConnectedStatements;
-        if ( ! fNumConnectedStatements ) this->CloseIdleConnection(); 
+        if (! fNumConnectedStatements) {
+            this->CloseIdleConnection();
+        }
     }
 
     /// Connection is permanent, don't close even when idle.

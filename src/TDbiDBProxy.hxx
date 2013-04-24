@@ -39,116 +39,120 @@
 #include <vector>
 
 namespace CP {
-class TDbiCascader;
-class TDbiInRowStream;
-class TDbiTableMetaData;
-class TDbiTableProxy;
-class TDbiValidityRec;
+    class TDbiCascader;
+    class TDbiInRowStream;
+    class TDbiTableMetaData;
+    class TDbiTableProxy;
+    class TDbiValidityRec;
 }
 namespace CP {
-class TVldContext;
+    class TVldContext;
 };
 namespace CP {
-class TVldTimeStamp;
+    class TVldTimeStamp;
 };
 
 namespace CP {
-class TDbiDBProxy
-{
+    class TDbiDBProxy {
 
-public:
+    public:
 
 #ifndef __CINT__
-typedef const std::vector<UInt_t> SeqList_t;
+        typedef const std::vector<UInt_t> SeqList_t;
 #endif
 
 // Constructors.
-           TDbiDBProxy(TDbiCascader& cascader,
-                      const std::string& tableName,
-                      const TDbiTableMetaData* metaData,
-                      const TDbiTableMetaData* metaValid,
-                      const TDbiTableProxy* tableProxy);
-  virtual ~TDbiDBProxy();
+        TDbiDBProxy(TDbiCascader& cascader,
+                    const std::string& tableName,
+                    const TDbiTableMetaData* metaData,
+                    const TDbiTableMetaData* metaValid,
+                    const TDbiTableProxy* tableProxy);
+        virtual ~TDbiDBProxy();
 
 // State testing member functions
-              Bool_t HasEpoch() const;
-              UInt_t GetNumDb() const;
-       const std::string& GetTableName() const { return fTableName; }
-const TDbiTableProxy* GetTableProxy() const { return fTableProxy; }
-                void StoreMetaData(TDbiTableMetaData& metaData) const;
-              Bool_t TableExists(Int_t selectDbNo=-1) const;
+        Bool_t HasEpoch() const;
+        UInt_t GetNumDb() const;
+        const std::string& GetTableName() const {
+            return fTableName;
+        }
+        const TDbiTableProxy* GetTableProxy() const {
+            return fTableProxy;
+        }
+        void StoreMetaData(TDbiTableMetaData& metaData) const;
+        Bool_t TableExists(Int_t selectDbNo=-1) const;
 
 // Query (input) member functions
-           void FindTimeBoundaries(const CP::TVldContext& vc,
-                                   const TDbi::Task& task,
-                                   UInt_t dbNo,
-                                   const TDbiValidityRec& lowestPriorityVrec,
-				   Bool_t resolveByCreationDate,
-                                   CP::TVldTimeStamp& start,
-                                   CP::TVldTimeStamp& end) const;
-  TDbiInRowStream* QueryAllValidities(UInt_t dbNo,UInt_t seqNo=0) const;
-  TDbiInRowStream* QuerySeqNo(UInt_t seqNo,UInt_t dbNo) const;
+        void FindTimeBoundaries(const CP::TVldContext& vc,
+                                const TDbi::Task& task,
+                                UInt_t dbNo,
+                                const TDbiValidityRec& lowestPriorityVrec,
+                                Bool_t resolveByCreationDate,
+                                CP::TVldTimeStamp& start,
+                                CP::TVldTimeStamp& end) const;
+        TDbiInRowStream* QueryAllValidities(UInt_t dbNo,UInt_t seqNo=0) const;
+        TDbiInRowStream* QuerySeqNo(UInt_t seqNo,UInt_t dbNo) const;
 #ifndef __CINT__
 /// Secondary query for aggregate and extended context queries.
-  TDbiInRowStream* QuerySeqNos(SeqList_t& seqNos,
-                            UInt_t dbNo,
-                            const std::string& sqlData = "",
-                            const std::string& fillOpts = "") const;
+        TDbiInRowStream* QuerySeqNos(SeqList_t& seqNos,
+                                     UInt_t dbNo,
+                                     const std::string& sqlData = "",
+                                     const std::string& fillOpts = "") const;
 #endif
-  TDbiInRowStream* QueryValidity(const CP::TVldContext& vc,
-                              const TDbi::Task& task,
-                              UInt_t dbNo) const;
-  TDbiInRowStream* QueryValidity(const std::string& context,
-                              const TDbi::Task& task,
-                              UInt_t dbNo) const;
-  TDbiInRowStream* QueryValidity(UInt_t seqNo,
-                              UInt_t dbNo) const;
+        TDbiInRowStream* QueryValidity(const CP::TVldContext& vc,
+                                       const TDbi::Task& task,
+                                       UInt_t dbNo) const;
+        TDbiInRowStream* QueryValidity(const std::string& context,
+                                       const TDbi::Task& task,
+                                       UInt_t dbNo) const;
+        TDbiInRowStream* QueryValidity(UInt_t seqNo,
+                                       UInt_t dbNo) const;
 
 // Store (output) member functions
-         Bool_t ReplaceInsertDate(const CP::TVldTimeStamp& ts,
-                                  UInt_t SeqNo,
-                                  UInt_t dbNo) const;
-         Bool_t RemoveSeqNo(UInt_t seqNo,
+        Bool_t ReplaceInsertDate(const CP::TVldTimeStamp& ts,
+                                 UInt_t SeqNo,
+                                 UInt_t dbNo) const;
+        Bool_t RemoveSeqNo(UInt_t seqNo,
+                           UInt_t dbNo) const;
+        Bool_t ReplaceSeqNo(UInt_t oldSeqNo,
+                            UInt_t newSeqNo,
                             UInt_t dbNo) const;
-         Bool_t ReplaceSeqNo(UInt_t oldSeqNo,
-                             UInt_t newSeqNo,
-                             UInt_t dbNo) const;
 
 // State changing member functions
-	   void SetSqlCondition(const std::string& sql) {
-                                                  fSqlCondition = sql; }
+        void SetSqlCondition(const std::string& sql) {
+            fSqlCondition = sql;
+        }
 
-private:
+    private:
 
 // Disabled (not implemented) copy constructor and asignment.
 
- TDbiDBProxy(const TDbiDBProxy&);
- CP::TDbiDBProxy& operator=(const CP::TDbiDBProxy&);
+        TDbiDBProxy(const TDbiDBProxy&);
+        CP::TDbiDBProxy& operator=(const CP::TDbiDBProxy&);
 
 // Data members
 
 /// Reference to one and only cascader
-  TDbiCascader& fCascader;
+        TDbiCascader& fCascader;
 
 /// Owned by TDbiTableProxy
-  const TDbiTableMetaData* fMetaData;
+        const TDbiTableMetaData* fMetaData;
 
 /// Owned by TDbiTableProxy
-  const TDbiTableMetaData* fMetaValid;
+        const TDbiTableMetaData* fMetaValid;
 
 /// Optional condition to be applied.
 /// See Usage Notes.
-  std::string fSqlCondition;
+        std::string fSqlCondition;
 
 /// Table Name
-  std::string fTableName;
+        std::string fTableName;
 
 /// Owning TDbiTableProxy.
-   const TDbiTableProxy* fTableProxy;
+        const TDbiTableProxy* fTableProxy;
 
-ClassDef(TDbiDBProxy,0)     //  Proxy for physical database.
+        ClassDef(TDbiDBProxy,0)     //  Proxy for physical database.
 
-};
+    };
 };
 
 #endif  // DBIDBPROXY_H

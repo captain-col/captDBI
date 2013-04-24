@@ -16,7 +16,7 @@ Int_t CP::TSeqNoAllocator::GetSeqNo(const std::string& tableName,
 //   dbNo            in     The entry in the cascade for which the SEQNO is required
 
 {
-   return CP::TDbiDatabaseManager::Instance().GetCascader().AllocateSeqNo(tableName,requireGlobal,dbNo);
+    return CP::TDbiDatabaseManager::Instance().GetCascader().AllocateSeqNo(tableName,requireGlobal,dbNo);
 
 }
 

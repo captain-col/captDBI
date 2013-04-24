@@ -28,8 +28,10 @@ CP::TDbiExceptionLog CP::TDbiExceptionLog::fgGELog;
 
 CP::TDbiExceptionLog::TDbiExceptionLog(const CP::TDbiException* e) {
 
-  DbiTrace( "Creating CP::TDbiExceptionLog" << "  ");
-  if ( e ) this->AddEntry(*e);
+    DbiTrace("Creating CP::TDbiExceptionLog" << "  ");
+    if (e) {
+        this->AddEntry(*e);
+    }
 
 }
 //.....................................................................
@@ -38,29 +40,29 @@ CP::TDbiExceptionLog::TDbiExceptionLog(const CP::TDbiException* e) {
 CP::TDbiExceptionLog::~TDbiExceptionLog() {
 
 
-  DbiTrace( "Destroying CP::TDbiExceptionLog" << "  ");
+    DbiTrace("Destroying CP::TDbiExceptionLog" << "  ");
 
 }
 
 //.....................................................................
 
-std::ostream& CP::operator<<(std::ostream& os, 
+std::ostream& CP::operator<<(std::ostream& os,
                              const CP::TDbiExceptionLog& el) {
 
-  if ( el.IsEmpty() ) {
-      os << "The database exception log is empty" << std::endl;
-  }
-  else {
-      os << "Database exception log:-" << std::endl;
-    std::vector<CP::TDbiException>::const_iterator itr(el.GetEntries().begin()),
-                                               itrEnd(el.GetEntries().end());
-    while ( itr != itrEnd ) {
-      os << *itr << std::endl;
-      ++itr;
+    if (el.IsEmpty()) {
+        os << "The database exception log is empty" << std::endl;
     }
-  }
+    else {
+        os << "Database exception log:-" << std::endl;
+        std::vector<CP::TDbiException>::const_iterator itr(el.GetEntries().begin()),
+            itrEnd(el.GetEntries().end());
+        while (itr != itrEnd) {
+            os << *itr << std::endl;
+            ++itr;
+        }
+    }
 
-  return os;
+    return os;
 
 }
 
@@ -70,9 +72,11 @@ std::ostream& CP::operator<<(std::ostream& os,
 /// Purpose:  Add all entries from el.
 void CP::TDbiExceptionLog::AddLog(const CP::TDbiExceptionLog& el) {
 
-  const std::vector<CP::TDbiException>& ve = el.GetEntries();
-  std::vector<CP::TDbiException>::const_iterator itr(ve.begin()), itrEnd(ve.end());
-  while ( itr != itrEnd ) this->AddEntry(*itr++);
+    const std::vector<CP::TDbiException>& ve = el.GetEntries();
+    std::vector<CP::TDbiException>::const_iterator itr(ve.begin()), itrEnd(ve.end());
+    while (itr != itrEnd) {
+        this->AddEntry(*itr++);
+    }
 
 }
 
@@ -83,18 +87,20 @@ void CP::TDbiExceptionLog::Copy(CP::TDbiExceptionLog& that, UInt_t start) const 
 //
 
 
-  UInt_t maxEntry = fEntries.size();
-  while (start <= maxEntry ) that.AddEntry(fEntries[start++]);
+    UInt_t maxEntry = fEntries.size();
+    while (start <= maxEntry) {
+        that.AddEntry(fEntries[start++]);
+    }
 
 }
 //.....................................................................
 /// Purpose:  Print contents to cout.
-void CP::TDbiExceptionLog::Print () const {
+void CP::TDbiExceptionLog::Print() const {
 //
 //
 
 
-  std::cout << *this << std::endl;
+    std::cout << *this << std::endl;
 
 }
 

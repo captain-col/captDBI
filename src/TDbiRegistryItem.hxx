@@ -23,25 +23,24 @@ class type_info;
 namespace CP {
 ///
 /// An item stored in a registry. This class does not do  a right lot, but  TDbiRegistryItemXxx which inherits from it, does a lot.
-class TDbiRegistryItem : public TObject
-{
+    class TDbiRegistryItem : public TObject {
 
-public:
+    public:
 
-    TDbiRegistryItem();
-    virtual ~TDbiRegistryItem();
-    virtual TDbiRegistryItem* Dup(void) const = 0;
+        TDbiRegistryItem();
+        virtual ~TDbiRegistryItem();
+        virtual TDbiRegistryItem* Dup(void) const = 0;
 
-    virtual std::ostream& PrintStream(std::ostream& os) const = 0;
-    virtual std::istream& ReadStream(std::istream& is) = 0;
-    virtual void Print(Option_t* option="") const = 0;
+        virtual std::ostream& PrintStream(std::ostream& os) const = 0;
+        virtual std::istream& ReadStream(std::istream& is) = 0;
+        virtual void Print(Option_t* option="") const = 0;
 
-    virtual const type_info& GetType() const = 0;
-    virtual const char* GetTypeAsString() const = 0;
+        virtual const type_info& GetType() const = 0;
+        virtual const char* GetTypeAsString() const = 0;
 
 
-    ClassDef(CP::TDbiRegistryItem,1)
-};                              // end of class TDbiRegistryItem
+        ClassDef(CP::TDbiRegistryItem,1)
+    };                              // end of class TDbiRegistryItem
 }
 
 

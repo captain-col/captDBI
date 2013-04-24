@@ -31,10 +31,9 @@ ClassImp(CP::TDbiTimer)
 //.....................................................................
 
 CP::TDbiTimer::TDbiTimer() :
-fCurSubWatch(0),
-fRowSize(0),
-fQueryStage(kPassive)
-{
+    fCurSubWatch(0),
+    fRowSize(0),
+    fQueryStage(kPassive) {
 //
 //
 //  Purpose:  Default constructor
@@ -43,12 +42,12 @@ fQueryStage(kPassive)
 //
 
 
-  DbiTrace( "Creating CP::TDbiTimer" << "  ");
+    DbiTrace("Creating CP::TDbiTimer" << "  ");
 
-  fWatch.Stop();
-  for ( int subWatch = 0; subWatch <  kMaxSubWatch; ++subWatch) {
-    fSubWatches[subWatch].Stop();
-  }
+    fWatch.Stop();
+    for (int subWatch = 0; subWatch <  kMaxSubWatch; ++subWatch) {
+        fSubWatches[subWatch].Stop();
+    }
 
 }
 
@@ -64,7 +63,7 @@ CP::TDbiTimer::~TDbiTimer() {
 //
 
 
-  DbiTrace( "Destroying CP::TDbiTimer" << "  ");
+    DbiTrace("Destroying CP::TDbiTimer" << "  ");
 
 }
 
@@ -81,16 +80,18 @@ void CP::TDbiTimer::RecBegin(std::string tableName, UInt_t rowSize) {
 //
 //  Contact:   N. West
 
-  fQueryStage = kInitialQuery;
-  fTableName = tableName;
-  fRowSize = rowSize;
-  fWatch.Start();
-  for ( int subWatch = 0; subWatch <  kMaxSubWatch; ++subWatch) {
-    // Use Start to reset the counter (Reset doesn't do this).
-    fSubWatches[subWatch].Start();
-    fSubWatches[subWatch].Stop();
-  }
-  if ( fCurSubWatch >= 0 ) this->StartSubWatch(0);
+    fQueryStage = kInitialQuery;
+    fTableName = tableName;
+    fRowSize = rowSize;
+    fWatch.Start();
+    for (int subWatch = 0; subWatch <  kMaxSubWatch; ++subWatch) {
+        // Use Start to reset the counter (Reset doesn't do this).
+        fSubWatches[subWatch].Start();
+        fSubWatches[subWatch].Stop();
+    }
+    if (fCurSubWatch >= 0) {
+        this->StartSubWatch(0);
+    }
 
 }
 //.....................................................................
@@ -117,40 +118,43 @@ void CP::TDbiTimer::RecEnd(UInt_t numRows) {
 
 //  None.
 
-  if ( fQueryStage != kMainQuery ) return;
-
-  Float_t tableSize = numRows * fRowSize/1.0e+3;
-  std::string units = "Kb";
-  if ( tableSize > 1000. ) {
-    tableSize /= 1000.;
-    units = "Mb";
-  }
-  MsgFormat ffmt("%6.1f");
-
-  DbiInfo( "CP::TDbiTimer:" <<  fTableName
-			<< ": Query done. "  << numRows
-  			<< "rows, " << ffmt(tableSize) << units
-  			<< " Cpu" << ffmt(fWatch.CpuTime())
-  			<< " , elapse" << ffmt(fWatch.RealTime())
-                        << "  ");
-
-  fWatch.Stop();
-  fQueryStage = kPassive;
-
-  if ( fCurSubWatch >= 0 && fWatch.RealTime() > 5. ) {
-    for ( int subWatch = 0; subWatch <  kMaxSubWatch; ++subWatch) {
-    static const Char_t* subWatchNames[kMaxSubWatch]
-      = { "Query database     ",
-          "Create row objects ",
-          "Retrieve TSQL rows ",
-          "Fill row objects   "};
-       DbiInfo(  "      SubWatch " <<  subWatchNames[subWatch]
-            << ": Cpu" << ffmt(fSubWatches[subWatch].CpuTime())
-  	    << " , elapse" << ffmt(fSubWatches[subWatch].RealTime())
-	    << " , Starts " << fSubWatches[subWatch].Counter()
-            << "  ");
+    if (fQueryStage != kMainQuery) {
+        return;
     }
-  }
+
+    Float_t tableSize = numRows * fRowSize/1.0e+3;
+    std::string units = "Kb";
+    if (tableSize > 1000.) {
+        tableSize /= 1000.;
+        units = "Mb";
+    }
+    MsgFormat ffmt("%6.1f");
+
+    DbiInfo("CP::TDbiTimer:" <<  fTableName
+            << ": Query done. "  << numRows
+            << "rows, " << ffmt(tableSize) << units
+            << " Cpu" << ffmt(fWatch.CpuTime())
+            << " , elapse" << ffmt(fWatch.RealTime())
+            << "  ");
+
+    fWatch.Stop();
+    fQueryStage = kPassive;
+
+    if (fCurSubWatch >= 0 && fWatch.RealTime() > 5.) {
+        for (int subWatch = 0; subWatch <  kMaxSubWatch; ++subWatch) {
+            static const Char_t* subWatchNames[kMaxSubWatch]
+            = { "Query database     ",
+                "Create row objects ",
+                "Retrieve TSQL rows ",
+                "Fill row objects   "
+              };
+            DbiInfo("      SubWatch " <<  subWatchNames[subWatch]
+                    << ": Cpu" << ffmt(fSubWatches[subWatch].CpuTime())
+                    << " , elapse" << ffmt(fSubWatches[subWatch].RealTime())
+                    << " , Starts " << fSubWatches[subWatch].Counter()
+                    << "  ");
+        }
+    }
 }
 //.....................................................................
 
@@ -161,7 +165,7 @@ void CP::TDbiTimer::RecMainQuery() {
 //
 //  Contact:   N. West
 
-  fQueryStage = kMainQuery;
+    fQueryStage = kMainQuery;
 
 }
 //.....................................................................
@@ -185,8 +189,10 @@ void CP::TDbiTimer::Resume() {
 //
 //  Contact:   N. West
 
-  if ( fCurSubWatch >= 0 ) fSubWatches[fCurSubWatch].Start(kFALSE);
-  fWatch.Start(kFALSE);
+    if (fCurSubWatch >= 0) {
+        fSubWatches[fCurSubWatch].Start(kFALSE);
+    }
+    fWatch.Start(kFALSE);
 }
 
 //.....................................................................
@@ -201,12 +207,14 @@ void CP::TDbiTimer::StartSubWatch(UInt_t subWatch) {
 //
 //  Contact:   N. West
 
-  if (     fCurSubWatch < 0
-        || subWatch >= kMaxSubWatch ) return;
+    if (fCurSubWatch < 0
+        || subWatch >= kMaxSubWatch) {
+        return;
+    }
 
-  fSubWatches[fCurSubWatch].Stop();
-  fCurSubWatch = subWatch;
-  fSubWatches[fCurSubWatch].Start(kFALSE);
+    fSubWatches[fCurSubWatch].Stop();
+    fCurSubWatch = subWatch;
+    fSubWatches[fCurSubWatch].Start(kFALSE);
 
 }
 
@@ -217,8 +225,10 @@ void CP::TDbiTimer::Suspend() {
 //
 //  Contact:   N. West
 
-  if ( fCurSubWatch >= 0 ) fSubWatches[fCurSubWatch].Stop();
-  fWatch.Stop();
+    if (fCurSubWatch >= 0) {
+        fSubWatches[fCurSubWatch].Stop();
+    }
+    fWatch.Stop();
 }
 
 /*    Template for New Member Function

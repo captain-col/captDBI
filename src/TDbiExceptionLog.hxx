@@ -6,7 +6,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 ///
-/// Id: TDbiExceptionLog.hxx,v 1.1 2011/01/18 05:49:19 finch Exp 
+/// Id: TDbiExceptionLog.hxx,v 1.1 2011/01/18 05:49:19 finch Exp
 ///
 /// \class CP::TDbiExceptionLog
 ///
@@ -46,29 +46,45 @@ public:
 
     /// State testing member functions
 
-    Bool_t IsEmpty() const { return fEntries.size() == 0; }
+    Bool_t IsEmpty() const {
+        return fEntries.size() == 0;
+    }
     const std::vector<CP::TDbiException>&
-    GetEntries() const { return fEntries; }
+    GetEntries() const {
+        return fEntries;
+    }
     void Print() const;
-    UInt_t Size() const { return fEntries.size(); }
+    UInt_t Size() const {
+        return fEntries.size();
+    }
     void Copy(TDbiExceptionLog& that, UInt_t start=0) const;
 
     /// State changing member functions
 
     void AddLog(const TDbiExceptionLog& el);
-    void AddEntry(const TDbiException& e) { fEntries.push_back(e); }
+    void AddEntry(const TDbiException& e) {
+        fEntries.push_back(e);
+    }
     void AddEntry(const char* errMsg, Int_t code = -1) {
-        this->AddEntry(TDbiException(errMsg,code));}
+        this->AddEntry(TDbiException(errMsg,code));
+    }
     void AddEntry(const std::string& errMsg, Int_t code = -1) {
-        this->AddEntry(TDbiException(errMsg.c_str(),code));}
+        this->AddEntry(TDbiException(errMsg.c_str(),code));
+    }
     void AddEntry(const TSQLServer& server) {
-        this->AddEntry(TDbiException(server));}
+        this->AddEntry(TDbiException(server));
+    }
     void AddEntry(const TSQLStatement& statement) {
-        this->AddEntry(TDbiException(statement));}
-    void Clear() { fEntries.clear(); }
+        this->AddEntry(TDbiException(statement));
+    }
+    void Clear() {
+        fEntries.clear();
+    }
 
     /// The Global Exception Log
-    static TDbiExceptionLog& GetGELog() { return fgGELog;}
+    static TDbiExceptionLog& GetGELog() {
+        return fgGELog;
+    }
 
 private:
 

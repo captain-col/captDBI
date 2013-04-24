@@ -26,7 +26,7 @@
 #include <ostream>
 #include <string>
 #include <vector>
-#include <fstream> 
+#include <fstream>
 
 namespace CP {
     class TDbiCascader;
@@ -66,11 +66,15 @@ public:
     std::string GetDbName(UInt_t dbNo) const;
     Int_t GetDbNo(const std::string& dbName) const;
     Int_t GetStatus(UInt_t dbNo) const {
-        if ( dbNo >= GetNumDb() || ! fConnections[dbNo]  ) return kFailed;
-        return fConnections[dbNo]->IsClosed() ? kClosed : kOpen; }
+        if (dbNo >= GetNumDb() || ! fConnections[dbNo]) {
+            return kFailed;
+        }
+        return fConnections[dbNo]->IsClosed() ? kClosed : kOpen;
+    }
     std::string GetStatusAsString(UInt_t dbNo) const ;
     std::string GetURL(UInt_t dbNo) const {
-        return ( dbNo < GetNumDb() ) ? fConnections[dbNo]-> GetUrl(): ""; }
+        return (dbNo < GetNumDb()) ? fConnections[dbNo]-> GetUrl(): "";
+    }
     Bool_t IsTemporaryTable(const std::string& tableName,
                             Int_t dbNo) const;
     /// Cascade-wide getters.
@@ -78,11 +82,16 @@ public:
     Int_t AllocateSeqNo(const std::string& tableName,
                         Int_t requireGlobal = 0,
                         Int_t dbNo = 0) const;
-    Int_t GetAuthorisingDbNo() const { return fGlobalSeqNoDbNo; }
-    UInt_t GetNumDb() const {return fConnections.size();}
+    Int_t GetAuthorisingDbNo() const {
+        return fGlobalSeqNoDbNo;
+    }
+    UInt_t GetNumDb() const {
+        return fConnections.size();
+    }
     Int_t  GetTableDbNo(const std::string& tableName, Int_t selectDbNo = -1) const;
     Bool_t TableExists(const std::string& tableName, Int_t selectDbNo = -1) const {
-        return this->GetTableDbNo(tableName,selectDbNo) >= 0; }
+        return this->GetTableDbNo(tableName,selectDbNo) >= 0;
+    }
 
     /// State changing member functions
 
@@ -90,7 +99,7 @@ public:
                                const std::string& tableDescr);
     int ProcessTmpTblsFile(const std::string& SQLFilePath); // (T2K Extension)
     int GetTempCon(); // (T2K Extension)
-    int ParseTmpTblsSQLLine(const std::string& line, std::string &tableName); // (T2K Extension)
+    int ParseTmpTblsSQLLine(const std::string& line, std::string& tableName); // (T2K Extension)
     bool ExecTmpTblsSQLStmt(int tempConDbNo, const std::string& line, const std::string& tableName); // (T2K Extension)
 
     void HoldConnections();
@@ -104,7 +113,9 @@ private:
     Int_t ReserveNextSeqNo(const std::string& tableName,
                            Bool_t isGlobal,
                            UInt_t dbNo) const;
-    void SetAuthorisingEntry(Int_t entry) {fGlobalSeqNoDbNo = entry;}
+    void SetAuthorisingEntry(Int_t entry) {
+        fGlobalSeqNoDbNo = entry;
+    }
 
     /// Constructors and destructors.
     TDbiCascader(bool beQuiet=false);
@@ -113,7 +124,7 @@ private:
 
     /// Data members
 
-    /// First connection in the cascade supporting Temporary Tables 
+    /// First connection in the cascade supporting Temporary Tables
     /// Access through GetTempCon() only.
     Int_t fTempCon; // (T2K Extension)
 
@@ -141,7 +152,9 @@ private:
         Lock(TDbiStatement* stmtDB, const std::string& seqnoTable, const std::string& dataTable);
         ~Lock();
 
-        Bool_t IsLocked() const { return fLocked; }
+        Bool_t IsLocked() const {
+            return fLocked;
+        }
 
     private:
 

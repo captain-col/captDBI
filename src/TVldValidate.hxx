@@ -13,39 +13,39 @@
 #define VLDVALIDATE_H
 
 namespace CP {
-class TVldTimeStamp;
+    class TVldTimeStamp;
 }
 #include "TObject.h"
 namespace CP {
 
-class TVldValidate : public TObject {
+    class TVldValidate : public TObject {
 
- public:
+    public:
 
-   TVldValidate();                        // necessary for streamer io
-   virtual ~TVldValidate();
+        TVldValidate();                        // necessary for streamer io
+        virtual ~TVldValidate();
 
-   Bool_t  RunAllTests();
+        Bool_t  RunAllTests();
 
-   Bool_t  TestTimeStamp(void);
-   Bool_t  TestContext(void);
-   Bool_t  TestRange(void);
-   
-   Bool_t  TestFileIO(void);
+        Bool_t  TestTimeStamp(void);
+        Bool_t  TestContext(void);
+        Bool_t  TestRange(void);
 
- protected:
-   //   TVldValidate(const TObject &object);           // hide these
-   //   TVldValidate(const TVldValidate &tf);
-   //   TVldValidate& operator=(const TObject &rhs);
-   //   TVldValidate& operator=(const TVldValidate &tf);
+        Bool_t  TestFileIO(void);
 
-   Bool_t CompareTimeStamps(const char *label, 
-                            CP::TVldTimeStamp& test, CP::TVldTimeStamp& std);
+    protected:
+        //   TVldValidate(const TObject &object);           // hide these
+        //   TVldValidate(const TVldValidate &tf);
+        //   TVldValidate& operator=(const TObject &rhs);
+        //   TVldValidate& operator=(const TVldValidate &tf);
 
- private:
+        Bool_t CompareTimeStamps(const char* label,
+                                 CP::TVldTimeStamp& test, CP::TVldTimeStamp& std);
 
-   ClassDef(CP::TVldValidate,1)  // TVldValidate version 1
-};
+    private:
+
+        ClassDef(CP::TVldValidate,1)  // TVldValidate version 1
+    };
 };
 
 #endif // VLDVALIDATE_H

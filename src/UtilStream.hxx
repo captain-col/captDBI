@@ -5,7 +5,7 @@
  *
  * \brief Stream related utility functions.
  *
- * 
+ *
  *
  * \author (last to touch it) $Author: finch $
  *
@@ -30,15 +30,15 @@
 #include <string>
 namespace CP {
 
-namespace Util {
+    namespace Util {
 
-    /// discard all whitespace chars until hitting a non-whitespace
-    void eat_whitespace(std::istream& is);
-    
-    /// return a string of words.  Strings are delimited by single quotes.
-    /// any leading white space is eaten.
-    std::string read_quoted_string(std::istream& is);
-}
+        /// discard all whitespace chars until hitting a non-whitespace
+        void eat_whitespace(std::istream& is);
+
+        /// return a string of words.  Strings are delimited by single quotes.
+        /// any leading white space is eaten.
+        std::string read_quoted_string(std::istream& is);
+    }
 }
 
 #endif  // UTILSTREAM_H

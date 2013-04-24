@@ -36,39 +36,43 @@ class ostreamx;
 
 
 namespace CP {
-class TDbiException
+    class TDbiException
 
-{
+    {
 
-public:
-  TDbiException(const char* msg = 0, Int_t code = -1);
-  TDbiException(const TSQLServer& server);
-  TDbiException(const TSQLStatement& statement);
-  TDbiException(const TDbiException& that);
-  virtual ~TDbiException();
+    public:
+        TDbiException(const char* msg = 0, Int_t code = -1);
+        TDbiException(const TSQLServer& server);
+        TDbiException(const TSQLStatement& statement);
+        TDbiException(const TDbiException& that);
+        virtual ~TDbiException();
 
 // State testing member functions
 
-  const std::string & GetMessage() const { return fMessage; }
-           Int_t GetErrorCode() const { return fErrorCode; }
+        const std::string& GetMessage() const {
+            return fMessage;
+        }
+        Int_t GetErrorCode() const {
+            return fErrorCode;
+        }
 
- private:
+    private:
 
 
 // Data members
 
-private:
+    private:
 
 /// The message associated with the exception.
-  std::string fMessage;
+        std::string fMessage;
 
 /// The exception error code.
-  Int_t fErrorCode;
+        Int_t fErrorCode;
 
 
- ClassDef(TDbiException,0) // Object to hold a single database exception record.
+        ClassDef(TDbiException,0) // Object to hold a single database exception record.
 
-};
+    };
 };
 
 #endif // DBIEXCEPTIONLOG

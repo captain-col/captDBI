@@ -3,7 +3,7 @@
 ///
 /// \class CP::TDbiCfgDialog
 ///
-/// \brief A simple class to query a user to supply values for a registry. Internally 
+/// \brief A simple class to query a user to supply values for a registry. Internally
 /// stores three CP::TDbiRegistry objects,  current, default and reset
 ///
 /// messier@huhepl.harvard.edu
@@ -15,23 +15,22 @@
 #endif
 
 namespace CP {
-class TDbiCfgDialog
-{
-public:
-  TDbiCfgDialog();
-  TDbiCfgDialog(const TDbiRegistry& current, const TDbiRegistry& deflt);
-  virtual ~TDbiCfgDialog();
+    class TDbiCfgDialog {
+    public:
+        TDbiCfgDialog();
+        TDbiCfgDialog(const TDbiRegistry& current, const TDbiRegistry& deflt);
+        virtual ~TDbiCfgDialog();
 
-  virtual TDbiRegistry& Query();
-  
-  void SetCurrent(const TDbiRegistry& r);
-  void SetDefault(const TDbiRegistry& r);
+        virtual TDbiRegistry& Query();
 
-protected:
-  TDbiRegistry fCurrent; // Current values for configuration
-  TDbiRegistry fDefault; // Default settings for configuration
-  TDbiRegistry fResult;  // User inputs
-};
+        void SetCurrent(const TDbiRegistry& r);
+        void SetDefault(const TDbiRegistry& r);
+
+    protected:
+        TDbiRegistry fCurrent; // Current values for configuration
+        TDbiRegistry fDefault; // Default settings for configuration
+        TDbiRegistry fResult;  // User inputs
+    };
 
 };
 

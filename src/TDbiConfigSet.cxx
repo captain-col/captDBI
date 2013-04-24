@@ -38,9 +38,11 @@ CP::TDbiConfigSet::~TDbiConfigSet() {
 //  Purpose:  Destructor
 
 
-  for ( std::vector<Param*>::iterator itr = fParams.begin();
-        itr != fParams.end();
-        ++itr ) delete (*itr);
+    for (std::vector<Param*>::iterator itr = fParams.begin();
+         itr != fParams.end();
+         ++itr) {
+        delete(*itr);
+    }
 
 }
 
@@ -69,16 +71,16 @@ std::ostream& CP::operator<<(std::ostream& s, const CP::TDbiConfigSet& cfSet) {
 
 //  None.
 
-  s << "CP::TDbiConfigSet: Number of parameters: "
-    << cfSet.GetNumParams() << std::endl;
+    s << "CP::TDbiConfigSet: Number of parameters: "
+      << cfSet.GetNumParams() << std::endl;
 
-  for ( UInt_t iParam = 0; iParam < cfSet.GetNumParams(); ++iParam) {
-    s << "   "  << cfSet.GetParamName(iParam) << ":  "
-      << cfSet.GetParamValue(iParam) << " ("
-      << cfSet.GetParamType(iParam).AsString() << ")" << std::endl;
-  }
+    for (UInt_t iParam = 0; iParam < cfSet.GetNumParams(); ++iParam) {
+        s << "   "  << cfSet.GetParamName(iParam) << ":  "
+          << cfSet.GetParamValue(iParam) << " ("
+          << cfSet.GetParamType(iParam).AsString() << ")" << std::endl;
+    }
 
-  return s;
+    return s;
 
 }
 
@@ -104,7 +106,7 @@ std::ostream& CP::operator<<(std::ostream& s, const CP::TDbiConfigSet& cfSet) {
 ///  o Fill object from current (and only) row of Result Set.
 ///\endverbatim
 void CP::TDbiConfigSet::Fill(CP::TDbiInRowStream& rs,
-                        const CP::TDbiValidityRec* vrec) {
+                             const CP::TDbiValidityRec* vrec) {
 
 //  Program Notes:-
 //  =============
@@ -113,19 +115,19 @@ void CP::TDbiConfigSet::Fill(CP::TDbiInRowStream& rs,
 
 
 // Don't count leading SeqNo or ROW_COUNTER, they have already been skipped.
-  UInt_t numParams = rs.NumCols()-2;
+    UInt_t numParams = rs.NumCols()-2;
 
-  for (UInt_t iParam = 0; iParam < numParams; ++iParam ) {
-    Param* par = new Param;
-    par->Name  = rs.CurColName();
-    par->Value = rs.CurColValue();
-    par->Type  = rs.CurColFieldType();
+    for (UInt_t iParam = 0; iParam < numParams; ++iParam) {
+        Param* par = new Param;
+        par->Name  = rs.CurColName();
+        par->Value = rs.CurColValue();
+        par->Type  = rs.CurColFieldType();
 
-   fParams.push_back(par);
-    rs.IncrementCurCol();
-  }
+        fParams.push_back(par);
+        rs.IncrementCurCol();
+    }
 
-  fAggregateNo =  vrec->GetAggregateNo ();
+    fAggregateNo =  vrec->GetAggregateNo();
 
 }
 //.....................................................................
@@ -154,8 +156,8 @@ std::string CP::TDbiConfigSet::GetParamName(UInt_t parNo) const {
 
 //  None.
 
- return ( parNo <= GetNumParams() ) ?
-   fParams[parNo]->Name : "";
+    return (parNo <= GetNumParams()) ?
+           fParams[parNo]->Name : "";
 
 }
 //.....................................................................
@@ -184,8 +186,8 @@ CP::TDbiFieldType CP::TDbiConfigSet::GetParamType(UInt_t parNo) const {
 
 //  None.
 
- return ( parNo <= GetNumParams() ) ?
-   fParams[parNo]->Type : CP::TDbiFieldType(TDbi::kUnknown);
+    return (parNo <= GetNumParams()) ?
+           fParams[parNo]->Type : CP::TDbiFieldType(TDbi::kUnknown);
 
 }
 //.....................................................................
@@ -212,20 +214,20 @@ std::string CP::TDbiConfigSet::GetParamValue(UInt_t parNo) const {
 
 //  None.
 
- return ( parNo <= GetNumParams() ) ?
-   fParams[parNo]->Value : "";
+    return (parNo <= GetNumParams()) ?
+           fParams[parNo]->Value : "";
 
 }
 
 //.....................................................................
 /// Purpose:  Add another entry to the end of the existing row.
 void CP::TDbiConfigSet::PushBack(const std::string& name,
-                            const std::string& value,
-                            const CP::TDbiFieldType& type) {
+                                 const std::string& value,
+                                 const CP::TDbiFieldType& type) {
 //
 //
 
-  fParams.push_back(new Param(name,value,type));
+    fParams.push_back(new Param(name,value,type));
 }
 
 //.....................................................................
@@ -256,11 +258,13 @@ void CP::TDbiConfigSet::PushBack(const std::string& name,
 ///  CP::TDbiConfigSet to output data from any type of table.
 ///\endverbatim
 void CP::TDbiConfigSet::Store(CP::TDbiOutRowStream& ors,
-                         const CP::TDbiValidityRec* /* vrec */) const {
+                              const CP::TDbiValidityRec* /* vrec */) const {
 
-  for ( std::vector<Param*>::const_iterator itr = fParams.begin();
-        itr != fParams.end();
-        ++itr ) ors.Store((*itr)->Value.c_str());
+    for (std::vector<Param*>::const_iterator itr = fParams.begin();
+         itr != fParams.end();
+         ++itr) {
+        ors.Store((*itr)->Value.c_str());
+    }
 
 }
 

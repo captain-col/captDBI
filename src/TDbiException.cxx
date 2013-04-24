@@ -25,46 +25,42 @@ ClassImp(CP::TDbiException)
 
 /// Create an exception using the msg and code provided.
 CP::TDbiException::TDbiException(const char* msg /*= 0*/,
-                           Int_t code      /* = -1 */):
-fMessage(msg),
-fErrorCode(code)
-{
+                                 Int_t code      /* = -1 */):
+    fMessage(msg),
+    fErrorCode(code) {
 
-  DbiTrace( "Creating CP::TDbiException" << "  ");
+    DbiTrace("Creating CP::TDbiException" << "  ");
 
 }
 
 //.....................................................................
 /// Create an exception, getting the error message and code from server.
 CP::TDbiException::TDbiException(const TSQLServer& server):
-fMessage(server.GetErrorMsg()),
-fErrorCode(server.GetErrorCode())
-{
+    fMessage(server.GetErrorMsg()),
+    fErrorCode(server.GetErrorCode()) {
 
-  DbiTrace( "Creating CP::TDbiException" << "  ");
+    DbiTrace("Creating CP::TDbiException" << "  ");
 
 }
 
 //.....................................................................
 /// Create and exception, taking the message and code from statement.
 CP::TDbiException::TDbiException(const TSQLStatement& statement):
-fMessage(statement.GetErrorMsg()),
-fErrorCode(statement.GetErrorCode())
-{
+    fMessage(statement.GetErrorMsg()),
+    fErrorCode(statement.GetErrorCode()) {
 
-  DbiTrace( "Creating CP::TDbiException" << "  ");
+    DbiTrace("Creating CP::TDbiException" << "  ");
 
 }
 
 //.....................................................................
 
 
-CP::TDbiException::TDbiException(const CP::TDbiException& that)
-{
+CP::TDbiException::TDbiException(const CP::TDbiException& that) {
 
-  DbiTrace( "Creating CP::TDbiException" << "  ");
+    DbiTrace("Creating CP::TDbiException" << "  ");
 
-  *this = that;
+    *this = that;
 
 }
 
@@ -74,7 +70,7 @@ CP::TDbiException::TDbiException(const CP::TDbiException& that)
 CP::TDbiException::~TDbiException() {
 
 
-  DbiTrace( "Destroying CP::TDbiException" << "  ");
+    DbiTrace("Destroying CP::TDbiException" << "  ");
 
 }
 
@@ -82,9 +78,9 @@ CP::TDbiException::~TDbiException() {
 /// Append message describing this exception to the std::ostream 'os'.
 std::ostream& CP::operator<<(std::ostream& os, const CP::TDbiException& e) {
 
-  os << "Error " << e.GetErrorCode()
-     << " (" << e.GetMessage() << ")"  << std::endl;
-  return os;
+    os << "Error " << e.GetErrorCode()
+       << " (" << e.GetMessage() << ")"  << std::endl;
+    return os;
 
 }
 

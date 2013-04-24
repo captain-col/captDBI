@@ -12,15 +12,15 @@ namespace CP {
 
     public:
 
-	TResultSetHandle();
-	TResultSetHandle(const TResultSetHandle& from);
+        TResultSetHandle();
+        TResultSetHandle(const TResultSetHandle& from);
         TResultSetHandle(const TEventContext& context,
-			 Int_t task = 0);
-	virtual ~TResultSetHandle();
+                         Int_t task = 0);
+        virtual ~TResultSetHandle();
 
     private:
 
-	ClassDef(TResultSetHandle,1);
+        ClassDef(TResultSetHandle,1);
 
     };
 

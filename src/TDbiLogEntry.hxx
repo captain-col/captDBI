@@ -35,141 +35,178 @@
 #include <iosfwd>
 
 namespace CP {
-class TDbiLogEntry;
-class TDbiOutRowStream;
-class TDbiInRowStream;
-class TDbiTableProxy;
-class TDbiValidityRec;
-std::ostream& operator<<(std::ostream& s, const CP::TDbiLogEntry& logEntry);
+    class TDbiLogEntry;
+    class TDbiOutRowStream;
+    class TDbiInRowStream;
+    class TDbiTableProxy;
+    class TDbiValidityRec;
+    std::ostream& operator<<(std::ostream& s, const CP::TDbiLogEntry& logEntry);
 }
 
 
 namespace CP {
-class TDbiLogEntry : public TDbiTableRow
-{
+    class TDbiLogEntry : public TDbiTableRow {
 
-public:
+    public:
 
-  using TObject::Write;
+        using TObject::Write;
 
 // Constructors and destructors.
-  TDbiLogEntry(const std::string& tableName = "",
-              const std::string& reason = "",
-	      Int_t detMask = CP::DbiDetector::FullMask(),
-	      Int_t simMask = CP::DbiSimFlag::FullMask(),
-              TDbi::Task task = 0,
-              Int_t logSeqNoMin = 0,
-              Int_t logSeqNoMax = 0,
-              Int_t logNumSeqNo = 0);
-  virtual ~TDbiLogEntry();
+        TDbiLogEntry(const std::string& tableName = "",
+                     const std::string& reason = "",
+                     Int_t detMask = CP::DbiDetector::FullMask(),
+                     Int_t simMask = CP::DbiSimFlag::FullMask(),
+                     TDbi::Task task = 0,
+                     Int_t logSeqNoMin = 0,
+                     Int_t logSeqNoMax = 0,
+                     Int_t logNumSeqNo = 0);
+        virtual ~TDbiLogEntry();
 
 // State testing member functions.
 
 // Inherited responsibilities.
-  virtual TDbiTableRow* CreateTableRow() const {
-                                              return new TDbiLogEntry; }
-         Int_t GetAggregateNo() const { return -1; }
+        virtual TDbiTableRow* CreateTableRow() const {
+            return new TDbiLogEntry;
+        }
+        Int_t GetAggregateNo() const {
+            return -1;
+        }
 
 // New member functions.
- const std::string& GetLogTableName() const { return fLogTableName; }
-	 Int_t GetDetectorMask() const { return fLogDetMask; }
-	 Int_t GetLogSeqNoMin() const { return fLogSeqNoMin; }
-	 Int_t GetLogSeqNoMax() const { return fLogSeqNoMax; }
- 	 Int_t GetLogNumSeqNo() const { return fLogNumSeqNo; }
-	 Int_t GetSimMask() const { return fLogSimMask; }
-     TDbi::Task GetTask() const { return fLogTask; }
- const std::string& GetUserName() const { return fUserName; }
- const std::string& GetProcessName() const { return fProcessName; }
- const std::string& GetHostName() const { return fHostName; }
- const std::string& GetServerName() const { return fServerName; }
- const std::string& GetReason() const { return fReason; }
-  CP::TVldTimeStamp GetUpdateTime() const { return fUpdateTime; }
+        const std::string& GetLogTableName() const {
+            return fLogTableName;
+        }
+        Int_t GetDetectorMask() const {
+            return fLogDetMask;
+        }
+        Int_t GetLogSeqNoMin() const {
+            return fLogSeqNoMin;
+        }
+        Int_t GetLogSeqNoMax() const {
+            return fLogSeqNoMax;
+        }
+        Int_t GetLogNumSeqNo() const {
+            return fLogNumSeqNo;
+        }
+        Int_t GetSimMask() const {
+            return fLogSimMask;
+        }
+        TDbi::Task GetTask() const {
+            return fLogTask;
+        }
+        const std::string& GetUserName() const {
+            return fUserName;
+        }
+        const std::string& GetProcessName() const {
+            return fProcessName;
+        }
+        const std::string& GetHostName() const {
+            return fHostName;
+        }
+        const std::string& GetServerName() const {
+            return fServerName;
+        }
+        const std::string& GetReason() const {
+            return fReason;
+        }
+        CP::TVldTimeStamp GetUpdateTime() const {
+            return fUpdateTime;
+        }
 
-	Bool_t HasReason() const { return fReason.size() > 0; }
+        Bool_t HasReason() const {
+            return fReason.size() > 0;
+        }
 
 // State changing member functions
- 	  void SetReason(const std::string& reason);
-	  void SetDetectorMask(Int_t detMask) { fLogDetMask = detMask; }
-	  void SetSimMask(Int_t simMask) { fLogSimMask = simMask; }
-          void SetTask(TDbi::Task task) { fLogTask = task; }
-          void SetUpdateTime(const CP::TVldTimeStamp& updateTime) {
-                                         fUpdateTime = updateTime; }
-          void Recreate (const std::string& tableName = "",
-                         const std::string& reason = "",
-            	         Int_t detMask = CP::DbiDetector::FullMask(),
-	                 Int_t simMask = CP::DbiSimFlag::FullMask(),
-                         TDbi::Task task = 0,
-                         Int_t logSeqNoMin = 0,
-                         Int_t logSeqNoMax = 0,
-                         Int_t logNumSeqNo = 0);
+        void SetReason(const std::string& reason);
+        void SetDetectorMask(Int_t detMask) {
+            fLogDetMask = detMask;
+        }
+        void SetSimMask(Int_t simMask) {
+            fLogSimMask = simMask;
+        }
+        void SetTask(TDbi::Task task) {
+            fLogTask = task;
+        }
+        void SetUpdateTime(const CP::TVldTimeStamp& updateTime) {
+            fUpdateTime = updateTime;
+        }
+        void Recreate(const std::string& tableName = "",
+                      const std::string& reason = "",
+                      Int_t detMask = CP::DbiDetector::FullMask(),
+                      Int_t simMask = CP::DbiSimFlag::FullMask(),
+                      TDbi::Task task = 0,
+                      Int_t logSeqNoMin = 0,
+                      Int_t logSeqNoMax = 0,
+                      Int_t logNumSeqNo = 0);
 
 // I/O  member functions
-  virtual void Fill(TDbiInRowStream& rs,
-                    const TDbiValidityRec* vrec);
-  virtual void Store(TDbiOutRowStream& ors,
-                    const TDbiValidityRec* vrec) const;
-  Bool_t Write(UInt_t dbNo,Int_t logSeqNo=0);
+        virtual void Fill(TDbiInRowStream& rs,
+                          const TDbiValidityRec* vrec);
+        virtual void Store(TDbiOutRowStream& ors,
+                           const TDbiValidityRec* vrec) const;
+        Bool_t Write(UInt_t dbNo,Int_t logSeqNo=0);
 
-private:
+    private:
 // Constructors and destructors.
-  TDbiLogEntry(const TDbiLogEntry& from); // No!
+        TDbiLogEntry(const TDbiLogEntry& from); // No!
 
-  void SetServerName();
+        void SetServerName();
 
 // Data members
 
 /// Database no. written to. =0 if not output
-  UInt_t fDbNo;
+        UInt_t fDbNo;
 
 /// Seq. No. used to write this object. =0 if not output
-  Int_t fSeqNo;
+        Int_t fSeqNo;
 
 /// Table being updated.
-  std::string fLogTableName;
+        std::string fLogTableName;
 
 /// Detector type mask of update.
-  Int_t fLogDetMask;
+        Int_t fLogDetMask;
 
 /// SimFlag  mask of update.
-  Int_t fLogSimMask;
+        Int_t fLogSimMask;
 
 /// Task of update
-  TDbi::Task fLogTask;
+        TDbi::Task fLogTask;
 
 /// Minimum Seq. No. being updated.
-  Int_t fLogSeqNoMin;
+        Int_t fLogSeqNoMin;
 
 /// Maximum Seq. No. being updated.
-  Int_t fLogSeqNoMax;
+        Int_t fLogSeqNoMax;
 
 /// Number of Seq. Nos. being updated.
-  Int_t fLogNumSeqNo;
+        Int_t fLogNumSeqNo;
 
 /// Time of update.
-  CP::TVldTimeStamp fUpdateTime;
+        CP::TVldTimeStamp fUpdateTime;
 
 /// User performing update.
-  std::string fUserName;
+        std::string fUserName;
 
 /// Process performing update.
-  std::string fProcessName;
+        std::string fProcessName;
 
 /// Host performing update.
-  std::string fHostName;
+        std::string fHostName;
 
 /// Db server being updated.
-  std::string fServerName;
+        std::string fServerName;
 
 /// Reason for update.
-  std::string fReason;
+        std::string fReason;
 
 
 // Note: fLogDetMask,fLogSimMask,fLogTask,fUpdateTime are used to construct the TDbiValidityRec
 //       of the update; they are not store in main table.
 
-ClassDef(TDbiLogEntry,0)    // Configuration data.
+        ClassDef(TDbiLogEntry,0)    // Configuration data.
 
-};
+    };
 };
 
 

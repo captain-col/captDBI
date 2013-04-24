@@ -63,69 +63,84 @@ ClassImp(CP::TDbiResultSetNonAgg)
 ///\endverbatim
 
 CP::TDbiResultSetNonAgg::TDbiResultSetNonAgg(CP::TDbiInRowStream* resultSet,
-                                 const CP::TDbiTableRow* tableRow,
-                                 const CP::TDbiValidityRec* vrec,
-                                 Bool_t dropSeqNo,
-                                 const std::string& sqlQualifiers) :
-CP::TDbiResultSet(resultSet,vrec,sqlQualifiers),
-fBuffer(0)
-{
+                                             const CP::TDbiTableRow* tableRow,
+                                             const CP::TDbiValidityRec* vrec,
+                                             Bool_t dropSeqNo,
+                                             const std::string& sqlQualifiers) :
+    CP::TDbiResultSet(resultSet,vrec,sqlQualifiers),
+    fBuffer(0) {
 
-  this->DebugCtor();
+    this->DebugCtor();
 
-  if ( ! resultSet || resultSet->IsExhausted() || ! tableRow ) return;
+    if (! resultSet || resultSet->IsExhausted() || ! tableRow) {
+        return;
+    }
 
-  if ( vrec ) CP::TDbiTimerManager::gTimerManager.RecFillAgg(vrec->GetAggregateNo());
+    if (vrec) {
+        CP::TDbiTimerManager::gTimerManager.RecFillAgg(vrec->GetAggregateNo());
+    }
 
 //Move to first row if result set not yet started.
-  CP::TDbiInRowStream& rs = *resultSet;
-  if ( rs.IsBeforeFirst() ) rs.FetchRow();
-  if ( rs.IsExhausted() ) return;
+    CP::TDbiInRowStream& rs = *resultSet;
+    if (rs.IsBeforeFirst()) {
+        rs.FetchRow();
+    }
+    if (rs.IsExhausted()) {
+        return;
+    }
 
 //Check and load sequence number if necessary.
-  Int_t seqNo = 0;
-  if ( dropSeqNo && rs.CurColName() == "SEQNO" ) {
-    rs >> seqNo;
-    rs.DecrementCurCol();
-  }
+    Int_t seqNo = 0;
+    if (dropSeqNo && rs.CurColName() == "SEQNO") {
+        rs >> seqNo;
+        rs.DecrementCurCol();
+    }
 
 // Main (non-VLD) tables have a ROW_COUNTER (which has to be ignored when reading).
-  bool hasRowCounter = ! rs.IsVLDTable();
+    bool hasRowCounter = ! rs.IsVLDTable();
 
 // Create and fill table row object and move result set onto next row.
 
-  while ( ! rs.IsExhausted() ) {
+    while (! rs.IsExhausted()) {
 
 //  If stripping off sequence numbers check the next and quit,
 //  having restored the last, if it changes.
-    if ( seqNo != 0 ) {
-      Int_t nextSeqNo;
-      rs >> nextSeqNo;
-      if ( nextSeqNo != seqNo ) {
-        rs.DecrementCurCol();
-        break;
-      }
-    }
+        if (seqNo != 0) {
+            Int_t nextSeqNo;
+            rs >> nextSeqNo;
+            if (nextSeqNo != seqNo) {
+                rs.DecrementCurCol();
+                break;
+            }
+        }
 
 //  Strip off ROW_COUNTER if present.
-    if ( hasRowCounter ) rs.IncrementCurCol();
-    CP::TDbiTableRow* row = tableRow->CreateTableRow();
-    if ( vrec) CP::TDbiTimerManager::gTimerManager.StartSubWatch(3);
-    row->SetOwner(this);
-    row->Fill(rs,vrec);
-    if ( vrec) CP::TDbiTimerManager::gTimerManager.StartSubWatch(2);
-    fRows.push_back(row);
-    rs.FetchRow();
-    if ( vrec) CP::TDbiTimerManager::gTimerManager.StartSubWatch(1);
-  }
+        if (hasRowCounter) {
+            rs.IncrementCurCol();
+        }
+        CP::TDbiTableRow* row = tableRow->CreateTableRow();
+        if (vrec) {
+            CP::TDbiTimerManager::gTimerManager.StartSubWatch(3);
+        }
+        row->SetOwner(this);
+        row->Fill(rs,vrec);
+        if (vrec) {
+            CP::TDbiTimerManager::gTimerManager.StartSubWatch(2);
+        }
+        fRows.push_back(row);
+        rs.FetchRow();
+        if (vrec) {
+            CP::TDbiTimerManager::gTimerManager.StartSubWatch(1);
+        }
+    }
 
-  //Flag that data was read from Database.
-  this->SetResultsFromDb();
-  if ( seqNo  == 0 )
-        DbiInfo( "Created unaggregated VLD result set no. of rows: "
-                                               << this->GetNumRows() << "  ");
-  else  DbiInfo( "Created unaggregated result set for SeqNo: " << seqNo
-				  << " no. of rows: " << this->GetNumRows() << "  ");
+    //Flag that data was read from Database.
+    this->SetResultsFromDb();
+    if (seqNo  == 0)
+        DbiInfo("Created unaggregated VLD result set no. of rows: "
+                << this->GetNumRows() << "  ");
+    else  DbiInfo("Created unaggregated result set for SeqNo: " << seqNo
+                      << " no. of rows: " << this->GetNumRows() << "  ");
 
 }
 
@@ -158,15 +173,17 @@ fBuffer(0)
 CP::TDbiResultSetNonAgg::~TDbiResultSetNonAgg() {
 
 
-  DbiTrace( "Destroying CP::TDbiResultSetNonAgg."  << "  ");
+    DbiTrace("Destroying CP::TDbiResultSetNonAgg."  << "  ");
 
-  if ( ! fBuffer ) for ( std::vector<CP::TDbiTableRow*>::iterator itr = fRows.begin();
-        itr != fRows.end();
-        ++itr) delete *itr;
-  else {
-    delete [] fBuffer;
-    fBuffer = 0;
-  }
+    if (! fBuffer) for (std::vector<CP::TDbiTableRow*>::iterator itr = fRows.begin();
+                            itr != fRows.end();
+                            ++itr) {
+            delete *itr;
+        }
+    else {
+        delete [] fBuffer;
+        fBuffer = 0;
+    }
 }
 //.....................................................................
 ///  Purpose:  Create a key that corresponds to this result.
@@ -176,14 +193,16 @@ CP::TDbiResultKey* CP::TDbiResultSetNonAgg::CreateKey() const {
 
 
 
-  std::string rowName("empty_table");
-  const CP::TDbiTableRow* row = this->GetTableRow(0);
-  if ( row ) rowName = row->GetName();
-  const CP::TDbiValidityRec& vrec = this->GetValidityRec();
-  return new CP::TDbiResultKey(this->TableName(),
-                          rowName,
-                          vrec.GetSeqNo(),
-                          vrec.GetCreationDate() );
+    std::string rowName("empty_table");
+    const CP::TDbiTableRow* row = this->GetTableRow(0);
+    if (row) {
+        rowName = row->GetName();
+    }
+    const CP::TDbiValidityRec& vrec = this->GetValidityRec();
+    return new CP::TDbiResultKey(this->TableName(),
+                                 rowName,
+                                 vrec.GetSeqNo(),
+                                 vrec.GetCreationDate());
 
 }
 
@@ -191,11 +210,11 @@ CP::TDbiResultKey* CP::TDbiResultSetNonAgg::CreateKey() const {
 
 void CP::TDbiResultSetNonAgg::DebugCtor() const {
 
-  DbiTrace( "Creating CP::TDbiResultSetNonAgg" << (void*) this << "  ");
-  static const CP::TDbiResultSetNonAgg* that = 0;
-  if ( this == that ) {
-      std::cout << "debug " << (void*) this << std::endl;
-  }
+    DbiTrace("Creating CP::TDbiResultSetNonAgg" << (void*) this << "  ");
+    static const CP::TDbiResultSetNonAgg* that = 0;
+    if (this == that) {
+        std::cout << "debug " << (void*) this << std::endl;
+    }
 }
 //.....................................................................
 ///\verbatim
@@ -221,8 +240,10 @@ const CP::TDbiTableRow* CP::TDbiResultSetNonAgg::GetTableRow(UInt_t rowNum) cons
 
 //  None.
 
-  if ( rowNum >= fRows.size() ) return 0;
-  return fRows[rowNum];
+    if (rowNum >= fRows.size()) {
+        return 0;
+    }
+    return fRows[rowNum];
 }
 
 //.....................................................................
@@ -247,10 +268,12 @@ const CP::TDbiTableRow* CP::TDbiResultSetNonAgg::GetTableRow(UInt_t rowNum) cons
 const CP::TDbiTableRow* CP::TDbiResultSetNonAgg::GetTableRowByIndex(UInt_t index) const {
 
 
-  if ( ! this->LookUpBuilt() ) this->BuildLookUpTable();
+    if (! this->LookUpBuilt()) {
+        this->BuildLookUpTable();
+    }
 
 // The real look-up still takes place in the base class.
-  return this->CP::TDbiResultSet::GetTableRowByIndex(index);
+    return this->CP::TDbiResultSet::GetTableRowByIndex(index);
 
 }
 //.....................................................................
@@ -265,14 +288,16 @@ const CP::TDbiTableRow* CP::TDbiResultSetNonAgg::GetTableRowByIndex(UInt_t index
 ///  Only CP::TDbiResultSetNonAggs own rows; the base class CP::TDbiResultSet supplies
 ///  the default method that returns false.
 ///\endverbatim
-Bool_t CP::TDbiResultSetNonAgg::Owns(const CP::TDbiTableRow* row ) const {
+Bool_t CP::TDbiResultSetNonAgg::Owns(const CP::TDbiTableRow* row) const {
 
- std::vector<CP::TDbiTableRow*>::const_iterator itr    = fRows.begin();
- std::vector<CP::TDbiTableRow*>::const_iterator itrEnd = fRows.end();
+    std::vector<CP::TDbiTableRow*>::const_iterator itr    = fRows.begin();
+    std::vector<CP::TDbiTableRow*>::const_iterator itrEnd = fRows.end();
 
- for (; itr != itrEnd; ++itr) if ( *itr == row ) return kTRUE;
+    for (; itr != itrEnd; ++itr) if (*itr == row) {
+            return kTRUE;
+        }
 
- return kFALSE;
+    return kFALSE;
 
 
 }
@@ -280,26 +305,28 @@ Bool_t CP::TDbiResultSetNonAgg::Owns(const CP::TDbiTableRow* row ) const {
 //.....................................................................
 ///  Purpose: Check to see if this Result matches the supplied  CP::TDbiValidityRec.
 Bool_t CP::TDbiResultSetNonAgg::Satisfies(const CP::TDbiValidityRec& vrec,
-                                  const std::string& sqlQualifiers) {
+                                          const std::string& sqlQualifiers) {
 //
 //
 
 
-  DbiDebug(  "Trying to satisfy: Vrec " << vrec << " SQL: " << sqlQualifiers
-    << "\n with CanReuse: " << this->CanReuse()
-    << " vrec: " << this->GetValidityRec()
-    << " sqlQualifiers: " << this->GetSqlQualifiers()
-    << "  ");
+    DbiDebug("Trying to satisfy: Vrec " << vrec << " SQL: " << sqlQualifiers
+             << "\n with CanReuse: " << this->CanReuse()
+             << " vrec: " << this->GetValidityRec()
+             << " sqlQualifiers: " << this->GetSqlQualifiers()
+             << "  ");
 
-  if ( this->CanReuse() ) {
-    const CP::TDbiValidityRec& this_vrec = this->GetValidityRec();
-    if (    sqlQualifiers           == this->GetSqlQualifiers()
-         && vrec.GetSeqNo()         == this_vrec.GetSeqNo()
-	 && vrec.GetCreationDate()  == this_vrec.GetCreationDate()
-       )  return kTRUE;
-  }
+    if (this->CanReuse()) {
+        const CP::TDbiValidityRec& this_vrec = this->GetValidityRec();
+        if (sqlQualifiers           == this->GetSqlQualifiers()
+            && vrec.GetSeqNo()         == this_vrec.GetSeqNo()
+            && vrec.GetCreationDate()  == this_vrec.GetCreationDate()
+           ) {
+            return kTRUE;
+        }
+    }
 
-  return kFALSE;
+    return kFALSE;
 
 }
 
@@ -314,22 +341,22 @@ Bool_t CP::TDbiResultSetNonAgg::Satisfies(const CP::TDbiValidityRec& vrec,
 ///\endverbatim
 void CP::TDbiResultSetNonAgg::Streamer(CP::TDbiBinaryFile& file) {
 
-  if ( file.IsReading() ) {
-    this->CP::TDbiResultSet::Streamer(file);
-    DbiDebug( "    Restoring CP::TDbiResultSetNonAgg ..." << "  ");
-    file >> fRows;
+    if (file.IsReading()) {
+        this->CP::TDbiResultSet::Streamer(file);
+        DbiDebug("    Restoring CP::TDbiResultSetNonAgg ..." << "  ");
+        file >> fRows;
 //  Take ownership of the memory holding the array.
-    fBuffer = file.ReleaseArrayBuffer();
-    this->BuildLookUpTable();
-    DbiDebug( "    Restored CP::TDbiResultSetNonAgg. Size:"
-			    << fRows.size() << " rows" << "  ");
-  }
-  else if ( file.IsWriting() ) {
-    this->CP::TDbiResultSet::Streamer(file);
-    DbiDebug( "    Saving CP::TDbiResultSetNonAgg. Size:"
-			    << fRows.size() << " rows" << "  ");
-    file << fRows;
-  }
+        fBuffer = file.ReleaseArrayBuffer();
+        this->BuildLookUpTable();
+        DbiDebug("    Restored CP::TDbiResultSetNonAgg. Size:"
+                 << fRows.size() << " rows" << "  ");
+    }
+    else if (file.IsWriting()) {
+        this->CP::TDbiResultSet::Streamer(file);
+        DbiDebug("    Saving CP::TDbiResultSetNonAgg. Size:"
+                 << fRows.size() << " rows" << "  ");
+        file << fRows;
+    }
 }
 
 /*    Template for New Member Function

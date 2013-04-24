@@ -33,139 +33,174 @@
 typedef std::map<UInt_t,const CP::TDbiTableRow*> IndexToRow_t;
 
 namespace CP {
-class TDbiBinaryFile;
-class TDbiResultKey;
-class TDbiResultSet;
-class TDbiInRowStream;
-class TDbiTableRow;
+    class TDbiBinaryFile;
+    class TDbiResultKey;
+    class TDbiResultSet;
+    class TDbiInRowStream;
+    class TDbiTableRow;
 }
 namespace CP {
-class TVldContext;
-CP::TDbiBinaryFile& operator<<(CP::TDbiBinaryFile& bf, const CP::TDbiResultSet& res);
-CP::TDbiBinaryFile& operator>>(CP::TDbiBinaryFile& bf, CP::TDbiResultSet& res);
+    class TVldContext;
+    CP::TDbiBinaryFile& operator<<(CP::TDbiBinaryFile& bf, const CP::TDbiResultSet& res);
+    CP::TDbiBinaryFile& operator>>(CP::TDbiBinaryFile& bf, CP::TDbiResultSet& res);
 
 };
 
 namespace CP {
-class TDbiResultSet
-{
+    class TDbiResultSet {
 
-public:
+    public:
 
 // Constructors and destructors.
-           TDbiResultSet(TDbiInRowStream* resultSet = 0,
-                     const TDbiValidityRec* vrec = 0,
-                     const std::string& sqlQualifiers = "");
-  virtual ~TDbiResultSet();
+        TDbiResultSet(TDbiInRowStream* resultSet = 0,
+                      const TDbiValidityRec* vrec = 0,
+                      const std::string& sqlQualifiers = "");
+        virtual ~TDbiResultSet();
 
 // State testing member functions
 
- virtual                Bool_t CanReuse() const  { return fCanReuse; }
- virtual                Bool_t CanSave() const  { return kTRUE; }
- virtual                  void Connect() const { ++fNumClients; }
- virtual         TDbiResultKey* CreateKey() const = 0;
- virtual                  void Disconnect() const { --fNumClients; }
-        const TDbiExceptionLog& GetExceptionLog() const { return fExceptionLog; }
-                         Int_t GetID() const { return fID; }
- virtual   const TDbiResultKey* GetKey() const;
- virtual                UInt_t GetNumAggregates() const =0;
- virtual                UInt_t GetNumClients() const {
-                                                   return fNumClients; }
- virtual                UInt_t GetNumRows() const =0;
-                 const std::string& GetSqlQualifiers() const { return fSqlQualifiers; }
- virtual    const TDbiTableRow* GetTableRow(UInt_t rowNum) const =0;
- virtual    const TDbiTableRow* GetTableRowByIndex(UInt_t index) const;
- virtual const TDbiValidityRec& GetValidityRec(
-                                  const TDbiTableRow* /* row */ = 0) const {
-                                        return GetValidityRecGlobal(); }
- virtual const TDbiValidityRec& GetValidityRecGlobal() const {
-                                                      return fEffVRec; }
-                        Bool_t IsExtendedContext() const {
-                                       return this->GetSqlQualifiers() != ""; }
- virtual                Bool_t Owns(const TDbiTableRow* /* row */) const { return kFALSE; }
-                        Bool_t ResultsFromDb() const { return fResultsFromDb; }
- virtual         const std::string& TableName() const { return fTableName; }
+        virtual                Bool_t CanReuse() const  {
+            return fCanReuse;
+        }
+        virtual                Bool_t CanSave() const  {
+            return kTRUE;
+        }
+        virtual                  void Connect() const {
+            ++fNumClients;
+        }
+        virtual         TDbiResultKey* CreateKey() const = 0;
+        virtual                  void Disconnect() const {
+            --fNumClients;
+        }
+        const TDbiExceptionLog& GetExceptionLog() const {
+            return fExceptionLog;
+        }
+        Int_t GetID() const {
+            return fID;
+        }
+        virtual   const TDbiResultKey* GetKey() const;
+        virtual                UInt_t GetNumAggregates() const =0;
+        virtual                UInt_t GetNumClients() const {
+            return fNumClients;
+        }
+        virtual                UInt_t GetNumRows() const =0;
+        const std::string& GetSqlQualifiers() const {
+            return fSqlQualifiers;
+        }
+        virtual    const TDbiTableRow* GetTableRow(UInt_t rowNum) const =0;
+        virtual    const TDbiTableRow* GetTableRowByIndex(UInt_t index) const;
+        virtual const TDbiValidityRec& GetValidityRec(
+            const TDbiTableRow* /* row */ = 0) const {
+            return GetValidityRecGlobal();
+        }
+        virtual const TDbiValidityRec& GetValidityRecGlobal() const {
+            return fEffVRec;
+        }
+        Bool_t IsExtendedContext() const {
+            return this->GetSqlQualifiers() != "";
+        }
+        virtual                Bool_t Owns(const TDbiTableRow* /* row */) const {
+            return kFALSE;
+        }
+        Bool_t ResultsFromDb() const {
+            return fResultsFromDb;
+        }
+        virtual         const std::string& TableName() const {
+            return fTableName;
+        }
 
 // State changing member functions
-                          void CaptureExceptionLog(UInt_t startFrom);
+        void CaptureExceptionLog(UInt_t startFrom);
 
 /// Return true if no clients and unlikely to be reused.
- virtual                Bool_t CanDelete(const TDbiResultSet* res = 0);
+        virtual                Bool_t CanDelete(const TDbiResultSet* res = 0);
 
 /// All TDbiResultSet classes can satisfy this type of primary
 /// query so impliment here.
- virtual    Bool_t Satisfies(const CP::TVldContext& vc,
-                             const TDbi::Task& task);
+        virtual    Bool_t Satisfies(const CP::TVldContext& vc,
+                                    const TDbi::Task& task);
 /// Not all TDbiResultSet classes can satisfy these types of
 /// query so those that do must override.
-virtual     Bool_t Satisfies(const std::string&) {return kFALSE;}
-virtual     Bool_t Satisfies(const TDbiValidityRec&,
-                             const std::string& = "") {return kFALSE;}
+        virtual     Bool_t Satisfies(const std::string&) {
+            return kFALSE;
+        }
+        virtual     Bool_t Satisfies(const TDbiValidityRec&,
+                                     const std::string& = "") {
+            return kFALSE;
+        }
 
 /// Key handling
- virtual    void GenerateKey();
+        virtual    void GenerateKey();
 
- virtual void Streamer(TDbiBinaryFile& file);
- virtual void SetCanReuse(Bool_t reuse)  { fCanReuse = reuse ; }
+        virtual void Streamer(TDbiBinaryFile& file);
+        virtual void SetCanReuse(Bool_t reuse)  {
+            fCanReuse = reuse ;
+        }
 
-protected:
-         void SetResultsFromDb() { fResultsFromDb = kTRUE; }
+    protected:
+        void SetResultsFromDb() {
+            fResultsFromDb = kTRUE;
+        }
 
 // State testing member functions
 
-         void BuildLookUpTable() const;
-       Bool_t LookUpBuilt() const { return fIndexKeys.size() > 0; }
+        void BuildLookUpTable() const;
+        Bool_t LookUpBuilt() const {
+            return fIndexKeys.size() > 0;
+        }
 
 //  State changing member functions.
 
- virtual void SetTableName(const std::string& tableName)  {
-                                               fTableName = tableName; }
- virtual void SetValidityRec(const TDbiValidityRec& vRec)  {
-                                                      fEffVRec = vRec; }
+        virtual void SetTableName(const std::string& tableName)  {
+            fTableName = tableName;
+        }
+        virtual void SetValidityRec(const TDbiValidityRec& vRec)  {
+            fEffVRec = vRec;
+        }
 
 
-private:
+    private:
 
 // Data members
 
 /// Unique ID within the current job
-  Int_t fID;
+        Int_t fID;
 
 //// Set kTRUE if can be reused
-  Bool_t fCanReuse;
+        Bool_t fCanReuse;
 
 //// Effective validity record
-  TDbiValidityRec fEffVRec;
+        TDbiValidityRec fEffVRec;
 
 //// Look-up: Index -> TableRow
-  mutable IndexToRow_t fIndexKeys;
+        mutable IndexToRow_t fIndexKeys;
 
 //// Only non-zero for top-level result
-  const TDbiResultKey* fKey;
+        const TDbiResultKey* fKey;
 
 /// True is at least part didn't come from cache.
-  Bool_t fResultsFromDb;
+        Bool_t fResultsFromDb;
 //// Number of clients
-  mutable Int_t fNumClients;
+        mutable Int_t fNumClients;
 
 //// Table name
-  std::string fTableName;
+        std::string fTableName;
 
 /// Null unless Extended Context query in which case it contains:-
 /// context-sql;data-sql;fill-options
-  std::string fSqlQualifiers;
+        std::string fSqlQualifiers;
 
 /// Exception log produced when query was executed.
-  TDbiExceptionLog fExceptionLog;
+        TDbiExceptionLog fExceptionLog;
 
 
 /// Used to allocate unique ID within the current job
-  static  Int_t fgLastID;
+        static  Int_t fgLastID;
 
 
-ClassDef(TDbiResultSet,0)     //Abstract base representing query result
+        ClassDef(TDbiResultSet,0)     //Abstract base representing query result
 
-};
+    };
 };
 
 

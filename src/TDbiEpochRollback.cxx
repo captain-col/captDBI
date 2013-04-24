@@ -28,8 +28,7 @@ ClassImp(CP::TDbiEpochRollback)
 
 //.....................................................................
 
-CP::TDbiEpochRollback::TDbiEpochRollback()
-{
+CP::TDbiEpochRollback::TDbiEpochRollback() {
 //
 //
 //  Purpose:  Default constructor
@@ -48,7 +47,7 @@ CP::TDbiEpochRollback::TDbiEpochRollback()
 //  None.
 
 
-    DbiTrace( "Creating CP::TDbiEpochRollback" << "  ");
+    DbiTrace("Creating CP::TDbiEpochRollback" << "  ");
 }
 //.....................................................................
 
@@ -64,7 +63,7 @@ CP::TDbiEpochRollback::~TDbiEpochRollback() {
 
 
 
-  DbiTrace( "Destroying CP::TDbiEpochRollback" << "  ");
+    DbiTrace("Destroying CP::TDbiEpochRollback" << "  ");
 
 }
 //.....................................................................
@@ -83,23 +82,23 @@ const std::string& CP::TDbiEpochRollback::GetEpochCondition(const std::string& t
 //  Search in reverse order so that specific entries are processed
 //  before generic (i.e. ones that end in wildcard *).
 
-  static std::string condition;
+    static std::string condition;
 
-  condition = "";
+    condition = "";
 
-  name_map_t::const_reverse_iterator itr    = fTableToEpoch.rbegin();
-  name_map_t::const_reverse_iterator itrEnd = fTableToEpoch.rend();
+    name_map_t::const_reverse_iterator itr    = fTableToEpoch.rbegin();
+    name_map_t::const_reverse_iterator itrEnd = fTableToEpoch.rend();
 
-  for (; itr != itrEnd; ++itr) {
-    if ( ! CP::UtilString::cmp_wildcard(tableName,itr->first) ) {
-    	std::ostringstream condition_stream;
-    	condition_stream << "EPOCH <= ";
-    	condition_stream << itr->second;
-      condition = condition_stream.str();
-      return condition;
+    for (; itr != itrEnd; ++itr) {
+        if (! CP::UtilString::cmp_wildcard(tableName,itr->first)) {
+            std::ostringstream condition_stream;
+            condition_stream << "EPOCH <= ";
+            condition_stream << itr->second;
+            condition = condition_stream.str();
+            return condition;
+        }
     }
-  }
-  return condition;
+    return condition;
 }
 
 //.....................................................................
@@ -120,34 +119,36 @@ void CP::TDbiEpochRollback::Set(TDbiRegistry& reg) {
 //
 //  o Extract epoch Rollback from TDbiRegistry.
 
-  TDbiRegistry::TDbiRegistryKey keyItr(&reg);
+    TDbiRegistry::TDbiRegistryKey keyItr(&reg);
 
-  Bool_t  hasChanged = kFALSE;
+    Bool_t  hasChanged = kFALSE;
 
-  const char* key = keyItr();
-  while ( key ) {
+    const char* key = keyItr();
+    while (key) {
 
-    const char* nextKey =  keyItr();
+        const char* nextKey =  keyItr();
 
-    // Process EpochRollback keys
+        // Process EpochRollback keys
 
-    if ( ! strncmp("EpochRollback:",key,14) ) {
-      std::string tableName = key+14;
-      Int_t epoch;
-      bool  ok = reg.Get(key,epoch);
-      if ( ok ) {
-        fTableToEpoch[tableName] = epoch;
-        hasChanged = kTRUE;
+        if (! strncmp("EpochRollback:",key,14)) {
+            std::string tableName = key+14;
+            Int_t epoch;
+            bool  ok = reg.Get(key,epoch);
+            if (ok) {
+                fTableToEpoch[tableName] = epoch;
+                hasChanged = kTRUE;
 
-      }
-      else DbiWarn(  "Illegal EpochRollback registry item: " << key
-	<< " = " <<  reg.GetValueAsString(key) << "  ");
-      reg.RemoveKey(key);
+            }
+            else DbiWarn("Illegal EpochRollback registry item: " << key
+                             << " = " <<  reg.GetValueAsString(key) << "  ");
+            reg.RemoveKey(key);
+        }
+        key = nextKey;
     }
-    key = nextKey;
-  }
 
-  if ( hasChanged ) this->Show();
+    if (hasChanged) {
+        this->Show();
+    }
 }
 //.....................................................................
 
@@ -160,19 +161,23 @@ void CP::TDbiEpochRollback::Show() const {
 //  Contact:   N. West
 //
 
- std::ostream& msg=TDbiLog::GetLogStream();
-  msg << "\n\nEpochRollback Status:  ";
-  if ( fTableToEpoch.size() == 0 ) msg <<"Not enabled" << std::endl;
-  else {
-      msg << "Maximum EPOCH limits:- " << std::endl;
-    name_map_t::const_reverse_iterator itr    = fTableToEpoch.rbegin();
-    name_map_t::const_reverse_iterator itrEnd = fTableToEpoch.rend();
-    for (; itr != itrEnd; ++itr) {
-      std::string name = itr->first;
-      if ( name.size() < 30 ) name.append(30-name.size(),' ');
-      msg <<"    " << name << "  " << itr->second << std::endl;
+    std::ostream& msg=TDbiLog::GetLogStream();
+    msg << "\n\nEpochRollback Status:  ";
+    if (fTableToEpoch.size() == 0) {
+        msg <<"Not enabled" << std::endl;
     }
-  }
+    else {
+        msg << "Maximum EPOCH limits:- " << std::endl;
+        name_map_t::const_reverse_iterator itr    = fTableToEpoch.rbegin();
+        name_map_t::const_reverse_iterator itrEnd = fTableToEpoch.rend();
+        for (; itr != itrEnd; ++itr) {
+            std::string name = itr->first;
+            if (name.size() < 30) {
+                name.append(30-name.size(),' ');
+            }
+            msg <<"    " << name << "  " << itr->second << std::endl;
+        }
+    }
 }
 
 

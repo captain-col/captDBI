@@ -66,161 +66,165 @@ typedef std::vector<const CP::TDbiResultSet*>::const_iterator ConstResultItr_t;
 ///  tableRow is just used to create new subclass CP::TDbiTableRow objects.
 ///\endverbatim
 CP::TDbiResultSetAgg::TDbiResultSetAgg(const std::string& tableName,
-                           const CP::TDbiTableRow* tableRow,
-                           CP::TDbiCache* cache,
-                           const CP::TDbiValidityRecBuilder* vrecBuilder,
-                           const CP::TDbiDBProxy* proxy,
-                           const std::string& sqlQualifiers) :
-CP::TDbiResultSet(0,0,sqlQualifiers),
-fSize(0)
-{
+                                       const CP::TDbiTableRow* tableRow,
+                                       CP::TDbiCache* cache,
+                                       const CP::TDbiValidityRecBuilder* vrecBuilder,
+                                       const CP::TDbiDBProxy* proxy,
+                                       const std::string& sqlQualifiers) :
+    CP::TDbiResultSet(0,0,sqlQualifiers),
+    fSize(0) {
 
 
     typedef std::map<UInt_t,UInt_t> seqToRow_t;
 
-  DbiTrace( "Creating CP::TDbiResultSetAgg" << "  ");
-  SetTableName(tableName);
-  if ( ! tableRow || ! cache || ! vrecBuilder || ! proxy ) return;
+    DbiTrace("Creating CP::TDbiResultSetAgg" << "  ");
+    SetTableName(tableName);
+    if (! tableRow || ! cache || ! vrecBuilder || ! proxy) {
+        return;
+    }
 
 // Unpack the extended context SQL qualifiers.
 // Don't use StringTok - it eats null strings
 // e.g. abc;;def gives 2 substrings.
 
-  std::string::size_type loc  = sqlQualifiers.find(';');
-  std::string::size_type loc2 = sqlQualifiers.find(';',loc+1);
-  std::string sqlData  = std::string(sqlQualifiers,loc+1,loc2-loc-1);
-  std::string fillOpts = std::string(sqlQualifiers,loc2+1);
+    std::string::size_type loc  = sqlQualifiers.find(';');
+    std::string::size_type loc2 = sqlQualifiers.find(';',loc+1);
+    std::string sqlData  = std::string(sqlQualifiers,loc+1,loc2-loc-1);
+    std::string fillOpts = std::string(sqlQualifiers,loc2+1);
 
 //Loop over all rows looking to see if they are already in
 //the cache, and if not, recording their associated sequence numbers
 
-  std::vector<UInt_t> reqSeqNos;  // Sequence numbers required from DB.
-  seqToRow_t seqToRow;       // Map SeqNo - > RowNo.
+    std::vector<UInt_t> reqSeqNos;  // Sequence numbers required from DB.
+    seqToRow_t seqToRow;       // Map SeqNo - > RowNo.
 //  Set up a Default database number, it will be updated if anything
 //  needs to be read from the database.
-  UInt_t dbNo = 0;
-  Int_t maxRowNo = vrecBuilder->GetNumValidityRec() - 1;
+    UInt_t dbNo = 0;
+    Int_t maxRowNo = vrecBuilder->GetNumValidityRec() - 1;
 
 //Ignore the first entry from the validity rec builder, it will be
 //for Agg No = -1, which should not be present for aggregated data.
-  for ( Int_t rowNo = 1; rowNo <= maxRowNo; ++rowNo ) {
-    const CP::TDbiValidityRec& vrecRow = vrecBuilder->GetValidityRec(rowNo);
+    for (Int_t rowNo = 1; rowNo <= maxRowNo; ++rowNo) {
+        const CP::TDbiValidityRec& vrecRow = vrecBuilder->GetValidityRec(rowNo);
 
 //  If its already in the cache, then just connect it in.
-    const CP::TDbiResultSet* res = cache->Search(vrecRow,sqlQualifiers);
-    DbiVerbose( "Checking validity rec " << rowNo
-			      << " " << vrecRow
-			      << "SQL qual: " << sqlQualifiers
-			      << " cache search: " << (void*) res << "  ");
-    if ( res ) {
-      fResults.push_back(res);
-      res->Connect();
-      fSize += res->GetNumRows();
-    }
+        const CP::TDbiResultSet* res = cache->Search(vrecRow,sqlQualifiers);
+        DbiVerbose("Checking validity rec " << rowNo
+                   << " " << vrecRow
+                   << "SQL qual: " << sqlQualifiers
+                   << " cache search: " << (void*) res << "  ");
+        if (res) {
+            fResults.push_back(res);
+            res->Connect();
+            fSize += res->GetNumRows();
+        }
 
 //  If its not in the cache, but represents a gap, then create an empty
 //  CP::TDbiResultSet and add it to the cache.
-    else if ( vrecRow.IsGap() ) {
-      CP::TDbiResultSet* newRes = new CP::TDbiResultSetNonAgg(0, tableRow, &vrecRow);
-      cache->Adopt(newRes,false);
-      fResults.push_back(newRes);
-      newRes->Connect();
-    }
+        else if (vrecRow.IsGap()) {
+            CP::TDbiResultSet* newRes = new CP::TDbiResultSetNonAgg(0, tableRow, &vrecRow);
+            cache->Adopt(newRes,false);
+            fResults.push_back(newRes);
+            newRes->Connect();
+        }
 
 //  Neither in cache, nor a gap, so record its sequence number.
-    else {
-      UInt_t seqNo = vrecRow.GetSeqNo();
-      reqSeqNos.push_back(seqNo);
-      seqToRow[seqNo] = rowNo;
-      fResults.push_back(0);
+        else {
+            UInt_t seqNo = vrecRow.GetSeqNo();
+            reqSeqNos.push_back(seqNo);
+            seqToRow[seqNo] = rowNo;
+            fResults.push_back(0);
 //    All data must come from a single database, so any vrec will
 //    do to define which one.
-      dbNo = vrecRow.GetDbNo();
+            dbNo = vrecRow.GetDbNo();
+        }
     }
-  }
 
 //If there are required sequence numbers, then read them from the
 //database and build CP::TDbiResultSets for each.
 
-  if ( reqSeqNos.size() ) {
+    if (reqSeqNos.size()) {
 //  Sort into ascending order; it may simplify the query which will
 //  block ranges of sequence numbers together.
-    sort(reqSeqNos.begin(),reqSeqNos.end());
-    CP::TDbiInRowStream* rs = proxy->QuerySeqNos(reqSeqNos,dbNo,sqlData,fillOpts);
+        sort(reqSeqNos.begin(),reqSeqNos.end());
+        CP::TDbiInRowStream* rs = proxy->QuerySeqNos(reqSeqNos,dbNo,sqlData,fillOpts);
 //  Flag that data was read from Database.
-    this->SetResultsFromDb();
-    CP::TDbiTimerManager::gTimerManager.StartSubWatch(1);
-    while ( ! rs->IsExhausted() ) {
-      Int_t seqNo;
-      *rs >> seqNo;
-      rs->DecrementCurCol();
-      Int_t rowNo = -2;
-      if ( seqToRow.find(seqNo) == seqToRow.end() ) {
-        DbiSevere(  "Unexpected SeqNo: " << seqNo << "  ");
-      }
-      else {
-        rowNo = seqToRow[seqNo];
-        DbiVerbose(  "Procesing SeqNo: " << seqNo
-          << " for row " << rowNo << "  ");
-      }
+        this->SetResultsFromDb();
+        CP::TDbiTimerManager::gTimerManager.StartSubWatch(1);
+        while (! rs->IsExhausted()) {
+            Int_t seqNo;
+            *rs >> seqNo;
+            rs->DecrementCurCol();
+            Int_t rowNo = -2;
+            if (seqToRow.find(seqNo) == seqToRow.end()) {
+                DbiSevere("Unexpected SeqNo: " << seqNo << "  ");
+            }
+            else {
+                rowNo = seqToRow[seqNo];
+                DbiVerbose("Procesing SeqNo: " << seqNo
+                           << " for row " << rowNo << "  ");
+            }
 
-      const CP::TDbiValidityRec& vrecRow = vrecBuilder->GetValidityRec(rowNo);
-      CP::TDbiResultSetNonAgg* newRes = new CP::TDbiResultSetNonAgg(rs,tableRow,&vrecRow);
+            const CP::TDbiValidityRec& vrecRow = vrecBuilder->GetValidityRec(rowNo);
+            CP::TDbiResultSetNonAgg* newRes = new CP::TDbiResultSetNonAgg(rs,tableRow,&vrecRow);
 //    Don't allow results from Extended Context queries to be reused.
-      if ( this->IsExtendedContext() ) newRes->SetCanReuse(false);
-      if ( rowNo == -2 ) {
-        delete newRes;
-      }
-      else {
-        DbiVerbose(  "SeqNo: " << seqNo
-          << " produced " << newRes->GetNumRows() << " rows" << "  ");
+            if (this->IsExtendedContext()) {
+                newRes->SetCanReuse(false);
+            }
+            if (rowNo == -2) {
+                delete newRes;
+            }
+            else {
+                DbiVerbose("SeqNo: " << seqNo
+                           << " produced " << newRes->GetNumRows() << " rows" << "  ");
 //      Adopt but don't register key for this component, only the overall CP::TDbiResultSetAgg
 //      will have a registered key.
-        cache->Adopt(newRes,false);
-        fResults[rowNo-1] = newRes;
-        newRes->Connect();
-        fSize += newRes->GetNumRows();
-      }
-    }
+                cache->Adopt(newRes,false);
+                fResults[rowNo-1] = newRes;
+                newRes->Connect();
+                fSize += newRes->GetNumRows();
+            }
+        }
 
 //  CP::TDbiInRowStream fully processed, so delete it.
-    delete rs;
-  }
+        delete rs;
+    }
 
 //All component CP::TDbiResultSetNonAgg objects have now been located and
 //connected in, so set up their access keys and determine the validty
 //range by ANDing the time windows together.
 
-  fRowKeys.reserve(fSize);
+    fRowKeys.reserve(fSize);
 
-  CP::TDbiValidityRec vRec = vrecBuilder->GetValidityRec(1);
-  for ( Int_t rowNo = 1; rowNo <= maxRowNo; ++rowNo ) {
+    CP::TDbiValidityRec vRec = vrecBuilder->GetValidityRec(1);
+    for (Int_t rowNo = 1; rowNo <= maxRowNo; ++rowNo) {
 
-    const CP::TDbiValidityRec& vrecRow = vrecBuilder->GetValidityRec(rowNo);
-    CP::TVldRange r = vrecRow.GetVldRange();
-    vRec.AndTimeWindow(r.GetTimeStart(),r.GetTimeEnd());
+        const CP::TDbiValidityRec& vrecRow = vrecBuilder->GetValidityRec(rowNo);
+        CP::TVldRange r = vrecRow.GetVldRange();
+        vRec.AndTimeWindow(r.GetTimeStart(),r.GetTimeEnd());
 
-    const CP::TDbiResultSet* res = fResults[rowNo-1];
-    if ( res ) {
-      UInt_t numEnt = res->GetNumRows();
-      for (UInt_t entNo = 0; entNo < numEnt; ++entNo )
-         fRowKeys.push_back(res->GetTableRow(entNo));
+        const CP::TDbiResultSet* res = fResults[rowNo-1];
+        if (res) {
+            UInt_t numEnt = res->GetNumRows();
+            for (UInt_t entNo = 0; entNo < numEnt; ++entNo) {
+                fRowKeys.push_back(res->GetTableRow(entNo));
+            }
+        }
     }
-  }
 
 // Now that the row look-up table has been built the natural index
 // look-up table can be filled in.
-  this->BuildLookUpTable();
+    this->BuildLookUpTable();
 
 // Set aggregate number to -1 to show that it has multiple aggregates
-  vRec.SetAggregateNo(-1);
-  SetValidityRec(vRec);
+    vRec.SetAggregateNo(-1);
+    SetValidityRec(vRec);
 
-  DbiDebug(  "Aggregate contains " << fSize  << " entries.  vRec:-" << "  "
-    << vRec << "  ");
+    DbiDebug("Aggregate contains " << fSize  << " entries.  vRec:-" << "  "
+             << vRec << "  ");
 
-   DbiInfo( "Created aggregated result set no. of rows: "
-			     << this->GetNumRows() << "  ");
+    DbiInfo("Created aggregated result set no. of rows: "
+            << this->GetNumRows() << "  ");
 
 }
 
@@ -250,11 +254,13 @@ CP::TDbiResultSetAgg::~TDbiResultSetAgg() {
 //  None.
 
 
-  DbiTrace( "Destroying CP::TDbiResultSetAgg."  << "  ");
+    DbiTrace("Destroying CP::TDbiResultSetAgg."  << "  ");
 
-  for ( ConstResultItr_t itr = fResults.begin();
-        itr != fResults.end();
-        ++itr) if ( *itr ) (*itr)->Disconnect();
+    for (ConstResultItr_t itr = fResults.begin();
+         itr != fResults.end();
+         ++itr) if (*itr) {
+            (*itr)->Disconnect();
+        }
 
 }
 //.....................................................................
@@ -265,26 +271,30 @@ CP::TDbiResultSetAgg::~TDbiResultSetAgg() {
 ///
 CP::TDbiResultKey* CP::TDbiResultSetAgg::CreateKey() const {
 
-  CP::TDbiResultKey* key = 0;
-  for ( ConstResultItr_t itr = fResults.begin();
-        itr != fResults.end();
-        ++itr ) {
-    const CP::TDbiResultSet* result = *itr;
-    if ( result ) {
-      // Create key from first result.
-      if ( ! key ) key = result->CreateKey();
-      // Extend key from the remainder.
-      else {
-	const CP::TDbiValidityRec& vrec = result->GetValidityRec();
-	key->AddVRecKey(vrec.GetSeqNo(),vrec.GetCreationDate());
-      }
+    CP::TDbiResultKey* key = 0;
+    for (ConstResultItr_t itr = fResults.begin();
+         itr != fResults.end();
+         ++itr) {
+        const CP::TDbiResultSet* result = *itr;
+        if (result) {
+            // Create key from first result.
+            if (! key) {
+                key = result->CreateKey();
+            }
+            // Extend key from the remainder.
+            else {
+                const CP::TDbiValidityRec& vrec = result->GetValidityRec();
+                key->AddVRecKey(vrec.GetSeqNo(),vrec.GetCreationDate());
+            }
+        }
     }
-  }
 
 // Should not have an empty set, but just in case.
-  if ( ! key ) key = new CP::TDbiResultKey();
+    if (! key) {
+        key = new CP::TDbiResultKey();
+    }
 
-  return key;
+    return key;
 
 }
 //.....................................................................
@@ -306,7 +316,7 @@ const CP::TDbiTableRow* CP::TDbiResultSetAgg::GetTableRow(UInt_t row) const {
 
 //  None.
 
-  return  ( row >= fRowKeys.size() ) ? 0 : fRowKeys[row];
+    return (row >= fRowKeys.size()) ? 0 : fRowKeys[row];
 
 }
 
@@ -326,15 +336,17 @@ const CP::TDbiTableRow* CP::TDbiResultSetAgg::GetTableRow(UInt_t row) const {
 ///
 ///\endverbatim
 const CP::TDbiValidityRec& CP::TDbiResultSetAgg::GetValidityRec(
-                                  const CP::TDbiTableRow* row) const {
+    const CP::TDbiTableRow* row) const {
 
 //  Contact:   N. West
 //
 
 
- if ( ! row ) return this->GetValidityRecGlobal();
- CP::TDbiResultSet* owner = row->GetOwner();
- return owner ? owner->GetValidityRecGlobal() : this->GetValidityRecGlobal();
+    if (! row) {
+        return this->GetValidityRecGlobal();
+    }
+    CP::TDbiResultSet* owner = row->GetOwner();
+    return owner ? owner->GetValidityRecGlobal() : this->GetValidityRecGlobal();
 
 }
 //.....................................................................
@@ -345,12 +357,12 @@ Bool_t CP::TDbiResultSetAgg::Satisfies(const std::string& sqlQualifiers)  {
 
 //
 
-  DbiDebug(  "Trying to satisfy: SQL: " << sqlQualifiers
-    << "\n with CanReuse: " << this->CanReuse()
-    << " sqlQualifiers: " << this->GetSqlQualifiers()
-    << "  ");
- return    this->CanReuse()
-        && this->GetSqlQualifiers() == sqlQualifiers;
+    DbiDebug("Trying to satisfy: SQL: " << sqlQualifiers
+             << "\n with CanReuse: " << this->CanReuse()
+             << " sqlQualifiers: " << this->GetSqlQualifiers()
+             << "  ");
+    return    this->CanReuse()
+              && this->GetSqlQualifiers() == sqlQualifiers;
 }
 
 //.....................................................................
@@ -368,17 +380,21 @@ void CP::TDbiResultSetAgg::Streamer(CP::TDbiBinaryFile& bf) {
     std::vector<const CP::TDbiResultSet*>::const_iterator itr = fResults.begin();
     std::vector<const CP::TDbiResultSet*>::const_iterator end = fResults.end();
 
-  UInt_t numNonAgg = 0;
-  for (; itr != end; ++itr) {
-    const CP::TDbiResultSetNonAgg* rna = dynamic_cast<const CP::TDbiResultSetNonAgg*>(*itr);
-    if ( rna && ! rna->GetValidityRecGlobal().IsGap() ) ++numNonAgg;
-  }
-  bf << numNonAgg;
+    UInt_t numNonAgg = 0;
+    for (; itr != end; ++itr) {
+        const CP::TDbiResultSetNonAgg* rna = dynamic_cast<const CP::TDbiResultSetNonAgg*>(*itr);
+        if (rna && ! rna->GetValidityRecGlobal().IsGap()) {
+            ++numNonAgg;
+        }
+    }
+    bf << numNonAgg;
 
 
-  for (itr = fResults.begin(); itr != end; ++itr) {
-    const CP::TDbiResultSetNonAgg* rna = dynamic_cast<const CP::TDbiResultSetNonAgg*>(*itr);
-    if ( rna && ! rna->GetValidityRecGlobal().IsGap() ) bf << *rna;
-  }
+    for (itr = fResults.begin(); itr != end; ++itr) {
+        const CP::TDbiResultSetNonAgg* rna = dynamic_cast<const CP::TDbiResultSetNonAgg*>(*itr);
+        if (rna && ! rna->GetValidityRecGlobal().IsGap()) {
+            bf << *rna;
+        }
+    }
 }
 

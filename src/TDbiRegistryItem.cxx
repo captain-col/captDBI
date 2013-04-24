@@ -19,12 +19,10 @@
 
 ClassImp(CP::TDbiRegistryItem)
 
-CP::TDbiRegistryItem::TDbiRegistryItem(void)
-{
+CP::TDbiRegistryItem::TDbiRegistryItem(void) {
 }
 
-CP::TDbiRegistryItem::~TDbiRegistryItem(void)
-{
+CP::TDbiRegistryItem::~TDbiRegistryItem(void) {
 }
 
 

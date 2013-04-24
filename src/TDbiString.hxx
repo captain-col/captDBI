@@ -33,42 +33,49 @@
 #endif
 
 namespace CP {
-class TDbiString
-{
+    class TDbiString {
 
-public:
+    public:
 
 // Constructors and destructors.
-           TDbiString();
-           TDbiString(const Char_t* str);
-           TDbiString(const std::string& str);
-  virtual ~TDbiString();
+        TDbiString();
+        TDbiString(const Char_t* str);
+        TDbiString(const std::string& str);
+        virtual ~TDbiString();
 
 // State testing member functions
-  const Char_t* c_str() const { return fString.c_str(); }
-  const std::string& GetString() const { return fString; }
+        const Char_t* c_str() const {
+            return fString.c_str();
+        }
+        const std::string& GetString() const {
+            return fString;
+        }
 
 // State changing member functions
-  CP::TDbiString& operator<<(Int_t data);
-  CP::TDbiString& operator<<(UInt_t data);
-  CP::TDbiString& operator<<(Float_t data);
-  CP::TDbiString& operator<<(Char_t data);
-  CP::TDbiString& operator<<(const Char_t* data);
-  CP::TDbiString& operator<<(const std::string& data);
-        void Clear() { fString.clear(); }
-  std::string& GetString() { return fString; }
+        CP::TDbiString& operator<<(Int_t data);
+        CP::TDbiString& operator<<(UInt_t data);
+        CP::TDbiString& operator<<(Float_t data);
+        CP::TDbiString& operator<<(Char_t data);
+        CP::TDbiString& operator<<(const Char_t* data);
+        CP::TDbiString& operator<<(const std::string& data);
+        void Clear() {
+            fString.clear();
+        }
+        std::string& GetString() {
+            return fString;
+        }
 
-private:
+    private:
 
 
 // Data members
 
 /// The underlying string
- std::string fString;
+        std::string fString;
 
- ClassDef(TDbiString,0)     // output string stream
+        ClassDef(TDbiString,0)     // output string stream
 
-};
+    };
 };
 
 

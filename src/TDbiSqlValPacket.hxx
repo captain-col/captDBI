@@ -36,54 +36,64 @@
 #include <string>
 
 namespace CP {
-class TDbiTableRow;
-class TDbiValidityRec;
+    class TDbiTableRow;
+    class TDbiValidityRec;
 }
 namespace CP {
-class TVldRange;
+    class TVldRange;
 };
 
 namespace CP {
-class TDbiSqlValPacket
-{
+    class TDbiSqlValPacket {
 
-public:
+    public:
 
 // Types and enum
 
-  typedef enum ECompResult {
-    kIdentical,
-    kUpdate,
-    kOutOfDate,
-    kConflict
-  } CompResult_t;
+        typedef enum ECompResult {
+            kIdentical,
+            kUpdate,
+            kOutOfDate,
+            kConflict
+        } CompResult_t;
 
 // Constructors and destructors.
-           TDbiSqlValPacket();
-           TDbiSqlValPacket(std::ifstream& is);
-           TDbiSqlValPacket(const TDbiValidityRec& vrec);
-  virtual ~TDbiSqlValPacket();
+        TDbiSqlValPacket();
+        TDbiSqlValPacket(std::ifstream& is);
+        TDbiSqlValPacket(const TDbiValidityRec& vrec);
+        virtual ~TDbiSqlValPacket();
 
 // State testing member functions
         Bool_t CanBeStored() const {
-             return (fSeqNo > 0 && fNumErrors == 0 && this->GetNumSqlStmts()> 0)
-            ? kTRUE : kFALSE; };
-  CompResult_t Compare(const TDbiSqlValPacket& that,
-                       Bool_t log = kFALSE,
-                       const Char_t* thisName = "this",
-                       const Char_t* thatName = "that" ) const;
+            return (fSeqNo > 0 && fNumErrors == 0 && this->GetNumSqlStmts()> 0)
+                   ? kTRUE : kFALSE;
+        };
+        CompResult_t Compare(const TDbiSqlValPacket& that,
+                             Bool_t log = kFALSE,
+                             const Char_t* thisName = "this",
+                             const Char_t* thatName = "that") const;
         Bool_t CreateTable(UInt_t dbNo) const;
-        UInt_t GetNumErrors() const { return fNumErrors; }
-        UInt_t GetNumSqlStmts() const { return fNumStmts; }
-        UInt_t GetSeqNo() const { return fSeqNo; }
-  CP::TVldTimeStamp GetCreationDate() const { return fCreationDate; }
-	std::string GetStmt(UInt_t stmtNo) const;
-	std::vector<std::string> GetStmtValues(UInt_t stmtNo) const;
- const std::string& GetTableName() const{ return fTableName; }
+        UInt_t GetNumErrors() const {
+            return fNumErrors;
+        }
+        UInt_t GetNumSqlStmts() const {
+            return fNumStmts;
+        }
+        UInt_t GetSeqNo() const {
+            return fSeqNo;
+        }
+        CP::TVldTimeStamp GetCreationDate() const {
+            return fCreationDate;
+        }
+        std::string GetStmt(UInt_t stmtNo) const;
+        std::vector<std::string> GetStmtValues(UInt_t stmtNo) const;
+        const std::string& GetTableName() const {
+            return fTableName;
+        }
         Bool_t IsEqual(const TDbiSqlValPacket& that,
                        Bool_t log = kFALSE,
                        const Char_t* thisName = "this",
-                       const Char_t* thatName = "that" ) const;
+                       const Char_t* thatName = "that") const;
 
 //  I/O
         Bool_t Fill(std::ifstream& is);
@@ -91,70 +101,73 @@ public:
         Bool_t Write(std::ofstream& ios,
                      Bool_t addMetadata = kFALSE) const;
 
-//  Reconstruct.	
-          void Recreate(const std::string& tableName,
-                        const CP::TVldRange& vr,
-                        Int_t aggNo,
-                        TDbi::Task task = 0,
-                        CP::TVldTimeStamp creationDate = CP::TVldTimeStamp());
+//  Reconstruct.
+        void Recreate(const std::string& tableName,
+                      const CP::TVldRange& vr,
+                      Int_t aggNo,
+                      TDbi::Task task = 0,
+                      CP::TVldTimeStamp creationDate = CP::TVldTimeStamp());
         Bool_t AddDataRow(const TDbiTableProxy& tblProxy,
                           const TDbiValidityRec* vrec,
                           const TDbiTableRow& row);
 
 //  State changing member functions
-	  void Clear() { this->Reset(); fNumErrors = 0; }
-          void SetEpoch(UInt_t epoch);
-          void SetCreationDate(CP::TVldTimeStamp ts);
-          void SetSeqNo(UInt_t seqno);
-          void Reset();  //Doesn't clear fNumErrors.
+        void Clear() {
+            this->Reset();
+            fNumErrors = 0;
+        }
+        void SetEpoch(UInt_t epoch);
+        void SetCreationDate(CP::TVldTimeStamp ts);
+        void SetSeqNo(UInt_t seqno);
+        void Reset();  //Doesn't clear fNumErrors.
 
-  virtual void Print(Option_t *option="") const;
+        virtual void Print(Option_t* option="") const;
 
-protected:
+    protected:
 
-private:
-          void AddRow(const std::string & row);
+    private:
+        void AddRow(const std::string& row);
         Bool_t AddRow(const TDbiTableProxy& tblProxy,
                       const TDbiValidityRec* vrec,
                       const TDbiTableRow& row);
-          void Report(const char* msg,
-                      UInt_t line_num,
-                      const std::string& line);
-	  void SetMetaData() const;
-          void SetSeqNoOnRow(std::string& row,const std::string& seqno);
+        void Report(const char* msg,
+                    UInt_t line_num,
+                    const std::string& line);
+        void SetMetaData() const;
+        void SetSeqNoOnRow(std::string& row,const std::string& seqno);
 
-  TDbiSqlValPacket(const TDbiSqlValPacket& );  // Not allowed.
+        TDbiSqlValPacket(const TDbiSqlValPacket&);   // Not allowed.
 
 
 // Data members
 
 /// Number of error encountered while filling.
-  UInt_t fNumErrors;
+        UInt_t fNumErrors;
 
 /// Sequence number or 0 if not filled.
-  UInt_t fSeqNo;
+        UInt_t fSeqNo;
 
 /// MySQL SQL to create main table. May be empty until needed.
-  mutable std::string fSqlMySqlMetaMain;
+        mutable std::string fSqlMySqlMetaMain;
 
 /// As fSqlMySqlMetaMain but for aux. table.
-  mutable std::string fSqlMySqlMetaVld;
+        mutable std::string fSqlMySqlMetaVld;
 
 /// Set of SQL statements to generate packet.
-  std::list<std::string>  fSqlStmts;
+        std::list<std::string>  fSqlStmts;
 
 /// Number of statements
-  UInt_t fNumStmts;
+        UInt_t fNumStmts;
 
 /// Table name or null if not filled.
-  std::string fTableName;
+        std::string fTableName;
 
 /// Creation date, or object creation date if unfilled.
-  CP::TVldTimeStamp fCreationDate;
+        CP::TVldTimeStamp fCreationDate;
 
- ClassDef(TDbiSqlValPacket,0)           // SQL to generate Validity Packet.
+        ClassDef(TDbiSqlValPacket,0)           // SQL to generate Validity Packet.
 
-};
+    };
 };
 #endif  // DBISQLVALPACKET
 

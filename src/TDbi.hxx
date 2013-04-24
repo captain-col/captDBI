@@ -33,51 +33,52 @@ class TList;
 namespace TDbi {
 
 // Types and enum
-    
+
     typedef  Int_t Task;
-    
-    enum TaskTypes{  kAnyTask     = -1,   // disable task selection in context queries.
-                     kDefaultTask = 0
-    };
-    
-    enum TypeRegimes{ kRootRegime = 0,
-                      kSQLRegime  = 1
-    };
-    
-    enum DataTypes{ kUnknown,
-                    kBool,      // concept
-                    kChar,      // concept
-                    kUChar,     // concept
-                    kTiny,
-                    kUTiny,
-                    kShort,
-                    kUShort,
-                    kInt,       // concept
-                    kUInt,      // concept
-                    kLong,
-                    kULong,
-                    kFloat,     // concept
-                    kDouble,
-                    kString,    // concept
-                    kTString,
-                    kDate       // concept
-    };
+
+    enum TaskTypes {  kAnyTask     = -1,  // disable task selection in context queries.
+                      kDefaultTask = 0
+                   };
+
+    enum TypeRegimes { kRootRegime = 0,
+                       kSQLRegime  = 1
+                     };
+
+    enum DataTypes { kUnknown,
+                     kBool,      // concept
+                     kChar,      // concept
+                     kUChar,     // concept
+                     kTiny,
+                     kUTiny,
+                     kShort,
+                     kUShort,
+                     kInt,       // concept
+                     kUInt,      // concept
+                     kLong,
+                     kULong,
+                     kFloat,     // concept
+                     kDouble,
+                     kString,    // concept
+                     kTString,
+                     kDate       // concept
+                   };
 
 
-    enum DbTypes{  kMySQL         = 0
-    };
+    enum DbTypes {  kMySQL         = 0
+                 };
 
-    enum AbortTest{ kDisabled,
-                    kTableMissing,
-                    kDataMissing
-    };
+    enum AbortTest { kDisabled,
+                     kTableMissing,
+                     kDataMissing
+                   };
 
     enum { kMAXLOCALSEQNO   = 99999999,    // Max local SeqNo.
-           kMAXTABLENAMELEN = 80};         // Max length of table name.
+           kMAXTABLENAMELEN = 80
+         };         // Max length of table name.
 
     /// Return SQL needed to create VLD table.
     std::string GetVldDescr(const char* tableName,
-                            Bool_t isTemporary = false);  
+                            Bool_t isTemporary = false);
     void SetLogLevel(int level);
 
 

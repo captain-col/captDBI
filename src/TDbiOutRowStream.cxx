@@ -21,22 +21,22 @@ ClassImp(CP::TDbiOutRowStream)
         out << std::setprecision(16)<< v;       \
         Store(out.str());                       \
     }                                           \
-
+     
 // If writing unsigned dat as signed, convert bit pattern to signed,
 // extending sign bit if necessary.
 // For BIGINT (size 8) make an exception.  It's used only as
 // an alternative to unsigned int so can written without conversion.
 #define OUT2(t,v)                         \
-  const CP::TDbiFieldType& fType = this->ColFieldType(this->CurColNum());             \
-  if ( fType.IsSigned() && fType.GetSize() != 8 ) {                              \
-    Int_t v_signed = (Int_t) v;                                                  \
-    if ( fType.GetType() == TDbi::kTiny  && v & 0x80   ) v_signed |= 0xffffff00;  \
-    if ( fType.GetType() == TDbi::kShort && v & 0x8000 ) v_signed |= 0xffff0000;  \
-    OUT(TDbi::kInt,v_signed); }                                                   \
-  else {                                                                         \
-    OUT(t,v);                                                                    \
-  }                                                                              \
-
+    const CP::TDbiFieldType& fType = this->ColFieldType(this->CurColNum());             \
+    if ( fType.IsSigned() && fType.GetSize() != 8 ) {                              \
+        Int_t v_signed = (Int_t) v;                                                  \
+        if ( fType.GetType() == TDbi::kTiny  && v & 0x80   ) v_signed |= 0xffffff00;  \
+        if ( fType.GetType() == TDbi::kShort && v & 0x8000 ) v_signed |= 0xffff0000;  \
+        OUT(TDbi::kInt,v_signed); }                                                   \
+    else {                                                                         \
+        OUT(t,v);                                                                    \
+    }                                                                              \
+     
 //   Definition of static data members
 //   *********************************
 
@@ -49,9 +49,8 @@ ClassImp(CP::TDbiOutRowStream)
 //.....................................................................
 
 CP::TDbiOutRowStream::TDbiOutRowStream(const CP::TDbiTableMetaData* metaData) :
-CP::TDbiRowStream(metaData),
-fBadData(kFALSE)
-{
+    CP::TDbiRowStream(metaData),
+    fBadData(kFALSE) {
 //
 //
 //  Purpose:  Default constructor
@@ -60,7 +59,7 @@ fBadData(kFALSE)
 //     metaData in  Meta data for table to be written to..
 
 
-  DbiTrace( "Creating CP::TDbiOutRowStream" << "  ");
+    DbiTrace("Creating CP::TDbiOutRowStream" << "  ");
 
 }
 
@@ -73,46 +72,57 @@ CP::TDbiOutRowStream::~TDbiOutRowStream() {
 //  Purpose: Destructor
 
 
-  DbiTrace( "Destroying CP::TDbiOutRowStream" << "  ");
+    DbiTrace("Destroying CP::TDbiOutRowStream" << "  ");
 
 }
 
 //.....................................................................
 
 CP::TDbiOutRowStream& CP::TDbiOutRowStream::operator<<(Bool_t src) {
-                                     OUT(TDbi::kBool,src);  return *this;}
+    OUT(TDbi::kBool,src);  return *this;
+}
 
 CP::TDbiOutRowStream& CP::TDbiOutRowStream::operator<<(Char_t src) {
-                                     OUT(TDbi::kChar,src);  return *this;}
+    OUT(TDbi::kChar,src);  return *this;
+}
 
 CP::TDbiOutRowStream& CP::TDbiOutRowStream::operator<<(const Char_t* src) {
-                                     OUT(TDbi::kString,src);  return *this;}
+    OUT(TDbi::kString,src);  return *this;
+}
 
 CP::TDbiOutRowStream& CP::TDbiOutRowStream::operator<<(Short_t src) {
-                                     OUT(TDbi::kShort,src);  return *this;}
+    OUT(TDbi::kShort,src);  return *this;
+}
 
 CP::TDbiOutRowStream& CP::TDbiOutRowStream::operator<<(UShort_t src) {
-                                     OUT2(TDbi::kUShort,src); return *this;}
+    OUT2(TDbi::kUShort,src); return *this;
+}
 
 CP::TDbiOutRowStream& CP::TDbiOutRowStream::operator<<(Int_t src) {
-                                     OUT(TDbi::kInt,src);  return *this;}
+    OUT(TDbi::kInt,src);  return *this;
+}
 
 CP::TDbiOutRowStream& CP::TDbiOutRowStream::operator<<(UInt_t src) {
-                                     OUT2(TDbi::kUInt,src);  return *this;}
+    OUT2(TDbi::kUInt,src);  return *this;
+}
 
 CP::TDbiOutRowStream& CP::TDbiOutRowStream::operator<<(Float_t src) {
-                                     OUT(TDbi::kFloat,src); return *this;}
+    OUT(TDbi::kFloat,src); return *this;
+}
 
 CP::TDbiOutRowStream& CP::TDbiOutRowStream::operator<<(Double_t src) {
-                                     OUT(TDbi::kDouble,src);  return *this;}
+    OUT(TDbi::kDouble,src);  return *this;
+}
 
 CP::TDbiOutRowStream& CP::TDbiOutRowStream::operator<<(const std::string& src) {
-                                    OUT(TDbi::kString,src); return *this;}
+    OUT(TDbi::kString,src); return *this;
+}
 
 CP::TDbiOutRowStream& CP::TDbiOutRowStream::operator<<(const CP::TVldTimeStamp& src) {
-  if ( ! StoreDefaultIfInvalid(TDbi::kDate) )
-                          Store(TDbi::MakeDateTimeString(src).c_str());
-  return *this;
+    if (! StoreDefaultIfInvalid(TDbi::kDate)) {
+        Store(TDbi::MakeDateTimeString(src).c_str());
+    }
+    return *this;
 }
 
 
@@ -144,21 +154,23 @@ Bool_t CP::TDbiOutRowStream::StoreDefaultIfInvalid(TDbi::DataTypes type) {
 
 //  None.
 
-  CP::TDbiFieldType typeSupplied(type);
-  CP::TDbiFieldType typeRequired(CurColFieldType());
-  if ( typeSupplied.IsCompatible(typeRequired) ) return kFALSE;
+    CP::TDbiFieldType typeSupplied(type);
+    CP::TDbiFieldType typeRequired(CurColFieldType());
+    if (typeSupplied.IsCompatible(typeRequired)) {
+        return kFALSE;
+    }
 
-  std::string udef = typeRequired.UndefinedValue();
-     DbiSevere(  "In table " << TableNameTc()
-      << " column "<< CurColNum()
-      << " (" << CurColName() << ")"
-      << " of type " << typeRequired.AsString()
-      << " is incompatible with user type " << typeSupplied.AsString()
-      << ", value \"" << udef
-      << "\" will be substituted." <<  "  ");
-  Store(udef.c_str());
-  fBadData = kTRUE;
-  return kTRUE;
+    std::string udef = typeRequired.UndefinedValue();
+    DbiSevere("In table " << TableNameTc()
+              << " column "<< CurColNum()
+              << " (" << CurColName() << ")"
+              << " of type " << typeRequired.AsString()
+              << " is incompatible with user type " << typeSupplied.AsString()
+              << ", value \"" << udef
+              << "\" will be substituted." <<  "  ");
+    Store(udef.c_str());
+    fBadData = kTRUE;
+    return kTRUE;
 
 }
 //.....................................................................
@@ -189,21 +201,27 @@ void CP::TDbiOutRowStream::Store(const std::string& str)  {
 
 //  None.
 
-  UInt_t concept = CurColFieldType().GetConcept();
-  std::string delim = "";
-  if (    concept == TDbi::kString
-       || concept == TDbi::kDate
-       || concept == TDbi::kChar ) delim = "\'";
+    UInt_t concept = CurColFieldType().GetConcept();
+    std::string delim = "";
+    if (concept == TDbi::kString
+        || concept == TDbi::kDate
+        || concept == TDbi::kChar) {
+        delim = "\'";
+    }
 
-  if ( CurColNum()> 1 ) fCSV += ',';
-  fCSV += delim;
-  if ( concept != TDbi::kString ) fCSV += str;
+    if (CurColNum()> 1) {
+        fCSV += ',';
+    }
+    fCSV += delim;
+    if (concept != TDbi::kString) {
+        fCSV += str;
+    }
 //  When exporting strings, take care of special characters.
-  else {
-    CP::UtilString::MakePrintable(str.c_str(),fCSV);
-  }
-  fCSV += delim;
-  IncrementCurCol();
+    else {
+        CP::UtilString::MakePrintable(str.c_str(),fCSV);
+    }
+    fCSV += delim;
+    IncrementCurCol();
 }
 
 

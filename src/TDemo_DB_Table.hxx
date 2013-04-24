@@ -13,10 +13,10 @@ namespace CP {
 
 /// This is an example TTableRow subclass used to read rows of demonstration
 /// DEMO_DB_TABLE.  It can be used as the starting point for other subclasses.
-/// 
+///
 /// For table XXX_YYY (all tables names are upper case) the corresponding
 /// TTableRow subclass is
-/// \code 
+/// \code
 ///     CP::TXxx_Yyy  (arbitrary capitalisation).
 /// \endcode
 /// This is a demonstration table row
@@ -38,13 +38,27 @@ public:
     /// Standard Getters (here they just give access to the row's state but
     /// could equally well perform services based on that state e.g. apply
     /// calibration.)
-    TChannelId GetChannelId() const { return fChannelId; }
-    Int_t GetIParm1() const { return fIParm1;}
-    Int_t GetIParm2() const { return fIParm2;}
-    Int_t GetIParm3() const { return fIParm3;}
-    Float_t GetFParm1() const { return fFParm1;}
-    Float_t GetFParm2() const { return fFParm2;}
-    Float_t GetFParm3() const { return fFParm3;}
+    TChannelId GetChannelId() const {
+        return fChannelId;
+    }
+    Int_t GetIParm1() const {
+        return fIParm1;
+    }
+    Int_t GetIParm2() const {
+        return fIParm2;
+    }
+    Int_t GetIParm3() const {
+        return fIParm3;
+    }
+    Float_t GetFParm1() const {
+        return fFParm1;
+    }
+    Float_t GetFParm2() const {
+        return fFParm2;
+    }
+    Float_t GetFParm3() const {
+        return fFParm3;
+    }
 
     /// Return unique "Natural Index" of row in table.  Optional, the default
     /// is to return the row position, which is unique but arbitrary.
@@ -53,9 +67,11 @@ public:
     }
 
     /// Required method to create new row.
-    virtual CP::TTableRow* MakeTableRow() const {return new TDemo_DB_Table;}
+    virtual CP::TTableRow* MakeTableRow() const {
+        return new TDemo_DB_Table;
+    }
 
-    /// Required method to fill self from a ResultInputStream. 
+    /// Required method to fill self from a ResultInputStream.
     virtual           void Fill(CP::TResultInputStream& ris);
     virtual           void Print(const Option_t* = "") const;
 

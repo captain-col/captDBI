@@ -34,8 +34,7 @@ CP::TDbiTimerManager CP::TDbiTimerManager::gTimerManager;
 //.....................................................................
 
 CP::TDbiTimerManager::TDbiTimerManager() :
-fEnabled(kTRUE)
-{
+    fEnabled(kTRUE) {
 //
 //
 //  Purpose:  Default constructor
@@ -44,7 +43,7 @@ fEnabled(kTRUE)
 //
 
 
-  DbiTrace( "Creating CP::TDbiTimerManager" << "  ");
+    DbiTrace("Creating CP::TDbiTimerManager" << "  ");
 
 }
 
@@ -59,8 +58,10 @@ CP::TDbiTimerManager::~TDbiTimerManager() {
 //
 
 
-  DbiTrace( "Destroying CP::TDbiTimerManager" << "  ");
-  while ( this->GetCurrent() ) this->Pop();
+    DbiTrace("Destroying CP::TDbiTimerManager" << "  ");
+    while (this->GetCurrent()) {
+        this->Pop();
+    }
 
 }
 
@@ -75,7 +76,7 @@ CP::TDbiTimer* CP::TDbiTimerManager::GetCurrent() {
 //
 //  Contact:   N. West
 
-  return fTimers.empty() ? 0 : *(fTimers.begin());
+    return fTimers.empty() ? 0 : *(fTimers.begin());
 }
 //.....................................................................
 
@@ -87,15 +88,19 @@ CP::TDbiTimer* CP::TDbiTimerManager::Pop() {
 //  Return:    Previous timer (if any).
 //
 
-  if ( fTimers.empty() ) return 0;
+    if (fTimers.empty()) {
+        return 0;
+    }
 
-  CP::TDbiTimer* timer = this->GetCurrent();
-  delete timer;
-  timer = 0;
-  fTimers.pop_front();
-  timer = this->GetCurrent();
-  if ( timer ) timer->Resume();
-  return timer;
+    CP::TDbiTimer* timer = this->GetCurrent();
+    delete timer;
+    timer = 0;
+    fTimers.pop_front();
+    timer = this->GetCurrent();
+    if (timer) {
+        timer->Resume();
+    }
+    return timer;
 
 }
 
@@ -109,10 +114,12 @@ CP::TDbiTimer* CP::TDbiTimerManager::Push() {
 //  Return:    New timer.
 //
 
-  CP::TDbiTimer* timer = this->GetCurrent();
-  if ( timer ) timer->Suspend();
-  fTimers.push_front(new CP::TDbiTimer);
-  return this->GetCurrent();
+    CP::TDbiTimer* timer = this->GetCurrent();
+    if (timer) {
+        timer->Suspend();
+    }
+    fTimers.push_front(new CP::TDbiTimer);
+    return this->GetCurrent();
 
 }
 
@@ -131,9 +138,11 @@ void CP::TDbiTimerManager::RecBegin(std::string tableName, UInt_t rowSize) {
 
 //  Suspend current timer, if any, and start a new one.
 
-  if ( ! fEnabled ) return;
-  CP::TDbiTimer* timer = this->Push();
-  timer->RecBegin(tableName, rowSize);
+    if (! fEnabled) {
+        return;
+    }
+    CP::TDbiTimer* timer = this->Push();
+    timer->RecBegin(tableName, rowSize);
 }
 //.....................................................................
 
@@ -147,13 +156,17 @@ void CP::TDbiTimerManager::RecEnd(UInt_t numRows) {
 //
 //  Contact:   N. West
 
-  if ( ! fEnabled ) return;
+    if (! fEnabled) {
+        return;
+    }
 
 //  Terminate the current timer and resume the previous one.
 
-  CP::TDbiTimer* timer = this->GetCurrent();
-  if ( timer ) timer->RecEnd(numRows);
-  timer = this->Pop();
+    CP::TDbiTimer* timer = this->GetCurrent();
+    if (timer) {
+        timer->RecEnd(numRows);
+    }
+    timer = this->Pop();
 
 }
 
@@ -169,7 +182,9 @@ void CP::TDbiTimerManager::RecFillAgg(Int_t /* aggNo */) {
 //
 //  Contact:   N. West
 
-  if ( ! fEnabled ) return;
+    if (! fEnabled) {
+        return;
+    }
 
 //  Currently a no-op.
 
@@ -184,9 +199,13 @@ void CP::TDbiTimerManager::RecMainQuery() {
 //
 //  Contact:   N. West
 
-  if ( ! fEnabled ) return;
-  CP::TDbiTimer* timer = this->GetCurrent();
-  if ( timer ) timer->RecMainQuery();
+    if (! fEnabled) {
+        return;
+    }
+    CP::TDbiTimer* timer = this->GetCurrent();
+    if (timer) {
+        timer->RecMainQuery();
+    }
 
 }
 
@@ -202,9 +221,13 @@ void CP::TDbiTimerManager::StartSubWatch(UInt_t subWatch) {
 //
 //  Contact:   N. West
 
-  if ( ! fEnabled ) return;
-  CP::TDbiTimer* timer = this->GetCurrent();
-  if ( timer ) timer->StartSubWatch(subWatch);
+    if (! fEnabled) {
+        return;
+    }
+    CP::TDbiTimer* timer = this->GetCurrent();
+    if (timer) {
+        timer->StartSubWatch(subWatch);
+    }
 
 }
 

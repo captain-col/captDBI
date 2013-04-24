@@ -22,30 +22,30 @@
  */
 
 namespace CP {
-class TDbiCascader;
+    class TDbiCascader;
 }
 
 namespace CP {
-class TDbiConnectionMaintainer
+    class TDbiConnectionMaintainer
 
-{
+    {
 
-public:
+    public:
 
-           TDbiConnectionMaintainer(TDbiCascader* cascader = 0);
-	   virtual ~TDbiConnectionMaintainer();
+        TDbiConnectionMaintainer(TDbiCascader* cascader = 0);
+        virtual ~TDbiConnectionMaintainer();
 
 // Data members
 
-private:
+    private:
 
 
 /// May be null if made by (useless) default ctor.
-  TDbiCascader* fCascader;
+        TDbiCascader* fCascader;
 
- ClassDef(TDbiConnectionMaintainer,0) // Object to hold open connections
+        ClassDef(TDbiConnectionMaintainer,0) // Object to hold open connections
 
-};
+    };
 };
 
 

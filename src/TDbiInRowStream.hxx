@@ -34,21 +34,20 @@
 #include "TDbiRowStream.hxx"
 
 namespace CP {
-class TDbiString;
-class TDbiStatement;
-class TDbiTableMetaData;
-class TDbiTableProxy;
+    class TDbiString;
+    class TDbiStatement;
+    class TDbiTableMetaData;
+    class TDbiTableProxy;
 }
 class TSQLStatement;
 namespace CP {
-class TVldTimeStamp;
+    class TVldTimeStamp;
 };
 
 namespace CP {
-class TDbiInRowStream : public TDbiRowStream
-{
+    class TDbiInRowStream : public TDbiRowStream {
 
-public:
+    public:
 
 // Constructors and destructors.
 ///\verbatim
@@ -71,83 +70,98 @@ public:
 ///
 ///  o  Create ResultSet for query.
 ///\endverbatim
-           TDbiInRowStream(TDbiStatement* stmtDb,
+        TDbiInRowStream(TDbiStatement* stmtDb,
                         const TDbiString& sql,
                         const TDbiTableMetaData* metaData,
                         const TDbiTableProxy* tableProxy,
                         UInt_t dbNo,
                         const std::string& fillOpts = "");
-  virtual ~TDbiInRowStream();
+        virtual ~TDbiInRowStream();
 
 // State testing member functions
-              Bool_t CurColExists() const;
-              std::string CurColString() const;
-              std::string CurColValue() const { LoadCurValue(); return fValString;}
-              UInt_t CurRowNum() const { return fCurRow;}
-              UInt_t GetDbNo() const { return fDbNo; }
-              std::string GetFillOpts() const { return fFillOpts;}
-const TDbiTableProxy* GetTableProxy() const { return fTableProxy; }
+        Bool_t CurColExists() const;
+        std::string CurColString() const;
+        std::string CurColValue() const {
+            LoadCurValue();
+            return fValString;
+        }
+        UInt_t CurRowNum() const {
+            return fCurRow;
+        }
+        UInt_t GetDbNo() const {
+            return fDbNo;
+        }
+        std::string GetFillOpts() const {
+            return fFillOpts;
+        }
+        const TDbiTableProxy* GetTableProxy() const {
+            return fTableProxy;
+        }
 /// IsBeforeFirst not needed for ROOT API, but leave a dummy
 /// for now so as not to disturb TDbiInRowStream API.
-  Bool_t IsBeforeFirst() const { return false; };
-              Bool_t IsExhausted() const { return fExhausted; }
-	        void RowAsCsv(std::string& row) const;
+        Bool_t IsBeforeFirst() const {
+            return false;
+        };
+        Bool_t IsExhausted() const {
+            return fExhausted;
+        }
+        void RowAsCsv(std::string& row) const;
 
 // State changing member functions
 
- CP::TDbiInRowStream& operator>>(Bool_t& dest);
- CP::TDbiInRowStream& operator>>(Char_t& dest);
- CP::TDbiInRowStream& operator>>(Short_t& dest);
- CP::TDbiInRowStream& operator>>(UShort_t& dest);
- CP::TDbiInRowStream& operator>>(Int_t& dest);
- CP::TDbiInRowStream& operator>>(UInt_t& dest);
- CP::TDbiInRowStream& operator>>(Long_t& dest);
- CP::TDbiInRowStream& operator>>(ULong_t& dest);
- CP::TDbiInRowStream& operator>>(Float_t& dest);
- CP::TDbiInRowStream& operator>>(Double_t& dest);
- CP::TDbiInRowStream& operator>>(std::string& dest);
- CP::TDbiInRowStream& operator>>(CP::TVldTimeStamp& dest);
+        CP::TDbiInRowStream& operator>>(Bool_t& dest);
+        CP::TDbiInRowStream& operator>>(Char_t& dest);
+        CP::TDbiInRowStream& operator>>(Short_t& dest);
+        CP::TDbiInRowStream& operator>>(UShort_t& dest);
+        CP::TDbiInRowStream& operator>>(Int_t& dest);
+        CP::TDbiInRowStream& operator>>(UInt_t& dest);
+        CP::TDbiInRowStream& operator>>(Long_t& dest);
+        CP::TDbiInRowStream& operator>>(ULong_t& dest);
+        CP::TDbiInRowStream& operator>>(Float_t& dest);
+        CP::TDbiInRowStream& operator>>(Double_t& dest);
+        CP::TDbiInRowStream& operator>>(std::string& dest);
+        CP::TDbiInRowStream& operator>>(CP::TVldTimeStamp& dest);
 
-  Bool_t FetchRow();
+        Bool_t FetchRow();
 
-private:
+    private:
 
-  std::string& AsString(TDbi::DataTypes type);
- Bool_t LoadCurValue() const;
- TString GetStringFromTSQL(Int_t col) const;
+        std::string& AsString(TDbi::DataTypes type);
+        Bool_t LoadCurValue() const;
+        TString GetStringFromTSQL(Int_t col) const;
 
 // Data members
 
 /// Current row in query (0...)
-  Int_t fCurRow;
+        Int_t fCurRow;
 
 /// Cascade no. of source
-  UInt_t fDbNo;
+        UInt_t fDbNo;
 
 /// Owned TDbiStatement. May be 0.
 /// It's only use is to create a TSQLStatement in the ctor but it is not
 /// destroyed until the dtor to prevent a premature attempt to close the
 /// connection.
-  TDbiStatement* fStatement;
+        TDbiStatement* fStatement;
 
 /// Pointer to owned statement, may be 0.
-  TSQLStatement* fTSQLStatement;
+        TSQLStatement* fTSQLStatement;
 
 /// True is result set missing or exhausted.
-  Bool_t fExhausted;
+        Bool_t fExhausted;
 
 /// TDbiTableProxy that produced this set.
-  const TDbiTableProxy* fTableProxy;
+        const TDbiTableProxy* fTableProxy;
 
 /// Buffer for assembling value
-mutable  std::string fValString;
+        mutable  std::string fValString;
 
 /// Optional fill options.
-  std::string fFillOpts;
+        std::string fFillOpts;
 
-ClassDef(TDbiInRowStream,0)     //ResultSet from Query to database table
+        ClassDef(TDbiInRowStream,0)     //ResultSet from Query to database table
 
-};
+    };
 };
 
 

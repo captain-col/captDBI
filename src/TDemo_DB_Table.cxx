@@ -23,7 +23,7 @@ template class  CP::TDbiResultSetHandle<CP::TDemo_DB_Table>;
 
 CP::TDemo_DB_Table::TDemo_DB_Table()  {
 
-   // Default constructor
+    // Default constructor
 
     DbiTrace("CP::TDemo_DB_Table: Default ctor at:" << (void*) this);
 
@@ -34,7 +34,7 @@ CP::TDemo_DB_Table::TDemo_DB_Table()  {
 
 CP::TDemo_DB_Table::TDemo_DB_Table(const CP::TDemo_DB_Table& from) {
 
-   // Copy constructor
+    // Copy constructor
 
     DbiTrace("CP::TDemo_DB_Table: Copy ctor at:" << (void*) this);
 
@@ -46,7 +46,7 @@ CP::TDemo_DB_Table::TDemo_DB_Table(const CP::TDemo_DB_Table& from) {
 
 CP::TDemo_DB_Table::~TDemo_DB_Table()  {
 
-   // Destructor
+    // Destructor
 
     DbiTrace("CP::TDemo_DB_Table: dtor at:" << (void*) this);
 
@@ -69,9 +69,9 @@ void CP::TDemo_DB_Table::Fill(CP::TResultInputStream& ris) {
 /// MySQL INT but is used to fill a TTFBChannelId.
 
 
-  UInt_t id;
-  ris >> id >> fIParm1 >> fIParm2 >> fIParm3 >> fFParm1 >> fFParm2 >> fFParm3;
-  fChannelId = TChannelId(id);
+    UInt_t id;
+    ris >> id >> fIParm1 >> fIParm2 >> fIParm3 >> fFParm1 >> fFParm2 >> fFParm3;
+    fChannelId = TChannelId(id);
 
 }
 
@@ -79,12 +79,12 @@ void CP::TDemo_DB_Table::Fill(CP::TResultInputStream& ris) {
 
 void CP::TDemo_DB_Table::Print(const Option_t*) const {
 
-  // Programming note: The arg isn't used but is there so as to avoid compiler
-  // warnings about hidden method TObject::Print(const Option_t*).
+    // Programming note: The arg isn't used but is there so as to avoid compiler
+    // warnings about hidden method TObject::Print(const Option_t*).
 
-  DbiLog("DEMO_DB_TABLE row for channel " << fChannelId.AsString()
-	   << " integer parms: "       << fIParm1 << "," << fIParm2 << "," << fIParm3
-	   << " floating point parms " << fFParm1 << "," << fFParm2 << "," << fFParm3 );
+    DbiLog("DEMO_DB_TABLE row for channel " << fChannelId.AsString()
+           << " integer parms: "       << fIParm1 << "," << fIParm2 << "," << fIParm3
+           << " floating point parms " << fFParm1 << "," << fFParm2 << "," << fFParm3);
 
 }
 

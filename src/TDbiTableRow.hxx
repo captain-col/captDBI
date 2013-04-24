@@ -38,53 +38,64 @@
 #include <cassert>
 
 namespace CP {
-class TDbiOutRowStream;
-class TDbiResultSet;
-class TDbiInRowStream;
-class TDbiTableProxy;
-class TDbiValidityRec;
+    class TDbiOutRowStream;
+    class TDbiResultSet;
+    class TDbiInRowStream;
+    class TDbiTableProxy;
+    class TDbiValidityRec;
 }
 
 namespace CP {
-class TDbiTableRow : public TObject
-{
+    class TDbiTableRow : public TObject {
 
-public:
+    public:
 
 // Constructors and destructors.
-           TDbiTableRow();
-           TDbiTableRow(const TDbiTableRow& from);
-  virtual ~TDbiTableRow();
+        TDbiTableRow();
+        TDbiTableRow(const TDbiTableRow& from);
+        virtual ~TDbiTableRow();
 
 // State testing member functions
 /// Replace this with a function returning true in order to use the level 2 disk cache.
-virtual       Bool_t CanL2Cache() const { return kFALSE; } 
+        virtual       Bool_t CanL2Cache() const {
+            return kFALSE;
+        }
 //virtual       Bool_t CanL2Cache() const { return kTRUE; } //FOR TESTS
 
-virtual        Int_t GetAggregateNo() const { return -1; }
-          TDbiResultSet* GetOwner() const { return fOwner; }
-virtual TDbiTableRow* CreateTableRow() const =0;
-virtual       UInt_t GetIndex(UInt_t defIndex) const {return defIndex;}
+        virtual        Int_t GetAggregateNo() const {
+            return -1;
+        }
+        TDbiResultSet* GetOwner() const {
+            return fOwner;
+        }
+        virtual TDbiTableRow* CreateTableRow() const =0;
+        virtual       UInt_t GetIndex(UInt_t defIndex) const {
+            return defIndex;
+        }
 
 // State modifying member functions
-          void SetOwner(TDbiResultSet* owner) {fOwner = owner;}
+        void SetOwner(TDbiResultSet* owner) {
+            fOwner = owner;
+        }
 
 // I/O  member functions
-  virtual void Fill(TDbiInRowStream& rs,
-                    const TDbiValidityRec* vrec) =0;
-  virtual void Store(TDbiOutRowStream& /* ors */,
-                     const TDbiValidityRec* /* vrec */) const { assert(0); }
+        virtual void Fill(TDbiInRowStream& rs,
+                          const TDbiValidityRec* vrec) =0;
+        virtual void Store(TDbiOutRowStream& /* ors */,
+                           const TDbiValidityRec* /* vrec */) const {
+            assert(0);
+        }
 
-private:
+    private:
 
 // Data members
 
 /// The owning TDbiResultSet, if any.
-  TDbiResultSet * fOwner;
+        TDbiResultSet* fOwner;
 
-ClassDef(TDbiTableRow,0)   // TDbiTableRow for a specific database table.
+        ClassDef(TDbiTableRow,0)   // TDbiTableRow for a specific database table.
 
-};
+    };
 };
 
 

@@ -35,8 +35,7 @@ int                    CP::TDbiDatabaseManager::Cleaner::fgCount = 0;
 //.....................................................................
 
 CP::TDbiDatabaseManager::TDbiDatabaseManager() :
-fCascader(0)
-{
+    fCascader(0) {
 //
 //
 //  Purpose:  Constructor
@@ -60,14 +59,14 @@ fCascader(0)
 
 // Create cascader for database access.
 
-  fCascader = new CP::TDbiCascader;
+    fCascader = new CP::TDbiCascader;
 
 // Get any environment configuration.
 
-  this->SetConfigFromEnvironment();
+    this->SetConfigFromEnvironment();
 
-  DbiTrace( "Creating CP::TDbiDatabaseManager"
-    << "  ");
+    DbiTrace("Creating CP::TDbiDatabaseManager"
+             << "  ");
 
 
 }
@@ -93,37 +92,37 @@ CP::TDbiDatabaseManager::~TDbiDatabaseManager() {
 
 
 
-  if (  CP::TDbiExceptionLog::GetGELog().Size() ) {
-     DbiInfo( "Database Global Exception Log contains "
-	  << CP::TDbiExceptionLog::GetGELog().Size() << " entries:-" << "  ");;
-     CP::TDbiExceptionLog::GetGELog().Print();
-  }
+    if (CP::TDbiExceptionLog::GetGELog().Size()) {
+        DbiInfo("Database Global Exception Log contains "
+                << CP::TDbiExceptionLog::GetGELog().Size() << " entries:-" << "  ");;
+        CP::TDbiExceptionLog::GetGELog().Print();
+    }
 
-  int shutdown = 0;
-  if (    ! this->GetConfig().Get("Shutdown",shutdown)
-	 || shutdown == 0 ) {
-    DbiInfo( "DatabaseInterface shutdown not requested" << "  ");
-    return;
-  }
+    int shutdown = 0;
+    if (! this->GetConfig().Get("Shutdown",shutdown)
+        || shutdown == 0) {
+        DbiInfo("DatabaseInterface shutdown not requested" << "  ");
+        return;
+    }
 
-  DbiInfo( "DatabaseInterface shutting down..." << "  ");
+    DbiInfo("DatabaseInterface shutting down..." << "  ");
 
 // Destroy all owned objects.
 
-  for ( std::map<std::string,CP::TDbiTableProxy*>::iterator itr = fTPmap.begin();
-        itr != fTPmap.end();
-        ++itr) {
-    CP::TDbiTableProxy* tp = (*itr).second;
-    delete tp;
-  }
+    for (std::map<std::string,CP::TDbiTableProxy*>::iterator itr = fTPmap.begin();
+         itr != fTPmap.end();
+         ++itr) {
+        CP::TDbiTableProxy* tp = (*itr).second;
+        delete tp;
+    }
 
-  delete fCascader;
-  fCascader = 0;
+    delete fCascader;
+    fCascader = 0;
 
-  DbiTrace(  "Destroying CP::TDbiDatabaseManager" << "  ");
+    DbiTrace("Destroying CP::TDbiDatabaseManager" << "  ");
 
-  DbiInfo( "DatabaseInterface shutdown complete." << "  ");
-  CP::TDbiDatabaseManager::fgInstance = 0;
+    DbiInfo("DatabaseInterface shutdown complete." << "  ");
+    CP::TDbiDatabaseManager::fgInstance = 0;
 
 }
 
@@ -142,9 +141,11 @@ void CP::TDbiDatabaseManager::ApplySqlCondition() const {
 //  o Apply global Sql condition, together with any prevailing rollback to
 //    all existing CP::TDbiTableProxys.
 
-  std::map<std::string,CP::TDbiTableProxy*>::const_iterator itr = fTPmap.begin();
-  std::map<std::string,CP::TDbiTableProxy*>::const_iterator itrEnd = fTPmap.end();
-  for ( ; itr != itrEnd; ++itr) this->ApplySqlCondition(itr->second);
+    std::map<std::string,CP::TDbiTableProxy*>::const_iterator itr = fTPmap.begin();
+    std::map<std::string,CP::TDbiTableProxy*>::const_iterator itrEnd = fTPmap.end();
+    for (; itr != itrEnd; ++itr) {
+        this->ApplySqlCondition(itr->second);
+    }
 }
 
 //.....................................................................
@@ -160,39 +161,43 @@ void CP::TDbiDatabaseManager::ApplySqlCondition(CP::TDbiTableProxy* proxy) const
 //  Contact:   N. West
 //
 
-  std::string sqlFull = fSqlCondition;
-  const std::string tableName(proxy->GetTableName());
-  const std::string& date = fRollbackDates.GetDate(tableName);
-  if ( date.size() ) {
-    if ( sqlFull.size() ) sqlFull += " and ";
-    sqlFull += fRollbackDates.GetType(tableName);
-    sqlFull += " < \'";
-    sqlFull += date;
-    sqlFull += "\'";
-  }
-  const std::string& epoch_condition = fEpochRollback.GetEpochCondition(tableName);
-  if ( epoch_condition.size() ) {
-    if ( sqlFull.size() ) sqlFull += " and ";
-    sqlFull += epoch_condition;
-  }
+    std::string sqlFull = fSqlCondition;
+    const std::string tableName(proxy->GetTableName());
+    const std::string& date = fRollbackDates.GetDate(tableName);
+    if (date.size()) {
+        if (sqlFull.size()) {
+            sqlFull += " and ";
+        }
+        sqlFull += fRollbackDates.GetType(tableName);
+        sqlFull += " < \'";
+        sqlFull += date;
+        sqlFull += "\'";
+    }
+    const std::string& epoch_condition = fEpochRollback.GetEpochCondition(tableName);
+    if (epoch_condition.size()) {
+        if (sqlFull.size()) {
+            sqlFull += " and ";
+        }
+        sqlFull += epoch_condition;
+    }
 
-  proxy->SetSqlCondition(sqlFull);
+    proxy->SetSqlCondition(sqlFull);
 }
 
 //.....................................................................
 
 void CP::TDbiDatabaseManager::ClearRollbacks() {
 
-  fEpochRollback.Clear();
-  fRollbackDates.Clear();
-  this->ApplySqlCondition();
+    fEpochRollback.Clear();
+    fRollbackDates.Clear();
+    this->ApplySqlCondition();
 }
 
 //.....................................................................
 
 void CP::TDbiDatabaseManager::ClearSimFlagAssociation() {
 
-  fSimFlagAss.Clear();
+    fSimFlagAss.Clear();
 }
 //.....................................................................
 ///
@@ -214,103 +219,110 @@ void CP::TDbiDatabaseManager::Config() {
 
 //  None.
 
-  TDbiRegistry& reg = this->GetConfig();
+    TDbiRegistry& reg = this->GetConfig();
 
-  //Load up SimFlag Associations and remove them from the TDbiRegistry.
-  fSimFlagAss.Set(reg);
+    //Load up SimFlag Associations and remove them from the TDbiRegistry.
+    fSimFlagAss.Set(reg);
 
-  //Load up Rollback dates and epochs and remove them from the TDbiRegistry.
-  fEpochRollback.Set(reg);
-  fRollbackDates.Set(reg);
+    //Load up Rollback dates and epochs and remove them from the TDbiRegistry.
+    fEpochRollback.Set(reg);
+    fRollbackDates.Set(reg);
 
-  //Apply any rollback now in force.
-  this->ApplySqlCondition();
+    //Apply any rollback now in force.
+    this->ApplySqlCondition();
 
-  // If Level 2 cache enabled establish working directory
-  // for CP::TDbiBinaryFile.
-  const char*  dir;
-  if ( reg.Get("Level2Cache",dir) ) {
-    // Expand any environmental variables.
-    TString tmp(dir);
-    //  March 2004 ExpandPathName returns false even if it works, so test for failure
-    //  by looking for an unexpanded symbol.
-    gSystem->ExpandPathName(tmp);
-    if ( tmp.Contains("$" ) ) {
-      dir = "./";
-      DbiWarn( "Directory name expansion failed, using "
-  			     << dir << " instead" << "  ");
+    // If Level 2 cache enabled establish working directory
+    // for CP::TDbiBinaryFile.
+    const char*  dir;
+    if (reg.Get("Level2Cache",dir)) {
+        // Expand any environmental variables.
+        TString tmp(dir);
+        //  March 2004 ExpandPathName returns false even if it works, so test for failure
+        //  by looking for an unexpanded symbol.
+        gSystem->ExpandPathName(tmp);
+        if (tmp.Contains("$")) {
+            dir = "./";
+            DbiWarn("Directory name expansion failed, using "
+                    << dir << " instead" << "  ");
+        }
+        else {
+            dir = tmp.Data();
+        }
+
+        CP::TDbiBinaryFile::SetWorkDir(dir);
+        DbiLog("CP::TDbiDatabaseManager: Setting L2 Cache to: " << dir << "  ");
     }
-    else {
-      dir = tmp.Data();
+
+    // Check for request to make all cascade connections permanent
+    // and remove from the TDbiRegistry.
+
+    int connectionsPermanent = 0;
+    if (reg.Get("MakeConnectionsPermanent",connectionsPermanent)) {
+        reg.RemoveKey("MakeConnectionsPermanent");
+        Int_t dbNo =fCascader->GetNumDb();
+        if (connectionsPermanent > 0) {
+            while (--dbNo >= 0) {
+                fCascader->SetPermanent(dbNo);
+            }
+            DbiInfo("Making all database connections permanent" << "  ");
+            // Inform CP::TDbiServices so that CP::TDbiConnection can check when opening new connections.
+            CP::TDbiServices::fAsciiDBConectionsTemporary = false;
+        }
+        else {
+            while (--dbNo >= 0) {
+                fCascader->SetPermanent(dbNo,false);
+            }
+            DbiInfo("Forcing all connections, including ASCII DB, to be temporary" << "  ");
+            // Inform CP::TDbiServices so that CP::TDbiConnection can check when opening new connections.
+            CP::TDbiServices::fAsciiDBConectionsTemporary = true;
+        }
     }
 
-    CP::TDbiBinaryFile::SetWorkDir(dir);
-    DbiLog( "CP::TDbiDatabaseManager: Setting L2 Cache to: " << dir << "  ");
-  }
+    // Check for request to order context queries and remove from the TDbiRegistry.
 
-  // Check for request to make all cascade connections permanent
-  // and remove from the TDbiRegistry.
-
-  int connectionsPermanent = 0;
-  if ( reg.Get("MakeConnectionsPermanent",connectionsPermanent) ) {
-    reg.RemoveKey("MakeConnectionsPermanent");
-    Int_t dbNo =fCascader->GetNumDb();
-    if ( connectionsPermanent > 0 ) {
-      while ( --dbNo >= 0 ) fCascader->SetPermanent(dbNo);
-      DbiInfo( "Making all database connections permanent" << "  ");
-      // Inform CP::TDbiServices so that CP::TDbiConnection can check when opening new connections.
-      CP::TDbiServices::fAsciiDBConectionsTemporary = false;
+    int OrderContextQuery = 0;
+    if (reg.Get("OrderContextQuery",OrderContextQuery)) {
+        reg.RemoveKey("OrderContextQuery");
+        if (OrderContextQuery) {
+            CP::TDbiServices::fOrderContextQuery = true;
+            DbiInfo("Forcing ordering of all context queries" << "  ");
+        }
     }
-    else {
-      while ( --dbNo >= 0 ) fCascader->SetPermanent(dbNo,false);
-      DbiInfo( "Forcing all connections, including ASCII DB, to be temporary" << "  ");
-      // Inform CP::TDbiServices so that CP::TDbiConnection can check when opening new connections.
-      CP::TDbiServices::fAsciiDBConectionsTemporary = true;
+
+    // Abort if TDbiRegistry contains any unknown keys
+
+    const char* knownKeys[]   = { "Level2Cache",
+                                  "Shutdown"
+                                };
+    int numKnownKeys          = sizeof(knownKeys)/sizeof(char*);
+    bool hasUnknownKeys       = false;
+
+    TDbiRegistry::TDbiRegistryKey keyItr(&this->GetConfig());
+    while (const char* foundKey = keyItr()) {
+        bool keyUnknown = true;
+        for (int keyNum = 0; keyNum < numKnownKeys; ++keyNum) {
+            if (! strcmp(foundKey,knownKeys[keyNum])) {
+                keyUnknown = false;
+            }
+        }
+        if (keyUnknown) {
+            DbiSevere("FATAL: "
+                      << "Illegal registry item: " << foundKey << "  ");
+            hasUnknownKeys = true;
+        }
     }
-  }
 
-  // Check for request to order context queries and remove from the TDbiRegistry.
-
-  int OrderContextQuery = 0;
-  if ( reg.Get("OrderContextQuery",OrderContextQuery) ) {
-    reg.RemoveKey("OrderContextQuery");
-    if ( OrderContextQuery ) {
-      CP::TDbiServices::fOrderContextQuery = true;
-      DbiInfo( "Forcing ordering of all context queries" << "  ");
+    if (hasUnknownKeys) {
+        DbiSevere("FATAL: " << "Aborting due to illegal registry items." << "  ");
+        throw  EBadTDbiRegistryKeys();
     }
-  }
-
-  // Abort if TDbiRegistry contains any unknown keys
-
-  const char* knownKeys[]   = { "Level2Cache",
-	 		        "Shutdown" };
-  int numKnownKeys          = sizeof(knownKeys)/sizeof(char*);
-  bool hasUnknownKeys       = false;
-
-  TDbiRegistry::TDbiRegistryKey keyItr(&this->GetConfig());
-  while ( const char* foundKey = keyItr() ) {
-    bool keyUnknown = true;
-    for (int keyNum = 0; keyNum < numKnownKeys; ++keyNum ) {
-      if ( ! strcmp(foundKey,knownKeys[keyNum]) ) keyUnknown = false;
-    }
-    if ( keyUnknown ) {
-     DbiSevere( "FATAL: "
-	<< "Illegal registry item: " << foundKey << "  ");
-       hasUnknownKeys = true;
-    }
-  }
-
-  if ( hasUnknownKeys ) {
-    DbiSevere( "FATAL: " << "Aborting due to illegal registry items." << "  ");
-    throw  EBadTDbiRegistryKeys();
-  }
 }
 
 //.....................................................................
 
 CP::TDbiTableProxy& CP::TDbiDatabaseManager::GetTableProxy
-                                    (const std::string& tableNameReq,
-                                     const CP::TDbiTableRow* tableRow) {
+(const std::string& tableNameReq,
+ const CP::TDbiTableRow* tableRow) {
 //
 //
 //  Purpose:  Locate, or if necessary create, CP::TDbiTableProxy for
@@ -337,19 +349,19 @@ CP::TDbiTableProxy& CP::TDbiDatabaseManager::GetTableProxy
 //  None.
 
 // Force upper case name.
-  std::string tableName = CP::UtilString::ToUpper(tableNameReq);
-  std::string proxyName = tableName;
+    std::string tableName = CP::UtilString::ToUpper(tableNameReq);
+    std::string proxyName = tableName;
 
-  proxyName.append("::");
-  proxyName.append(tableRow->ClassName());
-  CP::TDbiTableProxy* qpp = fTPmap[proxyName];
-  if ( ! qpp ) {
-    qpp = new CP::TDbiTableProxy(fCascader,tableName,tableRow);
-    this->ApplySqlCondition(qpp);
-    fTPmap[proxyName] = qpp;
-  }
+    proxyName.append("::");
+    proxyName.append(tableRow->ClassName());
+    CP::TDbiTableProxy* qpp = fTPmap[proxyName];
+    if (! qpp) {
+        qpp = new CP::TDbiTableProxy(fCascader,tableName,tableRow);
+        this->ApplySqlCondition(qpp);
+        fTPmap[proxyName] = qpp;
+    }
 
-  return *qpp;
+    return *qpp;
 
 }
 
@@ -376,11 +388,11 @@ CP::TDbiDatabaseManager& CP::TDbiDatabaseManager::Instance() {
 
 //  None.
 
-  if ( ! fgInstance ) {
+    if (! fgInstance) {
 // Delete is handled by Cleaner class based on #include count
-    fgInstance = new CP::TDbiDatabaseManager();
-  }
-  return *fgInstance;
+        fgInstance = new CP::TDbiDatabaseManager();
+    }
+    return *fgInstance;
 
 }
 
@@ -411,12 +423,12 @@ void CP::TDbiDatabaseManager::PurgeCaches() {
 
 // Pruge all caches.
 
-  for ( std::map<std::string,CP::TDbiTableProxy*>::iterator itr = fTPmap.begin();
-        itr != fTPmap.end();
-        ++itr) {
-    CP::TDbiTableProxy* tp = (*itr).second;
-    tp->GetCache()->Purge();
-  }
+    for (std::map<std::string,CP::TDbiTableProxy*>::iterator itr = fTPmap.begin();
+         itr != fTPmap.end();
+         ++itr) {
+        CP::TDbiTableProxy* tp = (*itr).second;
+        tp->GetCache()->Purge();
+    }
 
 }
 
@@ -438,12 +450,14 @@ void CP::TDbiDatabaseManager::RefreshMetaData(const std::string& tableName) {
 //  it has created a new table in the database.  In such cases
 //  the pre-existing corresponding TDbiTableProxy.hxxas to be refreshed.
 
-  std::map<std::string,CP::TDbiTableProxy*>::iterator itr = fTPmap.begin();
-  std::map<std::string,CP::TDbiTableProxy*>::iterator itrEnd = fTPmap.end();
-  for ( ; itr != itrEnd; ++itr) {
-    CP::TDbiTableProxy* table = (*itr).second;
-    if ( table && table->GetTableName() == tableName ) table->RefreshMetaData();
-  }
+    std::map<std::string,CP::TDbiTableProxy*>::iterator itr = fTPmap.begin();
+    std::map<std::string,CP::TDbiTableProxy*>::iterator itrEnd = fTPmap.end();
+    for (; itr != itrEnd; ++itr) {
+        CP::TDbiTableProxy* table = (*itr).second;
+        if (table && table->GetTableName() == tableName) {
+            table->RefreshMetaData();
+        }
+    }
 
 }
 //.....................................................................
@@ -455,17 +469,20 @@ void CP::TDbiDatabaseManager::SetConfigFromEnvironment() {
 //            which consists of a semi-colon separated list of DBI
 //            configuration requests.
 
-  const char* strENV_DBI = gSystem->Getenv("ENV_DBI");
-  if ( strENV_DBI == 0  || strlen(strENV_DBI) == 0 ) return;
+    const char* strENV_DBI = gSystem->Getenv("ENV_DBI");
+    if (strENV_DBI == 0  || strlen(strENV_DBI) == 0) {
+        return;
+    }
 
-  DbiInfo( "\nConfiguring DatabaseInterface from the environmental "
-             << "variable ENV_DBI:-\n  " << strENV_DBI << "  ");
-  std::vector<std::string> configRequests;
-  CP::UtilString::StringTok(configRequests, strENV_DBI, ";");
+    DbiInfo("\nConfiguring DatabaseInterface from the environmental "
+            << "variable ENV_DBI:-\n  " << strENV_DBI << "  ");
+    std::vector<std::string> configRequests;
+    CP::UtilString::StringTok(configRequests, strENV_DBI, ";");
 
-  for (unsigned entry = 0; entry < configRequests.size(); ++entry )
-                  this->Set(configRequests[entry].c_str());
-  this->Update();
+    for (unsigned entry = 0; entry < configRequests.size(); ++entry) {
+        this->Set(configRequests[entry].c_str());
+    }
+    this->Update();
 }
 
 //.....................................................................
@@ -497,8 +514,8 @@ void CP::TDbiDatabaseManager::SetSqlCondition(const std::string& sql) {
 //  in parentheses.
 
 
-  fSqlCondition = sql;
-  this->ApplySqlCondition();
+    fSqlCondition = sql;
+    this->ApplySqlCondition();
 }
 
 //.....................................................................
@@ -510,31 +527,33 @@ void CP::TDbiDatabaseManager::ShowStatistics() const {
 //
 //  Contact:   N. West
 
- std::ostream& msg=TDbiLog::GetLogStream();
-  msg << "\n\nCache statistics:-\n\n"
-      << "Table Name                             "
-      << "    Current   Maximum     Total     Total\n"
-      << "                                       "
-      << "       Size      Size   Adopted    Reused" << std::endl;
+    std::ostream& msg=TDbiLog::GetLogStream();
+    msg << "\n\nCache statistics:-\n\n"
+        << "Table Name                             "
+        << "    Current   Maximum     Total     Total\n"
+        << "                                       "
+        << "       Size      Size   Adopted    Reused" << std::endl;
 
 // Loop over all owned objects.
 
-  for ( std::map<std::string,CP::TDbiTableProxy*>::const_iterator itr = fTPmap.begin();
-        itr != fTPmap.end();
-        ++itr) {
-    const CP::TDbiTableProxy* tp = (*itr).second;
-    std::string name = (*itr).first;
-    if ( name.size() < 40 ) name.append(40-name.size(),' ');
-    msg << name;
+    for (std::map<std::string,CP::TDbiTableProxy*>::const_iterator itr = fTPmap.begin();
+         itr != fTPmap.end();
+         ++itr) {
+        const CP::TDbiTableProxy* tp = (*itr).second;
+        std::string name = (*itr).first;
+        if (name.size() < 40) {
+            name.append(40-name.size(),' ');
+        }
+        msg << name;
 //  Only want to look at cache so by-pass constness.
-    const_cast<CP::TDbiTableProxy*>(tp)->GetCache()->ShowStatistics(msg);
-   msg << std::endl;
-  }
-  msg << "\n" << std::endl;
+        const_cast<CP::TDbiTableProxy*>(tp)->GetCache()->ShowStatistics(msg);
+        msg << std::endl;
+    }
+    msg << "\n" << std::endl;
 
 //  Only want to look at cascader so by-pass constness.
 
-  DbiInfo( const_cast<CP::TDbiDatabaseManager*>(this)->GetCascader());
+    DbiInfo(const_cast<CP::TDbiDatabaseManager*>(this)->GetCascader());
 
 
 }

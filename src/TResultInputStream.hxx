@@ -3,7 +3,7 @@
 
 #include "TDbiInRowStream.hxx"
 namespace CP {
-class TVldTimeStamp;
+    class TVldTimeStamp;
 };
 
 namespace CP {
@@ -20,8 +20,8 @@ public:
     virtual ~TResultInputStream() {};
 
     template <class T> TResultInputStream& operator>>(T& dest) {
-	fResultSet >> dest; 
-	return *this;
+        fResultSet >> dest;
+        return *this;
     }
 
 private:

@@ -38,71 +38,80 @@ namespace CP {
 
 
 namespace CP {
-class TDbiConfigSet : public TDbiTableRow
-{
+    class TDbiConfigSet : public TDbiTableRow {
 
-public:
+    public:
 
 // Constructors and destructors.
-  virtual ~TDbiConfigSet();
+        virtual ~TDbiConfigSet();
 
 // State testing member functions
 
-  virtual TDbiTableRow* CreateTableRow() const {
-                                              return new TDbiConfigSet; }
-        Int_t GetAggregateNo() const { return fAggregateNo; }
-       UInt_t GetNumParams() const { return fParams.size(); }
-       std::string GetParamName(UInt_t parNo) const;
- TDbiFieldType GetParamType(UInt_t parNo) const;
-       std::string GetParamValue(UInt_t parNo) const;
+        virtual TDbiTableRow* CreateTableRow() const {
+            return new TDbiConfigSet;
+        }
+        Int_t GetAggregateNo() const {
+            return fAggregateNo;
+        }
+        UInt_t GetNumParams() const {
+            return fParams.size();
+        }
+        std::string GetParamName(UInt_t parNo) const;
+        TDbiFieldType GetParamType(UInt_t parNo) const;
+        std::string GetParamValue(UInt_t parNo) const;
 
 // State changing member functions
-         void Clear(const Option_t* = "") { fParams.clear(); }
-	 void PushBack(const std::string& name,
-                       const std::string& value,
-                       const TDbiFieldType& type);
-         void SetAggregateNo(Int_t aggNo) { fAggregateNo = aggNo; }
+        void Clear(const Option_t* = "") {
+            fParams.clear();
+        }
+        void PushBack(const std::string& name,
+                      const std::string& value,
+                      const TDbiFieldType& type);
+        void SetAggregateNo(Int_t aggNo) {
+            fAggregateNo = aggNo;
+        }
 
 // I/O  member functions
-  virtual void Fill(TDbiInRowStream& rs,
-                    const TDbiValidityRec* vrec);
-  virtual void Store(TDbiOutRowStream& ors,
-                    const TDbiValidityRec* vrec) const;
+        virtual void Fill(TDbiInRowStream& rs,
+                          const TDbiValidityRec* vrec);
+        virtual void Store(TDbiOutRowStream& ors,
+                           const TDbiValidityRec* vrec) const;
 
-private:
+    private:
 // Constructors and destructors.
 
 
 // Internal structures.
 /// Internal structure used by TDbiCfgDialog to store Name/Value/Type triplets
-  struct Param {
-    Param() {  }
-    Param(const Param& that) {
-                              *this = that;}
-    Param(const std::string& name,
-          const std::string& value,
-          const TDbiFieldType& type) : Name(name), Value(value), Type(type) {
-                                   }
-   ~Param() {  }
+        struct Param {
+            Param() {  }
+            Param(const Param& that) {
+                *this = that;
+            }
+            Param(const std::string& name,
+                  const std::string& value,
+                  const TDbiFieldType& type) : Name(name), Value(value), Type(type) {
+            }
+            ~Param() {  }
 
-    std::string Name;
-    std::string Value;
-    TDbiFieldType Type;
-  };
+            std::string Name;
+            std::string Value;
+            TDbiFieldType Type;
+        };
 
 // Data members
 
 // Set of parameter, one per column.
-  std::vector<Param*> fParams;
+        std::vector<Param*> fParams;
 
 /// Aggregate number or:-
 ///     -1 Non-aggregated data or multiple aggregates
 ///     -2 undefined aggregates
-   Int_t fAggregateNo;
+        Int_t fAggregateNo;
 
-ClassDef(TDbiConfigSet,0)    // Configuration data.
+        ClassDef(TDbiConfigSet,0)    // Configuration data.
 
-};
+    };
 };
 
 

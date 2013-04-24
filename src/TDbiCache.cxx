@@ -15,11 +15,11 @@ ClassImp(CP::TDbiCache)
 
 // Typedefs
 
-  typedef CP::TDbiCache::ResultList_t ResultList_t;
-  typedef std::map<Int_t,ResultList_t>::const_iterator ConstCacheItr_t;
-  typedef std::map<Int_t,ResultList_t>::iterator CacheItr_t;
-  typedef ResultList_t::const_iterator ConstSubCacheItr_t;
-  typedef ResultList_t::iterator SubCacheItr_t;
+typedef CP::TDbiCache::ResultList_t ResultList_t;
+typedef std::map<Int_t,ResultList_t>::const_iterator ConstCacheItr_t;
+typedef std::map<Int_t,ResultList_t>::iterator CacheItr_t;
+typedef ResultList_t::const_iterator ConstSubCacheItr_t;
+typedef ResultList_t::iterator SubCacheItr_t;
 
 
 //   Definition of static data members
@@ -58,16 +58,15 @@ ClassImp(CP::TDbiCache)
 ///  None.
 ///\endverbatim
 CP::TDbiCache::TDbiCache(CP::TDbiTableProxy& qp,const std::string& tableName) :
-fTableProxy(qp),
-fTableName(tableName),
-fCurSize(0),
-fMaxSize(0),
-fNumAdopted(0),
-fNumReused(0)
-{
+    fTableProxy(qp),
+    fTableName(tableName),
+    fCurSize(0),
+    fMaxSize(0),
+    fNumAdopted(0),
+    fNumReused(0) {
 
 
-  DbiTrace( "Creating CP::TDbiCache" << "  ");
+    DbiTrace("Creating CP::TDbiCache" << "  ");
 
 }
 
@@ -98,21 +97,25 @@ CP::TDbiCache::~TDbiCache() {
 
 
 
-  DbiTrace( "Destroying CP::TDbiCache" << "  ");
+    DbiTrace("Destroying CP::TDbiCache" << "  ");
 
-  // Purge the AggNo == -1 cache before deleting.  For extended
-  // context queries it can have CP::TDbiResultSetAggs that are clients of
-  // CP::TDbiResultSetNonAggs in the same cache, so purging will remove clientless
-  // CP::TDbiResultSetAggs which should in turn make their CP::TDbiResultSetNonAggs
-  // clientless.
-  if ( this->GetSubCache(-1) ) this->Purge(fCache[-1]);
+    // Purge the AggNo == -1 cache before deleting.  For extended
+    // context queries it can have CP::TDbiResultSetAggs that are clients of
+    // CP::TDbiResultSetNonAggs in the same cache, so purging will remove clientless
+    // CP::TDbiResultSetAggs which should in turn make their CP::TDbiResultSetNonAggs
+    // clientless.
+    if (this->GetSubCache(-1)) {
+        this->Purge(fCache[-1]);
+    }
 
-  for ( CacheItr_t itr = fCache.begin(); itr != fCache.end(); ++itr) {
-    ResultList_t& subCache = itr->second;
-    for ( SubCacheItr_t sitr = subCache.begin();
-          sitr != subCache.end();
-          ++sitr) delete *sitr;
-  }
+    for (CacheItr_t itr = fCache.begin(); itr != fCache.end(); ++itr) {
+        ResultList_t& subCache = itr->second;
+        for (SubCacheItr_t sitr = subCache.begin();
+             sitr != subCache.end();
+             ++sitr) {
+            delete *sitr;
+        }
+    }
 
 }
 
@@ -144,30 +147,34 @@ CP::TDbiCache::~TDbiCache() {
 ///\endverbatim
 void CP::TDbiCache::Adopt(CP::TDbiResultSet* res,bool generateKey) {
 
-  if ( ! res ) return;
-  int aggNo = res->GetValidityRec().GetAggregateNo();
+    if (! res) {
+        return;
+    }
+    int aggNo = res->GetValidityRec().GetAggregateNo();
 
 //  Prime sub-cache if necessary.
-  if ( ! this->GetSubCache(aggNo) ) {
-    ResultList_t emptyList;
-    fCache[aggNo] = emptyList;
-  }
+    if (! this->GetSubCache(aggNo)) {
+        ResultList_t emptyList;
+        fCache[aggNo] = emptyList;
+    }
 
 //  Purge expired entries and add new result to cache.
-  ResultList_t& subCache = fCache[aggNo];
-  Purge(subCache, res);
-  subCache.push_back(res);
-  ++fCurSize;
-  ++fNumAdopted;
-  DbiDebug( "Adopting result for " << res->TableName()
-			 << "  " <<   res->GetValidityRecGlobal()
-			 << "\nCache size now " << fCurSize << "  ");
-  if ( fCurSize > fMaxSize ) fMaxSize = fCurSize;
-  // If required generate key.
-  if ( generateKey ) {
-    res->GenerateKey();
-    DbiInfo( "Caching new results: ResultKey: " <<  *res->GetKey());
-  }
+    ResultList_t& subCache = fCache[aggNo];
+    Purge(subCache, res);
+    subCache.push_back(res);
+    ++fCurSize;
+    ++fNumAdopted;
+    DbiDebug("Adopting result for " << res->TableName()
+             << "  " <<   res->GetValidityRecGlobal()
+             << "\nCache size now " << fCurSize << "  ");
+    if (fCurSize > fMaxSize) {
+        fMaxSize = fCurSize;
+    }
+    // If required generate key.
+    if (generateKey) {
+        res->GenerateKey();
+        DbiInfo("Caching new results: ResultKey: " <<  *res->GetKey());
+    }
 }
 
 //.....................................................................
@@ -177,8 +184,8 @@ void CP::TDbiCache::Adopt(CP::TDbiResultSet* res,bool generateKey) {
 ///\endverbatim
 const ResultList_t* CP::TDbiCache::GetSubCache(Int_t aggNo) const {
 
-  ConstCacheItr_t itr = fCache.find(aggNo);
-  return ( itr == fCache.end() ) ? 0 : &itr->second;
+    ConstCacheItr_t itr = fCache.find(aggNo);
+    return (itr == fCache.end()) ? 0 : &itr->second;
 
 }
 
@@ -210,8 +217,10 @@ void CP::TDbiCache::Purge() {
 
 
 
-  for ( CacheItr_t itr = fCache.begin(); itr != fCache.end(); ++itr
-      ) Purge(itr->second);
+    for (CacheItr_t itr = fCache.begin(); itr != fCache.end(); ++itr
+        ) {
+        Purge(itr->second);
+    }
 
 }
 //.....................................................................
@@ -244,27 +253,27 @@ void CP::TDbiCache::Purge(ResultList_t& subCache, const CP::TDbiResultSet* res) 
 //  Passing a CP::TDbiResultSet allows the sub-cache to hold entries
 //  for different detector types, simulation masks and tasks.
 
-    for ( SubCacheItr_t itr = subCache.begin(); itr != subCache.end(); ) {
-    CP::TDbiResultSet* pRes = *itr;
+    for (SubCacheItr_t itr = subCache.begin(); itr != subCache.end();) {
+        CP::TDbiResultSet* pRes = *itr;
 
-     if (      pRes->GetNumClients() == 0
-          && (    ! res
-               || pRes->CanDelete(res)  ) ) {
+        if (pRes->GetNumClients() == 0
+            && (! res
+                || pRes->CanDelete(res))) {
 
-      DbiDebug( "Purging " << pRes->GetValidityRec()
-		  	     << " from " << pRes->TableName()
-			     << " cache. Cache size now "
-			     << fCurSize-1 << "  ");
-      delete pRes;
+            DbiDebug("Purging " << pRes->GetValidityRec()
+                     << " from " << pRes->TableName()
+                     << " cache. Cache size now "
+                     << fCurSize-1 << "  ");
+            delete pRes;
 //    Erasing increments iterator.
-      itr = subCache.erase(itr);
-      --fCurSize;
+            itr = subCache.erase(itr);
+            --fCurSize;
 
+        }
+        else {
+            ++itr;
+        }
     }
-    else {
-      ++itr;
-    }
-  }
 
 }
 //.....................................................................
@@ -275,35 +284,35 @@ void CP::TDbiCache::Purge(ResultList_t& subCache, const CP::TDbiResultSet* res) 
 ///  Return:   Pointer to matching CP::TDbiResultSet, or = 0 if none.
 ///\endverbatim
 const CP::TDbiResultSet* CP::TDbiCache::Search(const CP::TDbiValidityRec& vrec,
-                                  const std::string& sqlQualifiers) const {
+                                               const std::string& sqlQualifiers) const {
 
 
-  Int_t aggNo = vrec.GetAggregateNo();
+    Int_t aggNo = vrec.GetAggregateNo();
 
-  DbiTrace( "Secondary cache search of table " << fTableName
-			 << " for  " << vrec
-			    << (sqlQualifiers != "" ? sqlQualifiers : "" ) << "  ");
-  const ResultList_t* subCache = this->GetSubCache(aggNo);
-  if ( ! subCache ) {
-    DbiTrace( "Secondary cache search failed." << "  ");
-    return 0;
-  }
-
-  ConstSubCacheItr_t itrEnd = subCache->end();
-  for ( ConstSubCacheItr_t itr = subCache->begin();
-        itr != itrEnd;
-        ++itr) {
-    CP::TDbiResultSet* res = *itr;
-    if ( res->Satisfies(vrec,sqlQualifiers) ) {
-      fNumReused += res->GetNumAggregates();
-      DbiTrace( "Secondary cache search succeeded.  Result set no. of rows: "
-				<< res->GetNumRows() << "  ");
-      return res;
+    DbiTrace("Secondary cache search of table " << fTableName
+             << " for  " << vrec
+             << (sqlQualifiers != "" ? sqlQualifiers : "") << "  ");
+    const ResultList_t* subCache = this->GetSubCache(aggNo);
+    if (! subCache) {
+        DbiTrace("Secondary cache search failed." << "  ");
+        return 0;
     }
-  }
 
-  DbiTrace( "Secondary cache search failed." << "  ");
-  return 0;
+    ConstSubCacheItr_t itrEnd = subCache->end();
+    for (ConstSubCacheItr_t itr = subCache->begin();
+         itr != itrEnd;
+         ++itr) {
+        CP::TDbiResultSet* res = *itr;
+        if (res->Satisfies(vrec,sqlQualifiers)) {
+            fNumReused += res->GetNumAggregates();
+            DbiTrace("Secondary cache search succeeded.  Result set no. of rows: "
+                     << res->GetNumRows() << "  ");
+            return res;
+        }
+    }
+
+    DbiTrace("Secondary cache search failed." << "  ");
+    return 0;
 }
 
 //.....................................................................
@@ -318,52 +327,52 @@ const CP::TDbiResultSet* CP::TDbiCache::Search(const CP::TDbiValidityRec& vrec,
 ///  Return:   Pointer to matching CP::TDbiResultSet, or = 0 if none.
 ///\endverbatim
 const CP::TDbiResultSet* CP::TDbiCache::Search(const CP::TVldContext& vc,
-                                  const TDbi::Task& task ) const {
+                                               const TDbi::Task& task) const {
 
-  DbiTrace( "Primary cache search of table " << fTableName
-			 << " for  " << vc
-			 << " with task " << task << "  ");
-  const ResultList_t* subCache = this->GetSubCache(-1);
-  if ( ! subCache ) {
-    DbiTrace( "Primary cache search failed - sub-cache -1 is empty" << "  ");
-    return 0;
-  }
-
-  // Loop over all possible SimFlag associations.
-
-  CP::DbiDetector::Detector_t     det(vc.GetDetector());
-  CP::DbiSimFlag::SimFlag_t       sim(vc.GetSimFlag());
-  CP::TVldTimeStamp              ts(vc.GetTimeStamp());
-
-  CP::TDbiSimFlagAssociation::SimList_t simList
-                  = CP::TDbiSimFlagAssociation::Instance().Get(sim);
-
-  CP::TDbiSimFlagAssociation::SimList_t::iterator listItr    = simList.begin();
-  CP::TDbiSimFlagAssociation::SimList_t::iterator listItrEnd = simList.end();
-  while ( listItr !=  listItrEnd ) {
-
-    CP::DbiSimFlag::SimFlag_t simTry = *listItr;
-    CP::TVldContext vcTry(det,simTry,ts);
-
-    DbiDebug( "  Searching cache with SimFlag: "
-			   << CP::DbiSimFlag::AsString(simTry) << "  ");
-    for ( ConstSubCacheItr_t itr = subCache->begin();
-          itr != subCache->end();
-          ++itr) {
-      CP::TDbiResultSet* res = *itr;
-      if ( res->Satisfies(vcTry,task) ) {
-        fNumReused += res->GetNumAggregates();
-	DbiTrace( "Primary cache search succeeded. Result set no. of rows: "
-				  << res->GetNumRows() << "  ");
-        return res;
-      }
+    DbiTrace("Primary cache search of table " << fTableName
+             << " for  " << vc
+             << " with task " << task << "  ");
+    const ResultList_t* subCache = this->GetSubCache(-1);
+    if (! subCache) {
+        DbiTrace("Primary cache search failed - sub-cache -1 is empty" << "  ");
+        return 0;
     }
 
-  DbiTrace( "Primary cache search failed." << "  ");
-  ++listItr;
-  }
+    // Loop over all possible SimFlag associations.
 
-  return 0;
+    CP::DbiDetector::Detector_t     det(vc.GetDetector());
+    CP::DbiSimFlag::SimFlag_t       sim(vc.GetSimFlag());
+    CP::TVldTimeStamp              ts(vc.GetTimeStamp());
+
+    CP::TDbiSimFlagAssociation::SimList_t simList
+    = CP::TDbiSimFlagAssociation::Instance().Get(sim);
+
+    CP::TDbiSimFlagAssociation::SimList_t::iterator listItr    = simList.begin();
+    CP::TDbiSimFlagAssociation::SimList_t::iterator listItrEnd = simList.end();
+    while (listItr !=  listItrEnd) {
+
+        CP::DbiSimFlag::SimFlag_t simTry = *listItr;
+        CP::TVldContext vcTry(det,simTry,ts);
+
+        DbiDebug("  Searching cache with SimFlag: "
+                 << CP::DbiSimFlag::AsString(simTry) << "  ");
+        for (ConstSubCacheItr_t itr = subCache->begin();
+             itr != subCache->end();
+             ++itr) {
+            CP::TDbiResultSet* res = *itr;
+            if (res->Satisfies(vcTry,task)) {
+                fNumReused += res->GetNumAggregates();
+                DbiTrace("Primary cache search succeeded. Result set no. of rows: "
+                         << res->GetNumRows() << "  ");
+                return res;
+            }
+        }
+
+        DbiTrace("Primary cache search failed." << "  ");
+        ++listItr;
+    }
+
+    return 0;
 }
 //.....................................................................
 ///\verbatim
@@ -377,26 +386,26 @@ const CP::TDbiResultSet* CP::TDbiCache::Search(const CP::TVldContext& vc,
 ///\endverbatim
 const CP::TDbiResultSet* CP::TDbiCache::Search(const std::string& sqlQualifiers) const {
 
-  DbiTrace( "Primary cache search of table " << fTableName
-			 << " for  SQL " << sqlQualifiers << "  ");
-  const ResultList_t* subCache = this->GetSubCache(-1);
-  if ( ! subCache ) {
-    DbiTrace( "Primary cache search failed" << "  ");
-    return 0;
-  }
-  for ( ConstSubCacheItr_t itr = subCache->begin();
-        itr != subCache->end();
-        ++itr) {
-    CP::TDbiResultSet* res = *itr;
-    if ( res->Satisfies(sqlQualifiers) ) {
-      fNumReused += res->GetNumAggregates();
-      DbiTrace( "Primary cache search succeeded Result set no. of rows: "
-				<< res->GetNumRows() << "  ");
-      return res;
+    DbiTrace("Primary cache search of table " << fTableName
+             << " for  SQL " << sqlQualifiers << "  ");
+    const ResultList_t* subCache = this->GetSubCache(-1);
+    if (! subCache) {
+        DbiTrace("Primary cache search failed" << "  ");
+        return 0;
     }
-  }
-  DbiTrace( "Primary cache search failed" << "  ");
-  return 0;
+    for (ConstSubCacheItr_t itr = subCache->begin();
+         itr != subCache->end();
+         ++itr) {
+        CP::TDbiResultSet* res = *itr;
+        if (res->Satisfies(sqlQualifiers)) {
+            fNumReused += res->GetNumAggregates();
+            DbiTrace("Primary cache search succeeded Result set no. of rows: "
+                     << res->GetNumRows() << "  ");
+            return res;
+        }
+    }
+    DbiTrace("Primary cache search failed" << "  ");
+    return 0;
 }
 
 //.....................................................................
@@ -427,16 +436,18 @@ const CP::TDbiResultSet* CP::TDbiCache::Search(const std::string& sqlQualifiers)
 
 void CP::TDbiCache::SetStale() {
 
-  for ( CacheItr_t cacheItr = fCache.begin();
-        cacheItr != fCache.end();
-        ++cacheItr
-	) {
-    ResultList_t& subcache = cacheItr->second;
+    for (CacheItr_t cacheItr = fCache.begin();
+         cacheItr != fCache.end();
+         ++cacheItr
+        ) {
+        ResultList_t& subcache = cacheItr->second;
 
-    for ( SubCacheItr_t subcacheItr = subcache.begin();
-          subcacheItr != subcache.end();
-          ++subcacheItr ) (*subcacheItr)->SetCanReuse(kFALSE);
-  }
+        for (SubCacheItr_t subcacheItr = subcache.begin();
+             subcacheItr != subcache.end();
+             ++subcacheItr) {
+            (*subcacheItr)->SetCanReuse(kFALSE);
+        }
+    }
 
 }
 
@@ -465,11 +476,11 @@ void CP::TDbiCache::SetStale() {
 ///\endverbatim
 std::ostream& CP::TDbiCache::ShowStatistics(std::ostream& msg) const {
 
-  MsgFormat ifmt("%10i");
+    MsgFormat ifmt("%10i");
 
-  msg << ifmt(fCurSize) << ifmt(fMaxSize)
-      << ifmt(fNumAdopted) << ifmt(fNumReused);
-  return msg;
+    msg << ifmt(fCurSize) << ifmt(fMaxSize)
+        << ifmt(fNumAdopted) << ifmt(fNumReused);
+    return msg;
 
 }
 

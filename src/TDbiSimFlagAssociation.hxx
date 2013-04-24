@@ -30,57 +30,59 @@
 #include <map>
 
 namespace CP {
-class TDbiSimFlagAssociation;
+    class TDbiSimFlagAssociation;
 }
-namespace CP{
-class TDbiRegistry;
-std::ostream& operator<<(std::ostream& s, const CP::TDbiSimFlagAssociation& simFlagAss);
+namespace CP {
+    class TDbiRegistry;
+    std::ostream& operator<<(std::ostream& s, const CP::TDbiSimFlagAssociation& simFlagAss);
 }
 
 
 namespace CP {
-class TDbiSimFlagAssociation
-{
+    class TDbiSimFlagAssociation {
 
 
-public:
+    public:
 
 // Typedefs for tired fingers.
-    typedef std::list<CP::DbiSimFlag::SimFlag_t>           SimList_t;
-    typedef std::map<CP::DbiSimFlag::SimFlag_t,SimList_t > SimMap_t;
+        typedef std::list<CP::DbiSimFlag::SimFlag_t>           SimList_t;
+        typedef std::map<CP::DbiSimFlag::SimFlag_t,SimList_t > SimMap_t;
 
 // Constructors and destructors.
-           TDbiSimFlagAssociation();
-  virtual ~TDbiSimFlagAssociation();
+        TDbiSimFlagAssociation();
+        virtual ~TDbiSimFlagAssociation();
 
 // State testing member functions
 
-  SimList_t Get(const CP::DbiSimFlag::SimFlag_t value)const;
-    void Print(std::ostream& s)const;
-    void Show();
+        SimList_t Get(const CP::DbiSimFlag::SimFlag_t value)const;
+        void Print(std::ostream& s)const;
+        void Show();
 
 ///  Get access to the one and only instance.
-  static const TDbiSimFlagAssociation& Instance();
+        static const TDbiSimFlagAssociation& Instance();
 
 // State changing member functions.
 
-  void Clear() { fAssociations.clear(); }
-  void Set(const CP::DbiSimFlag::SimFlag_t value, SimList_t list) {
-                                          fAssociations[value] = list; }
-  void Set(TDbiRegistry& reg);
+        void Clear() {
+            fAssociations.clear();
+        }
+        void Set(const CP::DbiSimFlag::SimFlag_t value, SimList_t list) {
+            fAssociations[value] = list;
+        }
+        void Set(TDbiRegistry& reg);
 
-private:
+    private:
 
 ///  The one and only instance (owned by TDbiDatabaseManager).
-  static const TDbiSimFlagAssociation* fgInstance;
+        static const TDbiSimFlagAssociation* fgInstance;
 
 // Data members
 
- SimMap_t fAssociations;
+        SimMap_t fAssociations;
 
- ClassDef(TDbiSimFlagAssociation,0)  // Association between SimFlag types.
+        ClassDef(TDbiSimFlagAssociation,0)  // Association between SimFlag types.
 
-};
+    };
 };
 
 

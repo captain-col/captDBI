@@ -28,78 +28,83 @@
 #include "TVldContext.hxx"
 
 namespace CP {
-class TDbiConfigStream;
-class TDbiFieldType;
+    class TDbiConfigStream;
+    class TDbiFieldType;
 }
-namespace CP{
-class TDbiRegistry;
-    std::ostream& operator<<(std::ostream& s, 
+namespace CP {
+    class TDbiRegistry;
+    std::ostream& operator<<(std::ostream& s,
                              const CP::TDbiConfigStream& cfStream);
 }
 #include <iosfwd>
 
 
 namespace CP {
-class TDbiConfigStream
-{
+    class TDbiConfigStream {
 
 
-public:
+    public:
 
-static      CP::TVldContext fgDefaultContext;
+        static      CP::TVldContext fgDefaultContext;
 
 // Constructors and destructors.
-           TDbiConfigStream();
-           TDbiConfigStream(const std::string& SoftwName,
-                           const std::string& ConfigName="default",
-                           CP::TVldContext vc = TDbiConfigStream::fgDefaultContext,
-                           TDbi::Task task=0,
-                           const std::string& tableName="SOFTWARE_CONFIGURATION");
-  virtual ~TDbiConfigStream();
+        TDbiConfigStream();
+        TDbiConfigStream(const std::string& SoftwName,
+                         const std::string& ConfigName="default",
+                         CP::TVldContext vc = TDbiConfigStream::fgDefaultContext,
+                         TDbi::Task task=0,
+                         const std::string& tableName="SOFTWARE_CONFIGURATION");
+        virtual ~TDbiConfigStream();
 
 // State testing member functions
-  const CP::TDbiConfigStream& operator>>(TDbiRegistry* reg);
-  const TDbiConfigSet* GetConfigSet() const { return fCFSet; }
+        const CP::TDbiConfigStream& operator>>(TDbiRegistry* reg);
+        const TDbiConfigSet* GetConfigSet() const {
+            return fCFSet;
+        }
 
 // State changing member functions
 
-  CP::TDbiConfigStream& operator<<(const TDbiRegistry* reg);
-               Bool_t IsEmpty() { return fCFSet == 0; }
-      TDbiValidityRec& GetValidityRec() { return fVRec; }
-               Bool_t Write(UInt_t dbNo = 0,
-                            const std::string& logComment = "",
-                            Bool_t localTest = false);
+        CP::TDbiConfigStream& operator<<(const TDbiRegistry* reg);
+        Bool_t IsEmpty() {
+            return fCFSet == 0;
+        }
+        TDbiValidityRec& GetValidityRec() {
+            return fVRec;
+        }
+        Bool_t Write(UInt_t dbNo = 0,
+                     const std::string& logComment = "",
+                     Bool_t localTest = false);
 
-private:
+    private:
 
-  TDbiConfigStream(const TDbiConfigStream&);  // Not implimented
+        TDbiConfigStream(const TDbiConfigStream&);  // Not implimented
 
 // Data members
 
-  ///  Pointer to the associated configuration set.  May point either
-  ///  to a row of fCFSetTable (or 0) or, after operator <<, to fCFSetModified
-  const TDbiConfigSet*
-                 fCFSet;
+        ///  Pointer to the associated configuration set.  May point either
+        ///  to a row of fCFSetTable (or 0) or, after operator <<, to fCFSetModified
+        const TDbiConfigSet*
+        fCFSet;
 
-  /// Pointer to ConfigSet table
-  CP::TDbiResultSetHandle<TDbiConfigSet>
-                 fCFSetTable;
+        /// Pointer to ConfigSet table
+        CP::TDbiResultSetHandle<TDbiConfigSet>
+        fCFSetTable;
 
-  /// Local CP::TDbiConfigSet (empty until/unless filled using operator <<).
-    TDbiConfigSet fCFSetModified;
+        /// Local CP::TDbiConfigSet (empty until/unless filled using operator <<).
+        TDbiConfigSet fCFSetModified;
 
-  /// Associated validity rec (used when writing back to the database).
-  TDbiValidityRec fVRec;
+        /// Associated validity rec (used when writing back to the database).
+        TDbiValidityRec fVRec;
 
-  /// Name of the configuration set
-  std::string    fConfigName;
+        /// Name of the configuration set
+        std::string    fConfigName;
 
-  /// Name of the software system to be configured
-  std::string    fSoftwName;
+        /// Name of the software system to be configured
+        std::string    fSoftwName;
 
-   ClassDef(TDbiConfigStream,0)  // Input/output stream of configuration data
+        ClassDef(TDbiConfigStream,0)  // Input/output stream of configuration data
 
-};
+    };
 };
 
 #endif  // DBICONFIGSTREAM_H

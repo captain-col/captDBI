@@ -20,14 +20,13 @@
 #endif
 
 namespace CP {
-class TDbiCfg
-{
-public:
-  static void TDbiRegistryToString(std::string& s, const TDbiRegistry& r);
-  static void StringToTDbiRegistry(TDbiRegistry& r,    const char* s);
-private:
-  TDbiCfg();
-};
+    class TDbiCfg {
+    public:
+        static void TDbiRegistryToString(std::string& s, const TDbiRegistry& r);
+        static void StringToTDbiRegistry(TDbiRegistry& r,    const char* s);
+    private:
+        TDbiCfg();
+    };
 
 };
 #endif // CFG_H

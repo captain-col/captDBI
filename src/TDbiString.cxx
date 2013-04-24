@@ -18,8 +18,7 @@ ClassImp(CP::TDbiString)
 
 //.....................................................................
 
-CP::TDbiString::TDbiString()
-{
+CP::TDbiString::TDbiString() {
 //
 //
 //  Purpose:  Default constructor
@@ -42,15 +41,14 @@ CP::TDbiString::TDbiString()
 //  None.
 
 
-  DbiTrace( "Creating CP::TDbiString" << "  ");
+    DbiTrace("Creating CP::TDbiString" << "  ");
 
 }
 
 //.....................................................................
 
 CP::TDbiString::TDbiString(const Char_t* str) :
-fString(str)
-{
+    fString(str) {
 //
 //
 //  Purpose:  Constructor from Char_t*.
@@ -74,15 +72,14 @@ fString(str)
 //  None.
 
 
-  DbiTrace( "Creating CP::TDbiString" << "  ");
+    DbiTrace("Creating CP::TDbiString" << "  ");
 
 }
 
 //.....................................................................
 
 CP::TDbiString::TDbiString(const std::string& str) :
-fString(str)
-{
+    fString(str) {
 //
 //
 //  Purpose:  Constructor from string.
@@ -106,7 +103,7 @@ fString(str)
 //  None.
 
 
-  DbiTrace( "Creating CP::TDbiString" << "  ");
+    DbiTrace("Creating CP::TDbiString" << "  ");
 
 }
 
@@ -136,7 +133,7 @@ CP::TDbiString::~TDbiString() {
 //  None.
 
 
-  DbiTrace( "Destroying CP::TDbiString" << "  ");
+    DbiTrace("Destroying CP::TDbiString" << "  ");
 
 }
 
@@ -147,14 +144,23 @@ CP::TDbiString::~TDbiString() {
     return *this;
 
 
-CP::TDbiString& CP::TDbiString::operator<<(Int_t data)   { OUT(Int_t,data) }
-CP::TDbiString& CP::TDbiString::operator<<(UInt_t data)  { OUT(UInt_t,data) }
-CP::TDbiString& CP::TDbiString::operator<<(Float_t data) { OUT(Float_t,data) }
+CP::TDbiString& CP::TDbiString::operator<<(Int_t data)   {
+    OUT(Int_t,data)
+}
+CP::TDbiString& CP::TDbiString::operator<<(UInt_t data)  {
+    OUT(UInt_t,data)
+}
+CP::TDbiString& CP::TDbiString::operator<<(Float_t data) {
+    OUT(Float_t,data)
+}
 CP::TDbiString& CP::TDbiString::operator<<(Char_t data) {
-                             fString.append(1,data); return *this; }
+    fString.append(1,data); return *this;
+}
 CP::TDbiString& CP::TDbiString::operator<<(const Char_t* data) {
-                               fString.append(data); return *this; }
+    fString.append(data); return *this;
+}
 CP::TDbiString& CP::TDbiString::operator<<(const std::string& data) {
-                               fString.append(data); return *this; }
+    fString.append(data); return *this;
+}
 
 

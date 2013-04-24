@@ -34,8 +34,7 @@ ClassImp(CP::TDbiStatement)
 //.....................................................................
 
 CP::TDbiStatement::TDbiStatement(CP::TDbiConnection& conDb) :
-fConDb(conDb)
-{
+    fConDb(conDb) {
 //
 //
 //  Purpose:  Constructor
@@ -48,7 +47,7 @@ fConDb(conDb)
 //
 
 
-    DbiTrace( "Creating CP::TDbiStatement" << "  ");
+    DbiTrace("Creating CP::TDbiStatement" << "  ");
     fConDb.ConnectStatement();
 
 }
@@ -60,7 +59,7 @@ CP::TDbiStatement::~TDbiStatement() {
 //
 //  Purpose: Destructor
 
-    DbiTrace( "Destroying CP::TDbiStatement" << "  ");
+    DbiTrace("Destroying CP::TDbiStatement" << "  ");
 
     fConDb.DisConnectStatement();
 }
@@ -72,11 +71,13 @@ TSQLStatement* CP::TDbiStatement::CreateProcessedStatement(const TString& sql /*
 // Attempt to create a processed statement (caller must delete).  Return 0 if failure.
 
     TSQLStatement* stmt = fConDb.CreatePreparedStatement(sql.Data());
-    if ( ! stmt ) {
+    if (! stmt) {
         this->AppendExceptionLog(fConDb);
         return 0;
     }
-    if ( stmt->Process() ) return stmt;
+    if (stmt->Process()) {
+        return stmt;
+    }
     this->AppendExceptionLog(stmt);
     delete stmt;
     stmt = 0;
@@ -87,7 +88,7 @@ TSQLStatement* CP::TDbiStatement::CreateProcessedStatement(const TString& sql /*
 
 //.....................................................................
 
-TSQLStatement* CP::TDbiStatement::ExecuteQuery( const TString& sql) {
+TSQLStatement* CP::TDbiStatement::ExecuteQuery(const TString& sql) {
 //
 //
 //  Purpose:  Execute SQL.
@@ -95,10 +96,12 @@ TSQLStatement* CP::TDbiStatement::ExecuteQuery( const TString& sql) {
 
     this->ClearExceptionLog();
 
-    DbiInfo( "SQL:" << fConDb.GetDbName() << ":" << sql << "  ");
+    DbiInfo("SQL:" << fConDb.GetDbName() << ":" << sql << "  ");
     TSQLStatement* stmt = this->CreateProcessedStatement(sql);
-    if ( ! stmt ) return 0;
-    if ( ! stmt->StoreResult() ) {
+    if (! stmt) {
+        return 0;
+    }
+    if (! stmt->StoreResult()) {
         this->AppendExceptionLog(stmt);
         delete stmt;
         stmt = 0;
@@ -106,13 +109,13 @@ TSQLStatement* CP::TDbiStatement::ExecuteQuery( const TString& sql) {
 
     // Final sanity check: If there is a statement then the exception log should still
     // be clear otherwise it should not be.
-    if ( stmt ) {
-        if ( ! fExceptionLog.IsEmpty() ) {
+    if (stmt) {
+        if (! fExceptionLog.IsEmpty()) {
             delete stmt;
             stmt = 0;
         }
     }
-    else if ( fExceptionLog.IsEmpty() ) {
+    else if (fExceptionLog.IsEmpty()) {
         std::ostringstream oss;
         oss << "Unknown failure (no execption but no TSQLStatement either executing " << sql;
         fExceptionLog.AddEntry(oss.str().c_str());
@@ -123,7 +126,7 @@ TSQLStatement* CP::TDbiStatement::ExecuteQuery( const TString& sql) {
 
 //.....................................................................
 
-Bool_t CP::TDbiStatement::ExecuteUpdate( const TString& sql) {
+Bool_t CP::TDbiStatement::ExecuteUpdate(const TString& sql) {
 //
 //
 //  Purpose:  Translate SQL if required and Execute.
@@ -133,9 +136,9 @@ Bool_t CP::TDbiStatement::ExecuteUpdate( const TString& sql) {
 
     this->ClearExceptionLog();
 
-    DbiInfo( "SQL:" << fConDb.GetDbName() << ":" << sql << "  ");
+    DbiInfo("SQL:" << fConDb.GetDbName() << ":" << sql << "  ");
     bool ok = fConDb.GetServer()->Exec(sql.Data());
-    if ( ! ok ) {
+    if (! ok) {
         fConDb.RecordException();
         this->AppendExceptionLog(fConDb);
         return false;
@@ -154,9 +157,15 @@ Bool_t CP::TDbiStatement::PrintExceptions(Int_t level) const {
 //            and return true if there are any.
 
     const CP::TDbiExceptionLog& el(this->GetExceptionLog());
-    if ( el.IsEmpty() ) return false;
-    if(level <= TDbiLog::GetLogLevel())  TDbiLog::GetLogStream ()<<el;
-    if ( level >= CP::TDbiLog::WarnLevel  )  CP::TDbiExceptionLog::GetGELog().AddLog(el);
+    if (el.IsEmpty()) {
+        return false;
+    }
+    if (level <= TDbiLog::GetLogLevel()) {
+        TDbiLog::GetLogStream()<<el;
+    }
+    if (level >= CP::TDbiLog::WarnLevel) {
+        CP::TDbiExceptionLog::GetGELog().AddLog(el);
+    }
     return true;
 
 }

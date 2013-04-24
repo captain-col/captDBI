@@ -1,7 +1,6 @@
 #include "UtilStream.hxx"
 
-void CP::Util::eat_whitespace(std::istream& is)
-{
+void CP::Util::eat_whitespace(std::istream& is) {
     char c;
     while (is.get(c)) {
         if (!isspace(c)) {
@@ -11,17 +10,20 @@ void CP::Util::eat_whitespace(std::istream& is)
     }
 }
 
-std::string CP::Util::read_quoted_string(std::istream& is)
-{
+std::string CP::Util::read_quoted_string(std::istream& is) {
     eat_whitespace(is);
 
     char c;
 
-    if (!is.get(c)) return "";
+    if (!is.get(c)) {
+        return "";
+    }
     if (c == '\'') {
         std::string stot;
         while (is.get(c)) {
-            if (c == '\'') break;
+            if (c == '\'') {
+                break;
+            }
             stot += c;
         }
         return stot;

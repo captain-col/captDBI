@@ -42,10 +42,9 @@ ClassImp(CP::TDbiRowStream)
 //.....................................................................
 
 CP::TDbiRowStream::TDbiRowStream(const CP::TDbiTableMetaData* metaData) :
-fCurCol(1),
-fMetaData(metaData),
-fIsVLDTable(false)
-{
+    fCurCol(1),
+    fMetaData(metaData),
+    fIsVLDTable(false) {
 //
 //
 //  Purpose:  Default constructor
@@ -70,10 +69,10 @@ fIsVLDTable(false)
 //  None.
 
 
-  DbiTrace( "Creating CP::TDbiRowStream" << "  ");
+    DbiTrace("Creating CP::TDbiRowStream" << "  ");
 
-  std::string suffix(this->TableName(),this->TableName().size()-3);
-  fIsVLDTable = suffix == "VLD";
+    std::string suffix(this->TableName(),this->TableName().size()-3);
+    fIsVLDTable = suffix == "VLD";
 
 }
 
@@ -104,7 +103,7 @@ CP::TDbiRowStream::~TDbiRowStream() {
 //  None.
 
 
-  DbiTrace( "Destroying CP::TDbiRowStream" << "  ");
+    DbiTrace("Destroying CP::TDbiRowStream" << "  ");
 
 }
 
@@ -117,7 +116,7 @@ const CP::TDbiFieldType& CP::TDbiRowStream::ColFieldType(UInt_t col) const {
 //
 //  Arguments: None.
 
-  return fMetaData->ColFieldType(col);
+    return fMetaData->ColFieldType(col);
 }
 //.....................................................................
 
@@ -126,7 +125,7 @@ std::string CP::TDbiRowStream::ColName(UInt_t col) const {
 //
 //  Purpose: Return specified column name, if defined
 
-  return fMetaData->ColName(col);
+    return fMetaData->ColName(col);
 }
 //.....................................................................
 
@@ -151,7 +150,7 @@ const CP::TDbiFieldType& CP::TDbiRowStream::CurColFieldType() const {
 
 //  None.
 
-  return fMetaData->ColFieldType(fCurCol);
+    return fMetaData->ColFieldType(fCurCol);
 }
 
 //.....................................................................
@@ -177,7 +176,7 @@ std::string CP::TDbiRowStream::CurColName() const {
 
 //  None.
 
-  return fMetaData->ColName(fCurCol);
+    return fMetaData->ColName(fCurCol);
 }
 
 //.....................................................................
@@ -203,14 +202,14 @@ UInt_t CP::TDbiRowStream::NumCols() const {
 
 //  None.
 
-  return fMetaData->NumCols();
+    return fMetaData->NumCols();
 
 }
 
 //.....................................................................
 
 Bool_t CP::TDbiRowStream::HasEpoch() const {
-  return fMetaData->HasEpoch();
+    return fMetaData->HasEpoch();
 }
 
 //.....................................................................
@@ -221,7 +220,7 @@ std::string CP::TDbiRowStream::TableName() const {
 //  Purpose: Return table name in upper case.
 //
 
-  return CP::UtilString::ToUpper(fMetaData->TableName());
+    return CP::UtilString::ToUpper(fMetaData->TableName());
 }
 
 //.....................................................................
@@ -231,7 +230,7 @@ std::string CP::TDbiRowStream::TableNameTc() const {
 //
 //  Purpose: Return table name in true case.
 
-  return fMetaData->TableName();
+    return fMetaData->TableName();
 }
 /*    Template for New Member Function
 

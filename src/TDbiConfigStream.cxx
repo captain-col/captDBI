@@ -22,8 +22,8 @@ ClassImp(CP::TDbiConfigStream)
 
 
 CP::TVldContext  CP::TDbiConfigStream::fgDefaultContext(CP::DbiDetector::kNear,
-                                  CP::DbiSimFlag::kData,
-                                  CP::TVldTimeStamp() );
+                                                        CP::DbiSimFlag::kData,
+                                                        CP::TVldTimeStamp());
 
 //    Definition of all member functions (static or otherwise)
 //    *******************************************************
@@ -33,8 +33,7 @@ CP::TVldContext  CP::TDbiConfigStream::fgDefaultContext(CP::DbiDetector::kNear,
 //.....................................................................
 
 CP::TDbiConfigStream::TDbiConfigStream() :
-fCFSet(0)
-{
+    fCFSet(0) {
 //
 //
 //  Purpose:  Default constructor
@@ -57,21 +56,20 @@ fCFSet(0)
 //  None.
 
 
-  DbiDebug( "Creating CP::TDbiConfigStream" << "  ");
+    DbiDebug("Creating CP::TDbiConfigStream" << "  ");
 }
 
 //.....................................................................
 
 CP::TDbiConfigStream::TDbiConfigStream(const std::string& SoftName,
-                                 const std::string& ConfigName,
-                                 CP::TVldContext vc,
-                                 TDbi::Task task,
-                                 const std::string& tableName) :
-fCFSet(0),
-fCFSetTable(tableName,vc,task),
-fConfigName(ConfigName),
-fSoftwName(SoftName)
-{
+                                       const std::string& ConfigName,
+                                       CP::TVldContext vc,
+                                       TDbi::Task task,
+                                       const std::string& tableName) :
+    fCFSet(0),
+    fCFSetTable(tableName,vc,task),
+    fConfigName(ConfigName),
+    fSoftwName(SoftName) {
 //
 //
 //  Purpose:  Standard constructor
@@ -103,40 +101,40 @@ fSoftwName(SoftName)
 //  None.
 
 
-  DbiDebug( "Creating CP::TDbiConfigStream" << "  ");
+    DbiDebug("Creating CP::TDbiConfigStream" << "  ");
 
-  // Search for row matching software and configuration names.
-  int rowNum = fCFSetTable.GetNumRows()-1;
-  while ( rowNum >= 0 ) {
-    fCFSet = fCFSetTable.GetRow(rowNum);
-    if (    fCFSet->GetParamValue(0) == fSoftwName
-	 && fCFSet->GetParamValue(1) == fConfigName ) {
-      fVRec = *fCFSetTable.GetValidityRec(fCFSet);
-      DbiLog( "CP::TDbiConfigStream for " << fSoftwName
-				 << "," << fConfigName
-				 << " has validity rec: " << fVRec
-				 << " and aggregate no.: " << fCFSet->GetAggregateNo()
-				 << "  ");
-      return;
+    // Search for row matching software and configuration names.
+    int rowNum = fCFSetTable.GetNumRows()-1;
+    while (rowNum >= 0) {
+        fCFSet = fCFSetTable.GetRow(rowNum);
+        if (fCFSet->GetParamValue(0) == fSoftwName
+            && fCFSet->GetParamValue(1) == fConfigName) {
+            fVRec = *fCFSetTable.GetValidityRec(fCFSet);
+            DbiLog("CP::TDbiConfigStream for " << fSoftwName
+                   << "," << fConfigName
+                   << " has validity rec: " << fVRec
+                   << " and aggregate no.: " << fCFSet->GetAggregateNo()
+                   << "  ");
+            return;
+        }
+        --rowNum;
     }
-    --rowNum;
-  }
 
-  // Cannot find matching row, leave configuration data as null
-  // and set up a validity rec that can be used if creating a
-  // new row.
+    // Cannot find matching row, leave configuration data as null
+    // and set up a validity rec that can be used if creating a
+    // new row.
 
-  fCFSet = 0;
+    fCFSet = 0;
 
-  fVRec.SetDbNo(0);
-  fVRec.SetTableProxy(&CP::TDbiResultSetHandle<CP::TDbiConfigSet>::GetTableProxy(tableName));
-  CP::TVldTimeStamp start(1970,1,1,0,0,0);
-  CP::TVldTimeStamp   end(2038,1,1,0,0,0);
-  CP::TVldRange vr(127,127,start,end,"CP::TDbiConfigStream");
-  fVRec.SetVldRange(vr);
-  DbiLog( "CP::TDbiConfigStream for " << fSoftwName
-			     << "," << fConfigName
-			     << " has no existing entry; creating validity rec: " << fVRec << "  ");
+    fVRec.SetDbNo(0);
+    fVRec.SetTableProxy(&CP::TDbiResultSetHandle<CP::TDbiConfigSet>::GetTableProxy(tableName));
+    CP::TVldTimeStamp start(1970,1,1,0,0,0);
+    CP::TVldTimeStamp   end(2038,1,1,0,0,0);
+    CP::TVldRange vr(127,127,start,end,"CP::TDbiConfigStream");
+    fVRec.SetVldRange(vr);
+    DbiLog("CP::TDbiConfigStream for " << fSoftwName
+           << "," << fConfigName
+           << " has no existing entry; creating validity rec: " << fVRec << "  ");
 
 }
 
@@ -166,14 +164,14 @@ CP::TDbiConfigStream::~TDbiConfigStream() {
 //  None.
 
 
-  DbiDebug( "Destroying CP::TDbiConfigStream" << "  ");
+    DbiDebug("Destroying CP::TDbiConfigStream" << "  ");
 
 }
 
 //.....................................................................
 
 
-std::ostream& CP::operator<<(std::ostream& os, 
+std::ostream& CP::operator<<(std::ostream& os,
                              const CP::TDbiConfigStream& cfStream) {
 
 //
@@ -198,11 +196,15 @@ std::ostream& CP::operator<<(std::ostream& os,
 
 //  None.
 
-  const CP::TDbiConfigSet* cfSet = cfStream.GetConfigSet();
+    const CP::TDbiConfigSet* cfSet = cfStream.GetConfigSet();
 
-  if ( cfSet )  os << "CP::TDbiConfigSet contains: " << *cfSet << std::endl;
-  else          os << "CP::TDbiConfigSet is empty! " << std::endl;
-  return os;
+    if (cfSet) {
+        os << "CP::TDbiConfigSet contains: " << *cfSet << std::endl;
+    }
+    else {
+        os << "CP::TDbiConfigSet is empty! " << std::endl;
+    }
+    return os;
 }
 
 //.....................................................................
@@ -231,36 +233,42 @@ const CP::TDbiConfigStream& CP::TDbiConfigStream::operator>>(TDbiRegistry* reg) 
 
 //  None.
 
-  if ( ! reg ) return *this;
+    if (! reg) {
+        return *this;
+    }
 
 //  Record the current state of reg and then clear it.
 
-  Bool_t keysLocked   = reg->KeysLocked();
-  Bool_t valuesLocked = reg->ValuesLocked();
-  reg->UnLockKeys();
-  reg->UnLockValues();
-  reg->Clear();
+    Bool_t keysLocked   = reg->KeysLocked();
+    Bool_t valuesLocked = reg->ValuesLocked();
+    reg->UnLockKeys();
+    reg->UnLockValues();
+    reg->Clear();
 
 //  Use the owned CP::TDbiConfigSet to fill reg.
 
-  if ( fCFSet ) {
-    UInt_t numParams = fCFSet->GetNumParams();
+    if (fCFSet) {
+        UInt_t numParams = fCFSet->GetNumParams();
 
 //  Handle configuration tables.
 
-    if ( numParams == 3 && fCFSet->GetParamName(2) == "CONFIG_DATA" ) {
-      std::istringstream is(fCFSet->GetParamValue(2));
-      reg->ReadStream(is);
+        if (numParams == 3 && fCFSet->GetParamName(2) == "CONFIG_DATA") {
+            std::istringstream is(fCFSet->GetParamValue(2));
+            reg->ReadStream(is);
+        }
+        else {
+            DbiSevere("Attempting to fill TDbiRegistry  from a table with "
+                      << numParams << " columns (should be 3) using column named "
+                      << fCFSet->GetParamName(2) << " (should be CONFIG_DATA)." << "  ");
+        }
     }
-    else {
-         DbiSevere( "Attempting to fill TDbiRegistry  from a table with "
-			     << numParams << " columns (should be 3) using column named "
-			     << fCFSet->GetParamName(2) << " (should be CONFIG_DATA)." << "  ");
+    if (keysLocked) {
+        reg->LockKeys();
     }
-  }
-  if ( keysLocked   ) reg->LockKeys();
-  if ( valuesLocked ) reg->LockValues();
-  return *this;
+    if (valuesLocked) {
+        reg->LockValues();
+    }
+    return *this;
 }
 //.....................................................................
 
@@ -284,22 +292,24 @@ CP::TDbiConfigStream& CP::TDbiConfigStream::operator<<(const TDbiRegistry* reg) 
 //  This does NOT write to the database.  To do that first use this
 //  method to refill the configuration and then call the Write method.
 
-  if ( fSoftwName == "" ) {
-       DbiSevere( "Cannot fill (<<): No software name defined." << "  ");
+    if (fSoftwName == "") {
+        DbiSevere("Cannot fill (<<): No software name defined." << "  ");
+        return *this;
+    }
+
+    CP::TDbiFieldType stringType(TDbi::kString);
+
+    std::ostringstream os;
+    reg->PrintStream(os);
+    fCFSetModified.Clear();
+    fCFSetModified.PushBack("SOFTW_NAME", fSoftwName,  stringType);
+    fCFSetModified.PushBack("CONFIG_NAME",fConfigName, stringType);
+    fCFSetModified.PushBack("CONFIG_DATA",os.str(),    stringType);
+    if (fVRec.GetAggregateNo() > 0) {
+        fCFSetModified.SetAggregateNo(fVRec.GetAggregateNo());
+    }
+    fCFSet =  &fCFSetModified;
     return *this;
-  }
-
-  CP::TDbiFieldType stringType(TDbi::kString);
-
-  std::ostringstream os;
-  reg->PrintStream(os);
-  fCFSetModified.Clear();
-  fCFSetModified.PushBack("SOFTW_NAME", fSoftwName,  stringType);
-  fCFSetModified.PushBack("CONFIG_NAME",fConfigName, stringType);
-  fCFSetModified.PushBack("CONFIG_DATA",os.str(),    stringType);
-  if ( fVRec.GetAggregateNo() > 0 ) fCFSetModified.SetAggregateNo( fVRec.GetAggregateNo());
-  fCFSet =  &fCFSetModified;
-  return *this;
 
 }
 
@@ -307,8 +317,8 @@ CP::TDbiConfigStream& CP::TDbiConfigStream::operator<<(const TDbiRegistry* reg) 
 //.....................................................................
 
 Bool_t CP::TDbiConfigStream::Write(UInt_t dbNo,
-                              const std::string& logComment,
-                              Bool_t localTest ) {
+                                   const std::string& logComment,
+                                   Bool_t localTest) {
 //
 //
 //  Purpose:  Write configuration data to the database.
@@ -323,34 +333,34 @@ Bool_t CP::TDbiConfigStream::Write(UInt_t dbNo,
 //
 //  Return:        True if I/O successful.
 
-  if ( ! fCFSet ) {
-       DbiSevere( "No configuration data to write out." << "  ");
-    return false;
-  }
-
-  // If no aggregate number has been asigned so far, but fCFSet non-zero, then must
-  // be creating a new software/config combination with the data in fCFSetModified.
-  // Use a global seqno number (or local if localTest) to define a unique aggregate number.
-  int requireGlobal = localTest ? -1 : 1;
-  if ( fVRec.GetAggregateNo() < 0 ) {
-    CP::TDbiCascader& cas = CP::TDbiDatabaseManager::Instance().GetCascader();
-    Int_t aggNo = cas.AllocateSeqNo(fVRec.GetTableProxy()->GetTableName(),requireGlobal,dbNo);
-    if ( aggNo <= TDbi::kMAXLOCALSEQNO && ! localTest ) {
-         DbiSevere( "Cannot write out configuration data: no authorising entry in cascade." << "  ");
-      return false;
+    if (! fCFSet) {
+        DbiSevere("No configuration data to write out." << "  ");
+        return false;
     }
-    fVRec.SetAggregateNo(aggNo);
-    fCFSetModified.SetAggregateNo(aggNo);
-    DbiDebug( "Aggregate number: " << aggNo
-		      << " allocated to entry " << fSoftwName
-		      << "," << fConfigName
-		      << " in table " << fVRec.GetTableProxy()->GetTableName() << "  ");
-  }
-  CP::TDbiWriter<CP::TDbiConfigSet> writer(fVRec,dbNo,logComment);
-  writer.SetRequireGlobalSeqno(requireGlobal);
-  writer.SetOverlayCreationDate();
-  writer << *fCFSet;
-  return writer.Close();
+
+    // If no aggregate number has been asigned so far, but fCFSet non-zero, then must
+    // be creating a new software/config combination with the data in fCFSetModified.
+    // Use a global seqno number (or local if localTest) to define a unique aggregate number.
+    int requireGlobal = localTest ? -1 : 1;
+    if (fVRec.GetAggregateNo() < 0) {
+        CP::TDbiCascader& cas = CP::TDbiDatabaseManager::Instance().GetCascader();
+        Int_t aggNo = cas.AllocateSeqNo(fVRec.GetTableProxy()->GetTableName(),requireGlobal,dbNo);
+        if (aggNo <= TDbi::kMAXLOCALSEQNO && ! localTest) {
+            DbiSevere("Cannot write out configuration data: no authorising entry in cascade." << "  ");
+            return false;
+        }
+        fVRec.SetAggregateNo(aggNo);
+        fCFSetModified.SetAggregateNo(aggNo);
+        DbiDebug("Aggregate number: " << aggNo
+                 << " allocated to entry " << fSoftwName
+                 << "," << fConfigName
+                 << " in table " << fVRec.GetTableProxy()->GetTableName() << "  ");
+    }
+    CP::TDbiWriter<CP::TDbiConfigSet> writer(fVRec,dbNo,logComment);
+    writer.SetRequireGlobalSeqno(requireGlobal);
+    writer.SetOverlayCreationDate();
+    writer << *fCFSet;
+    return writer.Close();
 
 }
 

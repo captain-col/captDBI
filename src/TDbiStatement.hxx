@@ -37,18 +37,17 @@
 #include "TDbiConnection.hxx"
 
 namespace CP {
-class TDbiException;
+    class TDbiException;
 }
 
 namespace CP {
-class TDbiStatement
-{
+    class TDbiStatement {
 
-public:
+    public:
 
 // Constructors and destructors.
-           TDbiStatement(TDbiConnection& conDb);
-  virtual ~TDbiStatement();
+        TDbiStatement(TDbiConnection& conDb);
+        virtual ~TDbiStatement();
 
 // State testing member functions
 
@@ -57,41 +56,55 @@ public:
 /// Print accumulated exceptions at supplied Msg level,
 /// add them to the Global Exception Log if level >= kWarning
 /// and return true if there are any.
-  Bool_t PrintExceptions(Int_t level = 3) const;
+        Bool_t PrintExceptions(Int_t level = 3) const;
 
-  const TDbiExceptionLog& GetExceptionLog() const { return fExceptionLog; }
+        const TDbiExceptionLog& GetExceptionLog() const {
+            return fExceptionLog;
+        }
 
 // State changing member functions
 
 // Database I/O
 
 /// Give caller a TSQLStatement of results (Process() and StoreResult() already performed.).
-  TSQLStatement* ExecuteQuery(const TString& sql="");
+        TSQLStatement* ExecuteQuery(const TString& sql="");
 
 /// Apply an update and return success/fail.
-  Bool_t ExecuteUpdate( const TString& sql="");
+        Bool_t ExecuteUpdate(const TString& sql="");
 
-private:
+    private:
 
-  void AppendExceptionLog(TDbiException* e)  { if ( e ) fExceptionLog.AddEntry(*e); }
-  void AppendExceptionLog(TSQLStatement* s) { if ( s ) fExceptionLog.AddEntry(*s); }
-  void AppendExceptionLog(TDbiConnection& c) {          fExceptionLog.AddLog(c.GetExceptionLog()); }
-  void ClearExceptionLog()                  { fExceptionLog.Clear(); }
+        void AppendExceptionLog(TDbiException* e)  {
+            if (e) {
+                fExceptionLog.AddEntry(*e);
+            }
+        }
+        void AppendExceptionLog(TSQLStatement* s) {
+            if (s) {
+                fExceptionLog.AddEntry(*s);
+            }
+        }
+        void AppendExceptionLog(TDbiConnection& c) {
+            fExceptionLog.AddLog(c.GetExceptionLog());
+        }
+        void ClearExceptionLog()                  {
+            fExceptionLog.Clear();
+        }
 
-  TSQLStatement* CreateProcessedStatement(const TString& sql="");
+        TSQLStatement* CreateProcessedStatement(const TString& sql="");
 
 // Data members
 
 ///Connection associated with this statement.
-  TDbiConnection& fConDb;
+        TDbiConnection& fConDb;
 
 /// A log of reported exceptions.
 /// Cleared by calling ExecuteQuery, ExecuteUpdate
-  TDbiExceptionLog fExceptionLog;
+        TDbiExceptionLog fExceptionLog;
 
- ClassDef(TDbiStatement,0)     // Managed TSQL_Statement
+        ClassDef(TDbiStatement,0)     // Managed TSQL_Statement
 
-};
+    };
 };
 
 

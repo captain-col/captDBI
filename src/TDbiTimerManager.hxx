@@ -4,64 +4,65 @@
 #define DBITIMERMANAGER
 
 ////////////////////////////////////////////////////////////////////////
-/// \class CP::TDbiTimerManager                                                    
+/// \class CP::TDbiTimerManager
 ///
-/// \brief <b> Concept: </b>Manager of a set of simple timers.                      
-///                                                                    
-/// <b> Purpose: </b> To find out why this is all soooo sssllloooowwww!         
-///                                                                    
+/// \brief <b> Concept: </b>Manager of a set of simple timers.
+///
+/// <b> Purpose: </b> To find out why this is all soooo sssllloooowwww!
+///
 ////////////////////////////////////////////////////////////////////////
 
 #include <string>
 #include <list>
 
 namespace CP {
-class TDbiTableMetaData;
-class TDbiTimer;
+    class TDbiTableMetaData;
+    class TDbiTimer;
 }
 
 namespace CP {
-class TDbiTimerManager
-{
+    class TDbiTimerManager {
 
-public:
+    public:
 
 // Constructors and destructors.
-           TDbiTimerManager();
-  virtual ~TDbiTimerManager();
+        TDbiTimerManager();
+        virtual ~TDbiTimerManager();
 
 // State testing member functions
 
 // State changing member functions
-    void Enable(Bool_t flag=kTRUE,
-		Bool_t enableSubWatch = kFALSE) { fEnabled = flag;
-                                    fSubWatchEnabled = enableSubWatch;}
-    void RecBegin(std::string tableName, UInt_t rowSize);
-    void RecEnd(UInt_t numRows);
-    void RecFillAgg(Int_t aggNo);
-    void RecMainQuery();
-    void StartSubWatch(UInt_t subWatch);
+        void Enable(Bool_t flag=kTRUE,
+                    Bool_t enableSubWatch = kFALSE) {
+            fEnabled = flag;
+            fSubWatchEnabled = enableSubWatch;
+        }
+        void RecBegin(std::string tableName, UInt_t rowSize);
+        void RecEnd(UInt_t numRows);
+        void RecFillAgg(Int_t aggNo);
+        void RecMainQuery();
+        void StartSubWatch(UInt_t subWatch);
 
 // Global timer manager used for all queries to the DBI.
 
-static TDbiTimerManager gTimerManager;
+        static TDbiTimerManager gTimerManager;
 
-private:
+    private:
 
- TDbiTimer* GetCurrent();
- TDbiTimer* Pop();
- TDbiTimer* Push();
+        TDbiTimer* GetCurrent();
+        TDbiTimer* Pop();
+        TDbiTimer* Push();
 
 // Data members
 
-          Bool_t fEnabled;     // Enable/disable
-          Bool_t fSubWatchEnabled;
-                               // SubWatch Enable/disable (not used now).
-    std::list<TDbiTimer*> fTimers;      // Push-down stack of timers.
+        Bool_t fEnabled;     // Enable/disable
+        Bool_t fSubWatchEnabled;
+        // SubWatch Enable/disable (not used now).
+        std::list<TDbiTimer*> fTimers;      // Push-down stack of timers.
 
- ClassDef(TDbiTimerManager,0)    // Simple query timer
+        ClassDef(TDbiTimerManager,0)    // Simple query timer
 
-};
+    };
 };
 
 

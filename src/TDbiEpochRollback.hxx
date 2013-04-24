@@ -29,42 +29,43 @@
 #endif
 #endif
 
-namespace CP{
-class TDbiRegistry;
+namespace CP {
+    class TDbiRegistry;
 }
 
 namespace CP {
-class TDbiEpochRollback
-{
+    class TDbiEpochRollback {
 
-public:
+    public:
 
-  typedef std::map<std::string,UInt_t> name_map_t;
+        typedef std::map<std::string,UInt_t> name_map_t;
 
 // Constructors and destructors.
-           TDbiEpochRollback();
-  virtual ~TDbiEpochRollback();
+        TDbiEpochRollback();
+        virtual ~TDbiEpochRollback();
 
 // State testing member functions
 
-  const std::string& GetEpochCondition(const std::string& tableName) const;
-  void Show() const;
+        const std::string& GetEpochCondition(const std::string& tableName) const;
+        void Show() const;
 
 // State changing member functions
 
-  void Clear() {fTableToEpoch.clear();}
-  void Set(TDbiRegistry& reg);  //Modifies TDbiRegistry
+        void Clear() {
+            fTableToEpoch.clear();
+        }
+        void Set(TDbiRegistry& reg);  //Modifies TDbiRegistry
 
-private:
+    private:
 
 // Data members
 
 /// Look-up table name -> maximum epoch number
-  name_map_t fTableToEpoch;
+        name_map_t fTableToEpoch;
 
-ClassDef(TDbiEpochRollback,0)   // Rollback dates by table name.
+        ClassDef(TDbiEpochRollback,0)   // Rollback dates by table name.
 
-};
+    };
 };
 
 

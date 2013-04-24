@@ -35,7 +35,7 @@ template class  CP::TDbiResultSetHandle<CP::TDbiValidityRec>;
 
 //.....................................................................
 
-std::ostream& CP::operator<<(std::ostream& os, 
+std::ostream& CP::operator<<(std::ostream& os,
                              const CP::TDbiValidityRec& vRec) {
 //
 //
@@ -59,23 +59,25 @@ std::ostream& CP::operator<<(std::ostream& os,
 
 //  None.
 
-  const CP::TVldRange&           range(vRec.GetVldRange());
+    const CP::TVldRange&           range(vRec.GetVldRange());
 
-  std::ostringstream os2;  //Use local to avoid manipulators from making permanent change to os.
-  os2 << "SeqNo: " << vRec.GetSeqNo()
-      << "  AggNo: " << vRec.GetAggregateNo()
-      << "  DbNo: " << vRec.GetDbNo();
-  if ( vRec.IsGap() ) os2 << " (gap)";
-  os2  << "  CP::TVldRange: |"
-       << std::setprecision(3) << std::ios::hex << std::setfill ('0') << "0x" <<  std::setw(3) << range.GetDetectorMask() << "|"
-       << "0x" << std::setw(3) << range.GetSimMask() << "|"
-       << " " << range.GetTimeStart().AsString("s") << " .. "
-       << range.GetTimeEnd().AsString("s")
-       << " Epoch: " << vRec.GetEpoch()
-       << " Task: " << vRec.GetTask()
-       << " from: " << range.GetDataSource();
-  os << os2.str();
-  return os;
+    std::ostringstream os2;  //Use local to avoid manipulators from making permanent change to os.
+    os2 << "SeqNo: " << vRec.GetSeqNo()
+        << "  AggNo: " << vRec.GetAggregateNo()
+        << "  DbNo: " << vRec.GetDbNo();
+    if (vRec.IsGap()) {
+        os2 << " (gap)";
+    }
+    os2  << "  CP::TVldRange: |"
+         << std::setprecision(3) << std::ios::hex << std::setfill('0') << "0x" <<  std::setw(3) << range.GetDetectorMask() << "|"
+         << "0x" << std::setw(3) << range.GetSimMask() << "|"
+         << " " << range.GetTimeStart().AsString("s") << " .. "
+         << range.GetTimeEnd().AsString("s")
+         << " Epoch: " << vRec.GetEpoch()
+         << " Task: " << vRec.GetTask()
+         << " from: " << range.GetDataSource();
+    os << os2.str();
+    return os;
 
 }
 
@@ -86,7 +88,7 @@ std::ostream& CP::operator<<(std::ostream& os,
 //.....................................................................
 
 void CP::TDbiValidityRec::AndTimeWindow(const CP::TVldTimeStamp& startOther,
-                                   const CP::TVldTimeStamp& endOther) {
+                                        const CP::TVldTimeStamp& endOther) {
 //
 //
 //  Purpose:  And in supplied start and end times.
@@ -110,26 +112,25 @@ void CP::TDbiValidityRec::AndTimeWindow(const CP::TVldTimeStamp& startOther,
 
 //  None.
 
-  CP::TVldTimeStamp start = fVldRange.GetTimeStart();
-  CP::TVldTimeStamp end   = fVldRange.GetTimeEnd();
+    CP::TVldTimeStamp start = fVldRange.GetTimeStart();
+    CP::TVldTimeStamp end   = fVldRange.GetTimeEnd();
 
-  SetTimeWindow( start > startOther ? start : startOther,
-                 end   < endOther   ? end   : endOther );
+    SetTimeWindow(start > startOther ? start : startOther,
+                  end   < endOther   ? end   : endOther);
 }
 
 //.....................................................................
 
 CP::TDbiValidityRec::TDbiValidityRec(Int_t dbNo,Bool_t isGap) :
 
-fAggregateNo(-2),
-fDbNo(dbNo),
-fIsGap(isGap),
-fTask(0),
-fSeqNo(0),
-fTableProxy(0),
-fEpoch(0),
-fReality(0)
-{
+    fAggregateNo(-2),
+    fDbNo(dbNo),
+    fIsGap(isGap),
+    fTask(0),
+    fSeqNo(0),
+    fTableProxy(0),
+    fEpoch(0),
+    fReality(0) {
 //
 //
 //  Purpose:  Default constructor
@@ -154,12 +155,11 @@ fReality(0)
 //  None.
 
 
-  DbiTrace( "Creating CP::TDbiValidityRec" << "  ");
+    DbiTrace("Creating CP::TDbiValidityRec" << "  ");
 }
 //.....................................................................
 
-CP::TDbiValidityRec::TDbiValidityRec(const CP::TDbiValidityRec& from) : CP::TDbiTableRow(from)
-{
+CP::TDbiValidityRec::TDbiValidityRec(const CP::TDbiValidityRec& from) : CP::TDbiTableRow(from) {
 //
 //
 //  Purpose:  Copy constructor
@@ -183,32 +183,31 @@ CP::TDbiValidityRec::TDbiValidityRec(const CP::TDbiValidityRec& from) : CP::TDbi
 //  Explicit just for leak checking.
 
 
-  DbiTrace( "Creating CP::TDbiValidityRec" << "  ");
+    DbiTrace("Creating CP::TDbiValidityRec" << "  ");
 
-  *this = from;
+    *this = from;
 
 }
 //.....................................................................
 
 CP::TDbiValidityRec::TDbiValidityRec(const CP::TVldRange& range,
-                               TDbi::Task task,
-                               Int_t aggNo,
-                               UInt_t seqNo,
-                               Int_t dbNo,
-                               Bool_t isGap,
-                               CP::TVldTimeStamp time,
-			       UInt_t epoch) :
-fAggregateNo(aggNo),
-fCreationDate(time),
-fDbNo(dbNo),
-fIsGap(isGap),
-fTask(task),
-fSeqNo(seqNo),
-fTableProxy(0),
-fVldRange(range),
-fEpoch(epoch),
-fReality(0)
-{
+                                     TDbi::Task task,
+                                     Int_t aggNo,
+                                     UInt_t seqNo,
+                                     Int_t dbNo,
+                                     Bool_t isGap,
+                                     CP::TVldTimeStamp time,
+                                     UInt_t epoch) :
+    fAggregateNo(aggNo),
+    fCreationDate(time),
+    fDbNo(dbNo),
+    fIsGap(isGap),
+    fTask(task),
+    fSeqNo(seqNo),
+    fTableProxy(0),
+    fVldRange(range),
+    fEpoch(epoch),
+    fReality(0) {
 //
 //
 //  Purpose:  Constructor from components
@@ -240,7 +239,7 @@ fReality(0)
 //  None.
 
 
-  DbiTrace( "Creating CP::TDbiValidityRec" << "  ");
+    DbiTrace("Creating CP::TDbiValidityRec" << "  ");
 }
 
 //.....................................................................
@@ -269,14 +268,14 @@ CP::TDbiValidityRec::~TDbiValidityRec() {
 //  None.
 
 
-  DbiTrace( "Destroying CP::TDbiValidityRec" << "  ");
+    DbiTrace("Destroying CP::TDbiValidityRec" << "  ");
 
 }
 
 //.....................................................................
 
 void CP::TDbiValidityRec::Fill(CP::TDbiInRowStream& rs,
-                          const CP::TDbiValidityRec* /* vrec */) {
+                               const CP::TDbiValidityRec* /* vrec */) {
 //
 //
 //  Purpose:  Fill oject from Result Set
@@ -312,8 +311,12 @@ void CP::TDbiValidityRec::Fill(CP::TDbiInRowStream& rs,
 
     rs >> fSeqNo >> start >> end;
 
-    if ( rs.HasEpoch() ) rs >> fEpoch >> fReality;
-    else fEpoch = fReality = 0;
+    if (rs.HasEpoch()) {
+        rs >> fEpoch >> fReality;
+    }
+    else {
+        fEpoch = fReality = 0;
+    }
 
     rs >> detMask >> simMask >> fTask
        >> fAggregateNo    >> fCreationDate  >> fInsertDate;
@@ -323,11 +326,11 @@ void CP::TDbiValidityRec::Fill(CP::TDbiInRowStream& rs,
     CP::TVldRange vr(detMask, simMask, start, end, "From Database");
     fVldRange = vr;
 
-    DbiVerbose(  "CP::TDbiValidityRec for row " << rs.CurRowNum()
-	 << ": " << fVldRange.AsString()
-	 << " seq num: " << fSeqNo
-	 << " agg no: "  << fAggregateNo
-	 << " task: " << "  ");
+    DbiVerbose("CP::TDbiValidityRec for row " << rs.CurRowNum()
+               << ": " << fVldRange.AsString()
+               << " seq num: " << fSeqNo
+               << " agg no: "  << fAggregateNo
+               << " task: " << "  ");
 }
 
 //.....................................................................
@@ -342,16 +345,16 @@ std::string CP::TDbiValidityRec::GetL2CacheName() const {
 //
 //  o See GetL2CacheName(UInt_t seqLo, UInt_t seqHi, CP::TVldTimeStamp ts);
 
-  return CP::TDbiValidityRec::GetL2CacheName(this->GetSeqNo(),
-                                        this->GetSeqNo(),
-					this->GetCreationDate());
+    return CP::TDbiValidityRec::GetL2CacheName(this->GetSeqNo(),
+                                               this->GetSeqNo(),
+                                               this->GetCreationDate());
 
 }
 //.....................................................................
 
 std::string CP::TDbiValidityRec::GetL2CacheName(UInt_t seqLo,
-                                           UInt_t seqHi,
-                                           CP::TVldTimeStamp ts) {
+                                                UInt_t seqHi,
+                                                CP::TVldTimeStamp ts) {
 //
 //
 //  Purpose:  Return the associated Level 2 Cache Name.
@@ -370,14 +373,18 @@ std::string CP::TDbiValidityRec::GetL2CacheName(UInt_t seqLo,
 //  CP::TDbiValidityRec and CP::TDbiValidityRecBuilder.
 
     std::ostringstream oss;
-  oss << seqLo << "_";
-  if ( seqLo != seqHi )  oss << seqHi << "_";
-  oss << ts.AsString("s");
-  std::string str(oss.str());
-  // Convert white space to underscore.
-  int i = str.size();
-  while ( i-- ) if ( str[i] == ' ' ) str[i] = '_';
-  return str;
+    oss << seqLo << "_";
+    if (seqLo != seqHi) {
+        oss << seqHi << "_";
+    }
+    oss << ts.AsString("s");
+    std::string str(oss.str());
+    // Convert white space to underscore.
+    int i = str.size();
+    while (i--) if (str[i] == ' ') {
+            str[i] = '_';
+        }
+    return str;
 
 }
 
@@ -408,22 +415,22 @@ Bool_t CP::TDbiValidityRec::HasExpired(const CP::TDbiValidityRec& other) const {
 //  This method is used by CP::TDbiCache to select candidates for
 //  purging.
 
-  const CP::TVldRange& otherVR =other.GetVldRange();
+    const CP::TVldRange& otherVR =other.GetVldRange();
 
-  return
-     (       other.GetTask() == fTask
-        && ( otherVR.GetDetectorMask() & fVldRange.GetDetectorMask() )
-        && ( otherVR.GetSimMask()      & fVldRange.GetSimMask() )
-        && (    otherVR.GetTimeStart() >= fVldRange.GetTimeEnd()
-             || otherVR.GetTimeEnd()   <= fVldRange.GetTimeStart() )
-     );
+    return
+        (other.GetTask() == fTask
+         && (otherVR.GetDetectorMask() & fVldRange.GetDetectorMask())
+         && (otherVR.GetSimMask()      & fVldRange.GetSimMask())
+         && (otherVR.GetTimeStart() >= fVldRange.GetTimeEnd()
+             || otherVR.GetTimeEnd()   <= fVldRange.GetTimeStart())
+        );
 
 }
 //.....................................................................
 
 
 Bool_t CP::TDbiValidityRec::HasExpired(const CP::TVldContext& vc,
-                                  const TDbi::Task& task) const {
+                                       const TDbi::Task& task) const {
 //
 //
 //  Purpose: See if validity record has expired i.e. is compatible with
@@ -442,16 +449,16 @@ Bool_t CP::TDbiValidityRec::HasExpired(const CP::TVldContext& vc,
 //  This method is used by CP::TDbiResultSet to identify when ready for
 //  purging.
 
-  CP::TVldTimeStamp    ts = vc.GetTimeStamp();
-  const CP::TVldRange& vr = this->GetVldRange();
+    CP::TVldTimeStamp    ts = vc.GetTimeStamp();
+    const CP::TVldRange& vr = this->GetVldRange();
 
-  return
-     (       task             == this->GetTask()
-        && ( vc.GetDetector() &  vr.GetDetectorMask() )
-        && ( vc.GetSimFlag()  &  vr.GetSimMask() )
-        && (    ts            >= vr.GetTimeEnd()
-             || ts            <  vr.GetTimeStart() )
-     );
+    return
+        (task             == this->GetTask()
+         && (vc.GetDetector() &  vr.GetDetectorMask())
+         && (vc.GetSimFlag()  &  vr.GetSimMask())
+         && (ts            >= vr.GetTimeEnd()
+             || ts            <  vr.GetTimeStart())
+        );
 
 }
 
@@ -459,7 +466,7 @@ Bool_t CP::TDbiValidityRec::HasExpired(const CP::TVldContext& vc,
 
 
 Bool_t CP::TDbiValidityRec::IsCompatible(const CP::TVldContext& vc,
-                                    const TDbi::Task& task) const {
+                                         const TDbi::Task& task) const {
 //
 //
 //  Purpose: See if result is compatible with query.
@@ -482,13 +489,13 @@ Bool_t CP::TDbiValidityRec::IsCompatible(const CP::TVldContext& vc,
 
 //  None.
 
-   DbiDebug(  " CP::TDbiValidityRec::IsCompatible : tasks:"
-     << task << "," << fTask
-     << " is compat: " << fVldRange.IsCompatible(vc) << "  "
-     << "   range " << fVldRange.AsString() << "  "
-     << "   context " << vc.AsString() << "  ");
+    DbiDebug(" CP::TDbiValidityRec::IsCompatible : tasks:"
+             << task << "," << fTask
+             << " is compat: " << fVldRange.IsCompatible(vc) << "  "
+             << "   range " << fVldRange.AsString() << "  "
+             << "   context " << vc.AsString() << "  ");
 
-  return task == fTask  && fVldRange.IsCompatible(vc);
+    return task == fTask  && fVldRange.IsCompatible(vc);
 
 }
 
@@ -496,7 +503,7 @@ Bool_t CP::TDbiValidityRec::IsCompatible(const CP::TVldContext& vc,
 
 
 Bool_t CP::TDbiValidityRec::IsHigherPriority(const CP::TDbiValidityRec& that,
-					Bool_t useCreationDate) const {
+                                             Bool_t useCreationDate) const {
 //
 //  Purpose:  Compare priorities (used in context queries to resolve ambiguities between VLD entries).
 //
@@ -508,12 +515,17 @@ Bool_t CP::TDbiValidityRec::IsHigherPriority(const CP::TDbiValidityRec& that,
 //
 //  Return:   True if this is of higher priority than that.
 
-  if ( useCreationDate) return fCreationDate > that.fCreationDate;
+    if (useCreationDate) {
+        return fCreationDate > that.fCreationDate;
+    }
 
-  if ( fEpoch != that.fEpoch ) return fEpoch > that.fEpoch;
-  if ( fVldRange.GetTimeStart() != that.fVldRange.GetTimeStart() )
-    return fVldRange.GetTimeStart() > that.fVldRange.GetTimeStart();
-  return fInsertDate > that.fInsertDate;
+    if (fEpoch != that.fEpoch) {
+        return fEpoch > that.fEpoch;
+    }
+    if (fVldRange.GetTimeStart() != that.fVldRange.GetTimeStart()) {
+        return fVldRange.GetTimeStart() > that.fVldRange.GetTimeStart();
+    }
+    return fInsertDate > that.fInsertDate;
 
 }
 
@@ -521,7 +533,7 @@ Bool_t CP::TDbiValidityRec::IsHigherPriority(const CP::TDbiValidityRec& that,
 
 
 void CP::TDbiValidityRec::SetTimeWindow(const CP::TVldTimeStamp& start,
-                                   const CP::TVldTimeStamp& end) {
+                                        const CP::TVldTimeStamp& end) {
 //
 //
 //  Purpose:  Set supplied start and end times.
@@ -545,19 +557,19 @@ void CP::TDbiValidityRec::SetTimeWindow(const CP::TVldTimeStamp& start,
 //  The method here is rather clumsy, but I don't know of anything
 //  better!
 
-  CP::TVldRange  range(fVldRange.GetDetectorMask(),
-                  fVldRange.GetSimMask(),
-                  start,
-                  end,
-                  fVldRange.GetDataSource() );
-  fVldRange = range;
+    CP::TVldRange  range(fVldRange.GetDetectorMask(),
+                         fVldRange.GetSimMask(),
+                         start,
+                         end,
+                         fVldRange.GetDataSource());
+    fVldRange = range;
 
 }
 
 //.....................................................................
 
 void CP::TDbiValidityRec::Store(CP::TDbiOutRowStream& ors,
-                           const CP::TDbiValidityRec* /* vrec */) const {
+                                const CP::TDbiValidityRec* /* vrec */) const {
 //
 //
 //  Purpose:  Stream object to output row stream
@@ -586,7 +598,9 @@ void CP::TDbiValidityRec::Store(CP::TDbiOutRowStream& ors,
     ors << fSeqNo
         << fVldRange.GetTimeStart()
         << fVldRange.GetTimeEnd();
-    if ( ors.HasEpoch() ) ors << fEpoch << fReality;
+    if (ors.HasEpoch()) {
+        ors << fEpoch << fReality;
+    }
     ors << fVldRange.GetDetectorMask()
         << fVldRange.GetSimMask()
         << fTask
@@ -607,37 +621,37 @@ void CP::TDbiValidityRec::Streamer(CP::TDbiBinaryFile& file) {
 //  Don't store the pointer fTableProxy (don't want to get into storing
 //  pointers!); the CP::TDbiCache will fix it up on input
 
-  if ( file.IsReading() ) {
-    file >> fAggregateNo
-         >> fCreationDate
-	 >> fEpoch
-	 >> fReality
-         >> fDbNo
-         >> fInsertDate
-         >> fIsGap
-         >> fTask
-         >> fSeqNo
-         >> fVldRange;
-    fTableProxy = 0;
-  }
-  else if ( file.IsWriting() ) {
-    file << fAggregateNo
-         << fCreationDate
-	 << fEpoch
-	 << fReality
-         << fDbNo
-         << fInsertDate
-         << fIsGap
-         << fTask
-         << fSeqNo
-         << fVldRange;
-  }
+    if (file.IsReading()) {
+        file >> fAggregateNo
+             >> fCreationDate
+             >> fEpoch
+             >> fReality
+             >> fDbNo
+             >> fInsertDate
+             >> fIsGap
+             >> fTask
+             >> fSeqNo
+             >> fVldRange;
+        fTableProxy = 0;
+    }
+    else if (file.IsWriting()) {
+        file << fAggregateNo
+             << fCreationDate
+             << fEpoch
+             << fReality
+             << fDbNo
+             << fInsertDate
+             << fIsGap
+             << fTask
+             << fSeqNo
+             << fVldRange;
+    }
 }
 
 //.....................................................................
 
 void CP::TDbiValidityRec::Trim(const CP::TVldTimeStamp& queryTime,
-                          const CP::TDbiValidityRec& other) {
+                               const CP::TDbiValidityRec& other) {
 //
 //
 //  Purpose:  Trim this validity record so that represents
@@ -688,39 +702,51 @@ void CP::TDbiValidityRec::Trim(const CP::TVldTimeStamp& queryTime,
 //  Ignore other records that are either gaps or have wrong
 //  aggregate number.
 
-  if ( fAggregateNo != other.fAggregateNo || other.IsGap() ) return;
+    if (fAggregateNo != other.fAggregateNo || other.IsGap()) {
+        return;
+    }
 
 //  If this record is not a gap then the other record can be ignore
 //  as it is of lower priority.
 
-  if ( ! IsGap() ) return;
+    if (! IsGap()) {
+        return;
+    }
 
-  CP::TVldTimeStamp start      = fVldRange.GetTimeStart();
-  CP::TVldTimeStamp end        = fVldRange.GetTimeEnd();
-  CP::TVldTimeStamp startOther = other.GetVldRange().GetTimeStart();
-  CP::TVldTimeStamp endOther   = other.GetVldRange().GetTimeEnd();
+    CP::TVldTimeStamp start      = fVldRange.GetTimeStart();
+    CP::TVldTimeStamp end        = fVldRange.GetTimeEnd();
+    CP::TVldTimeStamp startOther = other.GetVldRange().GetTimeStart();
+    CP::TVldTimeStamp endOther   = other.GetVldRange().GetTimeEnd();
 
 // If entry brackets query date, then use it but with a validity that
 // is trimmed by the current record.
 
-  if ( startOther <= queryTime && endOther > queryTime ) {
-    if ( start < startOther ) start = startOther;
-    if ( end   > endOther   ) end   = endOther;
-    *this = other;
-    SetTimeWindow(start,end);
-  }
+    if (startOther <= queryTime && endOther > queryTime) {
+        if (start < startOther) {
+            start = startOther;
+        }
+        if (end   > endOther) {
+            end   = endOther;
+        }
+        *this = other;
+        SetTimeWindow(start,end);
+    }
 
 // It doesn't bracket, so use it to trim the window
 
-  else {
+    else {
 
-    if ( endOther <= queryTime ) {
-      if ( start < endOther   ) SetTimeWindow(endOther,end);
+        if (endOther <= queryTime) {
+            if (start < endOther) {
+                SetTimeWindow(endOther,end);
+            }
+        }
+        else if (startOther > queryTime) {
+            if (end   > startOther) {
+                SetTimeWindow(start, startOther);
+            }
+        }
     }
-    else if ( startOther > queryTime ) {
-      if ( end   > startOther ) SetTimeWindow(start, startOther);
-    }
-  }
 
 }
 

@@ -17,7 +17,7 @@
 /// To use this class, you *must* do the following in your constructor:
 /// class C : public TDbiCfgConfigurable
 /// {
-///   C:C() { 
+///   C:C() {
 ///     // fill the default config:
 ///     TDbiRegistry r;
 ///     r.Set("a",42);
@@ -30,7 +30,7 @@
 /// the correct defaults.
 ///
 /// messier@huhepl.harvard.edu
-/// 
+///
 /// 2002/08/23, modifed to inherit from TDbiRegistry and
 /// not call Config() in the sub constructor. bv@bnl.gov
 ///
@@ -43,7 +43,7 @@
 # include "TDbiRegistry.hxx"
 #endif
 namespace CP {
-class TDbiCfgDialog;
+    class TDbiCfgDialog;
 }
 
 #ifndef ROOT_Rtypes
@@ -53,41 +53,40 @@ class TDbiCfgDialog;
 #endif
 
 namespace CP {
-class TDbiCfgConfigurable
-{
-  
-public:
+    class TDbiCfgConfigurable {
 
-  TDbiCfgConfigurable();
-  virtual ~TDbiCfgConfigurable();
+    public:
 
-  /// Subclass should implement this method:
-  virtual void            Config() = 0;
+        TDbiCfgConfigurable();
+        virtual ~TDbiCfgConfigurable();
 
-  /// Access default and main configuration
-  virtual const TDbiRegistry& DefaultConfig() const;
-  TDbiRegistry&               GetConfig();
-  const TDbiRegistry&         GetConfig() const;
+        /// Subclass should implement this method:
+        virtual void            Config() = 0;
 
-  /// Call anytime.  Triggers Config() only if it has been modifed
-  /// since last calling.
-  int  Update();
+        /// Access default and main configuration
+        virtual const TDbiRegistry& DefaultConfig() const;
+        TDbiRegistry&               GetConfig();
+        const TDbiRegistry&         GetConfig() const;
 
-  /// Set config via interactive dialog
-  void Set(CP::TDbiCfgDialog* d=0);
+        /// Call anytime.  Triggers Config() only if it has been modifed
+        /// since last calling.
+        int  Update();
 
-  /// Set config via string
-  void Set(const char* s);
+        /// Set config via interactive dialog
+        void Set(CP::TDbiCfgDialog* d=0);
 
-protected:
-  virtual void CommitDefaultConfig(const TDbiRegistry& r);
+        /// Set config via string
+        void Set(const char* s);
 
-private:
-  TDbiRegistry fDefConfig, fConfig;
-    
+    protected:
+        virtual void CommitDefaultConfig(const TDbiRegistry& r);
 
-  ClassDef(TDbiCfgConfigurable,1)
-};
+    private:
+        TDbiRegistry fDefConfig, fConfig;
+
+
+        ClassDef(TDbiCfgConfigurable,1)
+    };
 };
 
 #endif // CFGCONFIGURABLE_H

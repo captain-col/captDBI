@@ -32,28 +32,28 @@ std::ostream& CP::operator<<(std::ostream& os, const CP::TDbiResultKey& key) {
 //.....................................................................
 
 CP::TDbiResultKey::TDbiResultKey(const CP::TDbiResultKey* that /* =0 */) :
-fNumVRecKeys(0)
-{
+    fNumVRecKeys(0) {
     //
     //
     //  Purpose:  Default constructor
     //
-    
-    
-    DbiTrace( "Creating CP::TDbiResultKey" << "  ");
-    if ( that ) *this = *that;
+
+
+    DbiTrace("Creating CP::TDbiResultKey" << "  ");
+    if (that) {
+        *this = *that;
+    }
 }
 
 ///.....................................................................
 
 CP::TDbiResultKey::TDbiResultKey(std::string tableName,
-    std::string rowName,
-    UInt_t seqno,
-    CP::TVldTimeStamp ts) :
-fTableName(tableName),
-fRowName(rowName),
-fNumVRecKeys(0)
-{
+                                 std::string rowName,
+                                 UInt_t seqno,
+                                 CP::TVldTimeStamp ts) :
+    fTableName(tableName),
+    fRowName(rowName),
+    fNumVRecKeys(0) {
     //
     //
     //  Purpose:  Standard constructor
@@ -64,10 +64,10 @@ fNumVRecKeys(0)
     //  =============
     //
     //  o  Create CP::TDbiResultKey.
-    
-    
-    DbiTrace( "Creating CP::TDbiResultKey" << "  ");
-    
+
+
+    DbiTrace("Creating CP::TDbiResultKey" << "  ");
+
     this->AddVRecKey(seqno,ts);
 }
 
@@ -84,10 +84,10 @@ CP::TDbiResultKey::~TDbiResultKey() {
     //  =============
     //
     //  o  Destroy CP::TDbiResultKey
-    
-    
-    DbiTrace( "Destroying CP::TDbiResultKey" << "  ");
-    
+
+
+    DbiTrace("Destroying CP::TDbiResultKey" << "  ");
+
 }
 
 //.....................................................................
@@ -97,10 +97,10 @@ void CP::TDbiResultKey::AddVRecKey(UInt_t seqno, CP::TVldTimeStamp ts) {
     //
     //  Purpose:  Add a CP::TDbiValidityRec key.
     //
-    
+
     fVRecKeys.push_back(VRecKey(seqno,ts));
     ++fNumVRecKeys;
-    
+
 }
 
 //.....................................................................
@@ -113,38 +113,56 @@ std::string CP::TDbiResultKey::AsString() const {
     //            2)  The number of validity records (aggregates)
     //            3)  The range of SEQNOs
     //            4)  The range of CREATIONDATEs.
-    
+
     std::ostringstream os;
     os << "Table:" << fTableName << " row:" << fRowName;
-    if ( fVRecKeys.empty() ) os << " No vrecs";
+    if (fVRecKeys.empty()) {
+        os << " No vrecs";
+    }
     else {
-    	os << ".  " << fNumVRecKeys << " vrec";
-    	if ( fNumVRecKeys > 1 ) os << "s (seqno min..max;creationdate min..max):";
-    	else                    os << " (seqno;creationdate):";
-    	os << " ";
-    	std::list<VRecKey>::const_iterator itr    = fVRecKeys.begin();
-    	std::list<VRecKey>::const_iterator itrEnd = fVRecKeys.end();
-    	UInt_t seqnoMin    = itr->SeqNo;
-    	UInt_t seqnoMax    = seqnoMin;
-    	CP::TVldTimeStamp tsMin = itr->CreationDate;
-    	CP::TVldTimeStamp tsMax = tsMin;
-    	++itr;
-    	while ( itr != itrEnd ) {
-    	    UInt_t       seqno = itr->SeqNo;
-    	    CP::TVldTimeStamp ts    = itr->CreationDate;
-    	    if ( seqno < seqnoMin ) seqnoMin = seqno;
-    	    if ( seqno > seqnoMax ) seqnoMax = seqno;
-    	    if (    ts < tsMin    ) tsMin    = ts;
-    	    if (    ts > tsMax    ) tsMax    = ts;
-    	    ++itr;
-    	}
-    	os << seqnoMin;
-    	if ( seqnoMin < seqnoMax ) os << ".." << seqnoMax;
-    	os << ";" << tsMin.AsString("s");
-    	if ( tsMin < tsMax ) os << ".." <<  tsMax.AsString("s");
+        os << ".  " << fNumVRecKeys << " vrec";
+        if (fNumVRecKeys > 1) {
+            os << "s (seqno min..max;creationdate min..max):";
+        }
+        else {
+            os << " (seqno;creationdate):";
+        }
+        os << " ";
+        std::list<VRecKey>::const_iterator itr    = fVRecKeys.begin();
+        std::list<VRecKey>::const_iterator itrEnd = fVRecKeys.end();
+        UInt_t seqnoMin    = itr->SeqNo;
+        UInt_t seqnoMax    = seqnoMin;
+        CP::TVldTimeStamp tsMin = itr->CreationDate;
+        CP::TVldTimeStamp tsMax = tsMin;
+        ++itr;
+        while (itr != itrEnd) {
+            UInt_t       seqno = itr->SeqNo;
+            CP::TVldTimeStamp ts    = itr->CreationDate;
+            if (seqno < seqnoMin) {
+                seqnoMin = seqno;
+            }
+            if (seqno > seqnoMax) {
+                seqnoMax = seqno;
+            }
+            if (ts < tsMin) {
+                tsMin    = ts;
+            }
+            if (ts > tsMax) {
+                tsMax    = ts;
+            }
+            ++itr;
+        }
+        os << seqnoMin;
+        if (seqnoMin < seqnoMax) {
+            os << ".." << seqnoMax;
+        }
+        os << ";" << tsMin.AsString("s");
+        if (tsMin < tsMax) {
+            os << ".." <<  tsMax.AsString("s");
+        }
     }
     return std::string(os.str());
-    
+
 }
 //.....................................................................
 
@@ -159,48 +177,58 @@ Float_t CP::TDbiResultKey::Compare(const CP::TDbiResultKey* that) const {
     //             >= f  Table and row names match and fraction f of the
     //                   SEQNOs have same creation date.
     //                   So f = 1.  = perfect match.
-    
+
     //  Program Notes:-
     //  =============
-    
+
     //  None.
-    
+
     // Check in table and row names.
-    if ( fTableName != that->fTableName ) return -2.;
-    if ( fRowName   != that->fRowName   ) return -1.;
-    
+    if (fTableName != that->fTableName) {
+        return -2.;
+    }
+    if (fRowName   != that->fRowName) {
+        return -1.;
+    }
+
     // Pick the key with the most entries and compare the other to it.
-    
-    DbiDebug( "Comparing " << *this << " to "
-    	<< *that << "  ");
-    
+
+    DbiDebug("Comparing " << *this << " to "
+             << *that << "  ");
+
     const CP::TDbiResultKey* keyBig   = this;
     const CP::TDbiResultKey* keySmall = that;
-    if ( that->GetNumVrecs() > this->GetNumVrecs() ) {
-    	keyBig   = that;
-    	keySmall = this;
+    if (that->GetNumVrecs() > this->GetNumVrecs()) {
+        keyBig   = that;
+        keySmall = this;
     }
     int numVrecs = keyBig->GetNumVrecs();
-    if ( numVrecs == 0 ) return 0.;
-    
+    if (numVrecs == 0) {
+        return 0.;
+    }
+
     std::map<UInt_t,CP::TVldTimeStamp> seqnoToCreationDate;
     std::list<CP::TDbiResultKey::VRecKey>::const_iterator itrEnd = keyBig->fVRecKeys.end();
-    for (  std::list<CP::TDbiResultKey::VRecKey>::const_iterator itr = keyBig->fVRecKeys.begin();
-    	itr != itrEnd;
-    	++itr ) seqnoToCreationDate[itr->SeqNo] = itr->CreationDate;
+    for (std::list<CP::TDbiResultKey::VRecKey>::const_iterator itr = keyBig->fVRecKeys.begin();
+         itr != itrEnd;
+         ++itr) {
+        seqnoToCreationDate[itr->SeqNo] = itr->CreationDate;
+    }
     float match = 0;
     itrEnd = keySmall->fVRecKeys.end();
-    for (  std::list<CP::TDbiResultKey::VRecKey>::const_iterator itr = keySmall->fVRecKeys.begin();
-    	itr != itrEnd;
-    	++itr ) {
-    DbiDebug( "Comparing seqno " << itr->SeqNo << " with creation date " << itr->CreationDate
-    	<< " to " <<  seqnoToCreationDate[itr->SeqNo] << "  ");
-    if ( seqnoToCreationDate[itr->SeqNo] == itr->CreationDate ) ++match;
-    	}
-    	DbiDebug( "Match results: " << match << " out of " << numVrecs << "  ");
-    	
-    	return match/numVrecs;
-    	
+    for (std::list<CP::TDbiResultKey::VRecKey>::const_iterator itr = keySmall->fVRecKeys.begin();
+         itr != itrEnd;
+         ++itr) {
+        DbiDebug("Comparing seqno " << itr->SeqNo << " with creation date " << itr->CreationDate
+                 << " to " <<  seqnoToCreationDate[itr->SeqNo] << "  ");
+        if (seqnoToCreationDate[itr->SeqNo] == itr->CreationDate) {
+            ++match;
+        }
+    }
+    DbiDebug("Match results: " << match << " out of " << numVrecs << "  ");
+
+    return match/numVrecs;
+
 }
 
 //.....................................................................
@@ -209,11 +237,11 @@ std::string CP::TDbiResultKey::GetTableRowName() const {
     //
     //
     //  Purpose:  Return TableName::RowName
-    
+
     std::ostringstream os;
     os << fTableName << "::" << fRowName;
     return os.str();
-    
+
 }
 /*    Template for New Member Function
 

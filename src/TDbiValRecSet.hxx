@@ -24,46 +24,47 @@
 #include <string>
 
 namespace CP {
-class TDbiResultSet;
-class TDbiValidityRec;
+    class TDbiResultSet;
+    class TDbiValidityRec;
 }
 
 namespace CP {
-class TDbiValRecSet
-{
+    class TDbiValRecSet {
 
-public:
+    public:
 
 // Constructors and destructors.
-           TDbiValRecSet(const std::string& tableName,UInt_t dbNo,UInt_t seqNo=0);
-  virtual ~TDbiValRecSet();
+        TDbiValRecSet(const std::string& tableName,UInt_t dbNo,UInt_t seqNo=0);
+        virtual ~TDbiValRecSet();
 
 // State testing member functions
-               UInt_t GetDbNo() const { return fDbNo; }
-               UInt_t GetNumRows() const;
-         const std::string GetTableName() const;
-const TDbiValidityRec* GetTableRow(UInt_t rowNum) const;
-const TDbiValidityRec* GetTableRowBySeqNo(UInt_t seqNo) const;
+        UInt_t GetDbNo() const {
+            return fDbNo;
+        }
+        UInt_t GetNumRows() const;
+        const std::string GetTableName() const;
+        const TDbiValidityRec* GetTableRow(UInt_t rowNum) const;
+        const TDbiValidityRec* GetTableRowBySeqNo(UInt_t seqNo) const;
 
 // State changing member functions
 
-private:
+    private:
 
 // Data members
 
 //// Database number used to fill
-  UInt_t fDbNo;
+        UInt_t fDbNo;
 
 /// Result holding table of TDbiValidityRec
-  TDbiResultSet* fResult;
+        TDbiResultSet* fResult;
 
 /// Lookup SeqNo -> TDbiValidityRec
 /// lazy creation - see GetTableRowBySeqNo
-    mutable std::map<UInt_t,const TDbiValidityRec*>fSeqNoToRec;
+        mutable std::map<UInt_t,const TDbiValidityRec*>fSeqNoToRec;
 
- ClassDef(TDbiValRecSet,0)     //  A set of TDbiValidityRecs
+        ClassDef(TDbiValRecSet,0)     //  A set of TDbiValidityRecs
 
-};
+    };
 };
 
 

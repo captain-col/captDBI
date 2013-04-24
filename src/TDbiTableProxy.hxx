@@ -31,34 +31,46 @@
 #include "TVldTimeStamp.hxx"
 
 namespace CP {
-class TDbiCache;
-class TDbiCascader;
-class TDbiResultSet;
-class TDbiDatabaseManager;
-class TDbiTableRow;
-class TDbiValidityRec;
-class TDbiValidityRecBuilder;
+    class TDbiCache;
+    class TDbiCascader;
+    class TDbiResultSet;
+    class TDbiDatabaseManager;
+    class TDbiTableRow;
+    class TDbiValidityRec;
+    class TDbiValidityRecBuilder;
 }
 
 namespace CP {
-class TDbiTableProxy
-{
+    class TDbiTableProxy {
 
-  friend class TDbiDatabaseManager;    //Allow Resistry access to ctor/dtor.
+        friend class TDbiDatabaseManager;    //Allow Resistry access to ctor/dtor.
 
-public:
+    public:
 
 // State testing member functions
-      const TDbiDBProxy& GetDBProxy() const { return fDBProxy; }
-           TDbiCascader& GetCascader() { return *fCascader; }
-const TDbiTableMetaData& GetMetaData() const { return fMetaData; }
-const TDbiTableMetaData& GetMetaValid() const { return fMetaValid; }
-                 std::string GetRowName() const {
-                      return fTableRow ? fTableRow->ClassName() : "Unknown";}
-                 std::string GetTableName() const { return fTableName;}
+        const TDbiDBProxy& GetDBProxy() const {
+            return fDBProxy;
+        }
+        TDbiCascader& GetCascader() {
+            return *fCascader;
+        }
+        const TDbiTableMetaData& GetMetaData() const {
+            return fMetaData;
+        }
+        const TDbiTableMetaData& GetMetaValid() const {
+            return fMetaValid;
+        }
+        std::string GetRowName() const {
+            return fTableRow ? fTableRow->ClassName() : "Unknown";
+        }
+        std::string GetTableName() const {
+            return fTableName;
+        }
 // State changing member functions
-              TDbiCache* GetCache() { return fCache;}
-              //
+        TDbiCache* GetCache() {
+            return fCache;
+        }
+        //
 ///\verbatim
 ///  Purpose:  Apply context specific query to database table and return result.
 ///
@@ -85,9 +97,9 @@ const TDbiTableMetaData& GetMetaValid() const { return fMetaValid; }
 ///
 ///  See if there is one already in the cache for universal aggregate no.
 /// \endverbatim
-       const TDbiResultSet* Query(const CP::TVldContext& vc,
-                              const TDbi::Task& task,
-                              Bool_t findFullTimeWindow = true);
+        const TDbiResultSet* Query(const CP::TVldContext& vc,
+                                   const TDbi::Task& task,
+                                   Bool_t findFullTimeWindow = true);
 ///
 ///\verbatim
 ///  Purpose:  Apply extended context query to database table and return result.
@@ -115,11 +127,11 @@ const TDbiTableMetaData& GetMetaValid() const { return fMetaValid; }
 ///  Construct the query's "SQL Qualifiers" by forming the 3 strings
 ///  (which task encoded into the context) into a single semi-colon
 ///  separated string.
-/// \endverbatim                              
-       const TDbiResultSet* Query(const std::string& context,
-                              const TDbi::Task& task,
-                              const std::string& data,
-                              const std::string& fillOpts);
+/// \endverbatim
+        const TDbiResultSet* Query(const std::string& context,
+                                   const TDbi::Task& task,
+                                   const std::string& data,
+                                   const std::string& fillOpts);
 ///\verbatim
 ///
 ///  Purpose:  Apply non-agregate query to database table and return result.
@@ -130,7 +142,7 @@ const TDbiTableMetaData& GetMetaValid() const { return fMetaValid; }
 ///
 ///  Return:    Query result (never zero even if query fails).
 ///\endverbatim
-       const TDbiResultSet* Query(UInt_t seqNo,UInt_t dbNo);
+        const TDbiResultSet* Query(UInt_t seqNo,UInt_t dbNo);
 ///\verbatim
 ///
 ///  Purpose:  Apply non-agregate query to database table and return result.
@@ -149,8 +161,8 @@ const TDbiTableMetaData& GetMetaValid() const { return fMetaValid; }
 ///  o Apply non-aggregated query to main database table. Cache if required,
 ///    and return result.
 ///\endverbatim
-       const TDbiResultSet* Query(const TDbiValidityRec& vrec,
-                              Bool_t canReuse = kTRUE);
+        const TDbiResultSet* Query(const TDbiValidityRec& vrec,
+                                   Bool_t canReuse = kTRUE);
 ///\verbatim
 ///
 ///  Purpose:  Determine a suitable Creation Date so that this validity
@@ -193,14 +205,14 @@ const TDbiTableMetaData& GetMetaValid() const { return fMetaValid; }
 /// than a few minutes apart)
 ///
 ///\endverbatim
- 
-           CP::TVldTimeStamp QueryOverlayCreationDate(const TDbiValidityRec& vrec,
-					         UInt_t dbNo);
+
+        CP::TVldTimeStamp QueryOverlayCreationDate(const TDbiValidityRec& vrec,
+                                                   UInt_t dbNo);
 ///
 ///
 ///  Purpose:  Refresh meta data for table.
 ///
- 	           void RefreshMetaData();
+        void RefreshMetaData();
 ///\verbatim
 ///
 ///  Purpose:  Apply Sql condition to its CP::TDbiDBProxy.
@@ -222,10 +234,12 @@ const TDbiTableMetaData& GetMetaValid() const { return fMetaValid; }
 ///
 ///  None.
 ///\endverbatim
- 	           void SetSqlCondition(const std::string& sql);
-                 Bool_t TableExists() const { return fExists; }
+        void SetSqlCondition(const std::string& sql);
+        Bool_t TableExists() const {
+            return fExists;
+        }
 
-protected:
+    protected:
 
 ///Constructors (protected because created and owned by TDbiDatabaseManager).
 ///\verbatim
@@ -246,26 +260,26 @@ protected:
 ///
 ///  o Create table proxy for supplied table name.
 ///\endverbatim
-           TDbiTableProxy(TDbiCascader* cascader,
-                         const std::string& tableName,
-                         const TDbiTableRow* tableRow);
-  virtual ~TDbiTableProxy();
+        TDbiTableProxy(TDbiCascader* cascader,
+                       const std::string& tableName,
+                       const TDbiTableRow* tableRow);
+        virtual ~TDbiTableProxy();
 
 // State testing member functions
 
 // State changing member functions
 
-private:
+    private:
 
 // Disabled (not implemented) copy constructor and asignment.
 
- TDbiTableProxy(const TDbiTableProxy&);
- CP::TDbiTableProxy& operator=(const CP::TDbiTableProxy&);
+        TDbiTableProxy(const TDbiTableProxy&);
+        CP::TDbiTableProxy& operator=(const CP::TDbiTableProxy&);
 
 
 /// Level 2 (disk) cache management.
- Bool_t CanReadL2Cache() const;
- Bool_t CanWriteL2Cache() const;
+        Bool_t CanReadL2Cache() const;
+        Bool_t CanWriteL2Cache() const;
 ///\verbatim
 ///
 ///  Purpose: Restore results from named level 2 disk cache into memory cache.
@@ -276,7 +290,7 @@ private:
 ///
 ///  o Restore to cache but only if enabled and exists.
 ///\endverbatim
- Bool_t RestoreFromL2Cache(const TDbiValidityRecBuilder& builder);
+        Bool_t RestoreFromL2Cache(const TDbiValidityRecBuilder& builder);
 ///\verbatim
 ///
 ///  Purpose: Save result to named level 2 cache. Returns true if saved.
@@ -286,42 +300,42 @@ private:
 ///
 ///  o Save to cache but only if enabled and suitable.
 ///\endverbatim
- Bool_t SaveToL2Cache(const std::string& name, TDbiResultSet& res);
+        Bool_t SaveToL2Cache(const std::string& name, TDbiResultSet& res);
 
 // Data members (fMeta* must precede fDBProxy, it has to be created
 //               first - see initialiser list)
 
 
 /// Pointer  to one and only cascader
-  TDbiCascader* fCascader;
+        TDbiCascader* fCascader;
 
 /// Meta data for main(data) table.
-  TDbiTableMetaData fMetaData;
+        TDbiTableMetaData fMetaData;
 
 /// Meta data for aux. (validity)table.
-  TDbiTableMetaData fMetaValid;
+        TDbiTableMetaData fMetaValid;
 
 /// True if row supports L2 cache.
-   Bool_t fCanL2Cache;
+        Bool_t fCanL2Cache;
 
 /// Associated cache for result.
-  TDbiCache* fCache;
+        TDbiCache* fCache;
 
 /// Proxy to database
-  TDbiDBProxy fDBProxy;
+        TDbiDBProxy fDBProxy;
 
 /// true if table exists;
-  Bool_t fExists;
+        Bool_t fExists;
 
 /// Table Name
-std::string  fTableName;
+        std::string  fTableName;
 
 /// Pet object used to create new rows.
- TDbiTableRow* fTableRow;
+        TDbiTableRow* fTableRow;
 
-ClassDef(TDbiTableProxy,0)        // Object to query a specific table.
+        ClassDef(TDbiTableProxy,0)        // Object to query a specific table.
 
-};
+    };
 };
 
 

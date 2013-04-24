@@ -19,31 +19,31 @@
 #endif
 #endif
 
-namespace CP{
-namespace DbiSimFlag {
+namespace CP {
+    namespace DbiSimFlag {
 
-   typedef enum ESimFlag {
-      kUnknown      = 0x00,
-      kData         = 0x01,
-      kDaqFakeData  = 0x02, 
-      kMC           = 0x04,
-      kReroot       = 0x08
-   } SimFlag_t;
+        typedef enum ESimFlag {
+            kUnknown      = 0x00,
+            kData         = 0x01,
+            kDaqFakeData  = 0x02,
+            kMC           = 0x04,
+            kReroot       = 0x08
+        } SimFlag_t;
 
-   Int_t       FullMask();
+        Int_t       FullMask();
 
-   // Translation enum to/from character strings
+        // Translation enum to/from character strings
 
-   const Char_t*       AsString(SimFlag_t detector);
-   const Char_t*       MaskToString(Int_t mask);
-   DbiSimFlag::SimFlag_t  StringToEnum(const Char_t* chars, Int_t maxChar=0);
-   Int_t               StringToMask(const Char_t* chars, Int_t maxChar=0);
+        const Char_t*       AsString(SimFlag_t detector);
+        const Char_t*       MaskToString(Int_t mask);
+        DbiSimFlag::SimFlag_t  StringToEnum(const Char_t* chars, Int_t maxChar=0);
+        Int_t               StringToMask(const Char_t* chars, Int_t maxChar=0);
 
-   // Translation from mask to compact value
-   Int_t               Compact(SimFlag_t simFlag);
-   DbiSimFlag::SimFlag_t  Expand(Int_t compactSimFlag);
+        // Translation from mask to compact value
+        Int_t               Compact(SimFlag_t simFlag);
+        DbiSimFlag::SimFlag_t  Expand(Int_t compactSimFlag);
 
-}
+    }
 }
 
 #endif // SIMFLAG_H

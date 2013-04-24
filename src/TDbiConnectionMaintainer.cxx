@@ -26,10 +26,12 @@ CP::TDbiConnectionMaintainer::TDbiConnectionMaintainer(CP::TDbiCascader* cascade
 // temporary, once any other associated TDbiStatement.hxxas been deleted.
 
 
-  DbiTrace( "Creating CP::TDbiConnectionMaintainer" << "  ");
+    DbiTrace("Creating CP::TDbiConnectionMaintainer" << "  ");
 
-  fCascader = cascader;
-  if ( fCascader ) fCascader->HoldConnections();
+    fCascader = cascader;
+    if (fCascader) {
+        fCascader->HoldConnections();
+    }
 
 }
 //.....................................................................
@@ -37,10 +39,12 @@ CP::TDbiConnectionMaintainer::TDbiConnectionMaintainer(CP::TDbiCascader* cascade
 
 CP::TDbiConnectionMaintainer::~TDbiConnectionMaintainer() {
 
-  if ( fCascader ) fCascader->ReleaseConnections();
+    if (fCascader) {
+        fCascader->ReleaseConnections();
+    }
 
 
-  DbiTrace( "Destroying CP::TDbiConnectionMaintainer" << "  ");
+    DbiTrace("Destroying CP::TDbiConnectionMaintainer" << "  ");
 
 }
 

@@ -27,24 +27,27 @@
  */
 
 namespace CP {
-class TDbiServices
-{
+    class TDbiServices {
 
-  friend class TDbiDatabaseManager;
+        friend class TDbiDatabaseManager;
 
-public:
+    public:
 
-static bool AsciiDBConectionsTemporary() { return fAsciiDBConectionsTemporary; }
-static bool OrderContextQuery() { return fOrderContextQuery; }
+        static bool AsciiDBConectionsTemporary() {
+            return fAsciiDBConectionsTemporary;
+        }
+        static bool OrderContextQuery() {
+            return fOrderContextQuery;
+        }
 
-private:
+    private:
 
 // Data members
 
-  static bool fAsciiDBConectionsTemporary;
-  static bool fOrderContextQuery;
+        static bool fAsciiDBConectionsTemporary;
+        static bool fOrderContextQuery;
 
-};
+    };
 };
 
 

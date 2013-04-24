@@ -6,7 +6,7 @@ ClassImp(CP::TTableRow);
 
 CP::TTableRow::TTableRow()  {
 
-   // Default constructor
+    // Default constructor
 
     DbiTrace("CP::TTableRow: Default ctor at:" << (void*) this);
 
@@ -17,7 +17,7 @@ CP::TTableRow::TTableRow()  {
 
 CP::TTableRow::TTableRow(const CP::TTableRow& from) {
 
-   // Copy constructor
+    // Copy constructor
 
     DbiTrace("CP::TTableRow: Copy ctor at:" << (void*) this);
 
@@ -29,7 +29,7 @@ CP::TTableRow::TTableRow(const CP::TTableRow& from) {
 
 CP::TTableRow::~TTableRow()  {
 
-   // Destructor
+    // Destructor
 
     DbiTrace("CP::TTableRow: dtor at:" << (void*) this);
 
