@@ -53,6 +53,3 @@ macro install_dir $(CAPTDBIROOT)/$(captDBI_tag)
 document installer installer ../app/database_updater.py 
 document installer installer ../app/database_access_string.py
 
-# Define a setup script to check that calibration database environment variables
-# are set.  If not, use defaults.
-setup_script caldb_env_setup
