@@ -4,8 +4,8 @@
 
 #include "TVldContext.hxx"
 
-// Before instantiating templated CP::TDbiResultSetHandle classes, which will use MessageService
-// insure that __CVSID__ symbol is defined.
+// Before instantiating templated CP::TDbiResultSetHandle classes, which will
+// use MessageService insure that __CVSID__ symbol is defined.
 
 #include <TDbiLog.hxx>
 #include <MsgFormat.hxx>
