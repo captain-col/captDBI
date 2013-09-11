@@ -2,16 +2,21 @@
 // file is essentially the global readme for this library. This is a
 // collection of \mainpage and \page directives
 
-
-
 /*! 
-\mainpage The oaOfflineDatabase Library
+\mainpage The captDBI Library
   
-\anchor oaOfflineDatabase
+\anchor captDBI
 
-\section oaOffDBIIntroduction High-Level Conceptual Overview
+\section captDBIIntroduction High-Level Conceptual Overview
+	 
+  This package has been imported from the T2K experiment where it is
+  maintained by Alex Finch, and previously Nick West.  It is derived from
+  the MINOS database retrieval API.  The version used by CAPTAIN is lightly
+  customized, but otherwise is a direct uses all of Nick's and Alex's work
+  (and probably others that I don't know about).
 
-  This package provides a \ref oaOffDBIDataRetrieval "C++ Data Retrieval API" for answering requests of the form:
+  This package provides a \ref captDBIDataRetrieval "C++ Data Retrieval
+  API" for answering requests of the form:
 
   \anchor FunctionalRequest 'For a given event E, get the <b>Calibration Constant</b> X=f(D,S) for channel C'
   
@@ -52,7 +57,7 @@
   These requirements are accommodated through careful design at two levels:
   
   <ul>
-  <li>The underlying <b>Data Structure</b>: a normalized\ref glossNorm "*" \ref oaOffDBIDataStructurePhys "database schema" with a level of indirection between the concepts of <b>Calibration Constants</b> and their <b>Validity intervals</b>
+  <li>The underlying <b>Data Structure</b>: a normalized\ref glossNorm "*" \ref captDBIDataStructurePhys "database schema" with a level of indirection between the concepts of <b>Calibration Constants</b> and their <b>Validity intervals</b>
   <li>The <b>Data Retrieval</b> strategy: a \ref algorithm_description "method" 
   for solving the aforementioned systems at runtime, combining rows from
   the database into a set of <b>Calibration Constants</b> satisfying
@@ -61,7 +66,7 @@
   
   <hr />
   
-  The core \ref oaOffDBIDataStructure "Data Structure" and \ref oaOffDBIDataRetrieval "Data Retrieval" concepts are those of the
+  The core \ref captDBIDataStructure "Data Structure" and \ref captDBIDataRetrieval "Data Retrieval" concepts are those of the
   repackaged MINOS DBI code, instrumented by a small set of ND280-specific 
   classes (TResultSetHandle, TTableRow, etc.) \ref data_insertion is implemented
   by a separate script (database_updater.py). \ref data_distribution is achieved 
@@ -74,26 +79,26 @@
 \section Contents 
 
   <ul>
-  <li>\ref oaOffDBIIntroduction
+  <li>\ref captDBIIntroduction
 
-  <li>\ref oaOffDBIDataStructure
-  <li>\ref oaOffDBIDataRetrieval
+  <li>\ref captDBIDataStructure
+  <li>\ref captDBIDataRetrieval
   <li>\ref data_insertion
   <li>\ref data_distribution
   
-  <li>\ref oaOffDBIAppEnvironment
-  <li>\ref oaOffDBIAppTmpTbls
-  <li>\ref oaOffDBIAppAttributes
-  <li>\ref oaOffDBIAppNewTables
+  <li>\ref captDBIAppEnvironment
+  <li>\ref captDBIAppTmpTbls
+  <li>\ref captDBIAppAttributes
+  <li>\ref captDBIAppNewTables
   
   <li>\ref glossary
 
-  <li>\ref oaOffDBIFurtherReading  
+  <li>\ref captDBIFurtherReading  
   </ul>
 
 
-  \section oaOffDBIDataStructure Data Structure
-  \subsection oaOffDBIDataStructurePhys Physical Design
+  \section captDBIDataStructure Data Structure
+  \subsection captDBIDataStructurePhys Physical Design
   
   \image html time_structure.png
   
@@ -122,11 +127,11 @@
   their associated <b>Calibration Constants</b>) in a separate dimension or subcategory. These
   extra attributes can be used as a <i>discriminant</i> when data is later retrieved.
   
-  For specifications, please see \ref oaOffDBIAppAttributes.
+  For specifications, please see \ref captDBIAppAttributes.
   
-  \subsection oaOffDBIDataStructureFunc Functional Perspective (Design Rationale)
+  \subsection captDBIDataStructureFunc Functional Perspective (Design Rationale)
   
-  oaOfflineDatabase has a clear functional goal: to \ref FunctionalRequest "answer requests in a standard form."
+  captDBI has a clear functional goal: to \ref FunctionalRequest "answer requests in a standard form."
   
   Doing this efficiently (minimizing data duplication and maximizing lookup efficiency), requires:
   
@@ -156,7 +161,7 @@
   techniques, but uses much less disk space (by minimizing data duplication) and 
   makes it possible to accomodate more \ref AdvancedRequirements "advanced requirements".
   
-  The oaOfflineDatabase package then provides a simplified <b>Interface</b> to the
+  The captDBI package then provides a simplified <b>Interface</b> to the
   data, shielding users from the normalized tables and the lookup algorithm.
   \anchor algorithm_description The <b>Interface</b> enables a macro-level lookup abstraction, where the date/time 
   of an Event is the <i>Key</i> through which one obtains the set of <b>Calibration 
@@ -172,7 +177,7 @@
   <li>S
   </ul>
   
-  oaOfflineDatabase solves the \ref FunctionalRequest "system":
+  captDBI solves the \ref FunctionalRequest "system":
   
   <ul>
   <li>(Lookup Validity Table entries matching D & S) --> Set of <b>Validity Intervals</b>
@@ -185,7 +190,7 @@
 
 
 
-\section oaOffDBIDataRetrieval Data Retrieval API
+\section captDBIDataRetrieval Data Retrieval API
 
 The <b>Interface</b> for retrieving data consists of a few C++ classes that wrap MINOS DBI.
 These return the <a href="http://www-numi.fnal.gov/offline_software/srt_public_context/WebDocs/Companion/overview/DatabaseInterface_3.gif"><b>Calibration Constants</b> best satisfying a given <b>"Event Context"</b></a>
@@ -214,7 +219,7 @@ containing Constants from multiple <b>Validity Intervals</b>) reflecting the
 the Constants, the <b>Context</b> passed to MINOS DBI must be 
 specially adjusted.
   
-\subsection oaOffDBIDataRetrievalDemo Demo
+\subsection captDBIDataRetrievalDemo Demo
 
   For the purpose of this demo we will invent a table of TFB
   calibration constants.  The table will be called DEMO_DB_TABLE.
@@ -269,7 +274,7 @@ to be resolved and to achieve that we introduce the CREATIONDATE
 column which is used to resolve ambiguities in favour of the row with
 the later creation date.  Consequently in our example the validity of
 the first row is effectively trimmed to end on January 15th. However there is an additional mechanism 
-depending on a value called the \ref oaOffDBIEPOCH "EPOCH number" which can supersede the CREATIONDATE.
+depending on a value called the \ref captDBIEPOCH "EPOCH number" which can supersede the CREATIONDATE.
 
   Electronic channel IDs have their top (sign) bit set.  The MINOS
   database doesn't support unsigned integers for historical reasons
@@ -283,18 +288,18 @@ To build and run the demo program (../demo/demo.cxx):
 
 <ol>
 
-<li>Initialize your ND280 development environment and the oaOfflineDatabase package in the normal way
+<li>Initialize your ND280 development environment and the captDBI package in the normal way
 
 \code
 cd ~/my_nd280
 source setup_nd280.sh
-cd oaOfflineDatabase/vXrX/cmt
+cd captDBI/vXrX/cmt
 source setup.sh
 \endcode
 
 Notes:
 
-Sourcing setup.sh will configure a database \ref oaOffDBIAppEnvironment "cascade"
+Sourcing setup.sh will configure a database \ref captDBIAppEnvironment "cascade"
 (unless you have already set the relevant environment variables).
 
 If you intend to use temporary tables in step 3, the cascade must contain a connection that supports temporary tables (such a connection can be added by editing caldb_env_setup.sh).
@@ -313,10 +318,10 @@ make demo
 ../app/database_updater.py apply_local_update ../demo/demo_db_table.update
 \endcode
 
-Since this step writes to the database, you will need to \ref oaOffDBIAppEnvironment "configure the cascade" to 
+Since this step writes to the database, you will need to \ref captDBIAppEnvironment "configure the cascade" to 
 point to the test database (testnd280calib) and use a writer account.
 
-Alternatively, the demo program can use \ref oaOffDBIAppTmpTbls "Temporary Tables":
+Alternatively, the demo program can use \ref captDBIAppTmpTbls "Temporary Tables":
 
 \code
 ../app/database_updater.py --temporary_tables apply_local_update ../demo/demo_db_table.tmp.update > ~/my_temp_constant_tables/demo_db_table.tmp.sql
@@ -331,7 +336,7 @@ The demo queries the database at 5 day intervals from 2008-12-30 to
 2009-02-28 and if running correctly should produce:
 
 \code
-bash-3.2$ ../Linux-x86_64/demooaOfflineDatabase.exe 
+bash-3.2$ ../Linux-x86_64/democaptDBI.exe 
 % Applying query at 2008-12-30 00:00:00 ... failed to find any results.
 % Applying query at 2009-01-04 00:00:00 ... result set contains 4 rows as follows:-
 % DEMO_DB_TABLE row for channel    ECal: TFB:13:00:00:A:16 integer parms: 101,201,301 floating point parms 1.01,2.01,3.01
@@ -367,7 +372,7 @@ Notice how after January the 14th it switches to the 3 row result.
 If you are using Temporary Tables, the parms should be boosted by +1 (demo_db_table.tmp.update has been altered for this):
 
 \code
-bash-3.2$ ../Linux-x86_64/demooaOfflineDatabase.exe
+bash-3.2$ ../Linux-x86_64/democaptDBI.exe
 % Cascader is processing Temp Tables File ENV_TSQL_TMP_TBLS=/home/sclaret/my_temp_constant_tables/demo_db_table.tmp.sql
 % Cascader registered temporary table DEMO_DB_TABLE to connection 0
 % Applying query at 2008-12-30 00:00:00 ... failed to find any results.
@@ -383,7 +388,7 @@ bash-3.2$ ../Linux-x86_64/demooaOfflineDatabase.exe
 
 </ol>
 
-\subsection  oaOffDBIUsingAPI Explanation of demo source code
+\subsection  captDBIUsingAPI Explanation of demo source code
 
 The API to get a set of DEMO_DB_TABLE rows for a given "context" (in
 our case this is an event date and time), is conceptually very simple:
@@ -466,7 +471,7 @@ and again there is a (contrived) example in demo.cxx:-
 Once you have access to an individual CP::TDemo_DB_Table you can use
 its getters to access the row's data.
 
-\subsection  oaOffDBIOwnership Result Set Ownership Model
+\subsection  captDBIOwnership Result Set Ownership Model
 
 The name "ResultSetHandle" should hint pretty clearly that you don't
 own the vector of TDemo_DB_Tables.  Instead the interface caches them
@@ -515,7 +520,7 @@ you can see it perform the read of the two sets just once.
 
 
 
-See \ref oaOffDBIAppNewTables "Appendix 4" for information on defining your own tables and classes.
+See \ref captDBIAppNewTables "Appendix 4" for information on defining your own tables and classes.
 
   \section data_insertion Data Insertion
   
@@ -551,7 +556,7 @@ See \ref oaOffDBIAppNewTables "Appendix 4" for information on defining your own 
   Current information about the servers is kept on the
   <a href="http://www.t2k.org/nd280/database/nd280calib">T2K intranet</a>.
 
-\section  oaOffDBIAppEnvironment Appendix 1: Environment Variables
+\section  captDBIAppEnvironment Appendix 1: Environment Variables
 
 The C++ data retrieval interface maintains a prioritized list of database connections called a 'cascade'.
 When constants need to be retrieved, it uses the first connection that has the required tables.
@@ -601,7 +606,7 @@ calibration database.
 <td>Point to the nearest server (a mirror for EU & JPARC hosts)</td>
 </tr>
 <tr>
-<td>Using \ref oaOffDBIAppTmpTbls "Temporary Tables"</td>
+<td>Using \ref captDBIAppTmpTbls "Temporary Tables"</td>
 <td>Point the first cascade entry to a temp-table hosting db</td>
 </tr>
 </table>
@@ -611,7 +616,7 @@ calibration database.
 Note: environment variables may need to be manually 'unset' if they are going to be re-assigned.
 
 
-\section  oaOffDBIAppTmpTbls Appendix 2: Temporary Tables
+\section  captDBIAppTmpTbls Appendix 2: Temporary Tables
 
 In MySQL, users who have been granted the appropriate privileges on a database, can create 
 Temporary Tables on that database.
@@ -632,11 +637,11 @@ As recommended by MINOS, T2K provides a special db dedicated to Temporary Tables
 along with a special writer account limited to that db.  
 
 Users who wish to utilize temporary tables should place this db in the
-first position of the \ref oaOffDBIAppEnvironment "cascade".  Thanks to the 
+first position of the \ref captDBIAppEnvironment "cascade".  Thanks to the 
 position of the db in the cascade, temporary tables will automatically mask any
 permanent tables of the same name in a later db.
 
-\subsection oaOffDBIAppTmpTblsInit Initializing Temporary Tables
+\subsection captDBIAppTmpTblsInit Initializing Temporary Tables
 
 By definition, temporary tables must be initialized through the same connection
 that reads them.
@@ -661,7 +666,7 @@ for initializing Temporary Tables.
 Users should save this SQL output to a file, and set the environment variable 
 ENV_TSQL_TMP_TBLS to point to it.
 
-When programs using the \ref oaOffDBIDataRetrieval are run, the constructor of 
+When programs using the \ref captDBIDataRetrieval are run, the constructor of 
 CP::TDbiCascader checks for the presence of this environment 
 variable.  If set, it reads SQL statements out of the file and executes them 
 on the first database in the cascade supporting Temporary Tables.
@@ -672,17 +677,17 @@ will be used in preference to permanent tables on later connections.
 
 
 
-\section  oaOffDBIAppAttributes Appendix 3: Validity Interval Attributes
+\section  captDBIAppAttributes Appendix 3: Validity Interval Attributes
 
 
-Conventionally \ref oaOffDBITIMESTART is the time when the data that
-used to produce the calibration was taken.  \ref oaOffDBITIMEEND depends
-on the volatility of the data.  \ref oaOffDBIDETECTORMASK and \ref
-oaOffDBISIMMASK should be set to 1 and \ref oaOffDBITASK and \ref 
-oaOffDBIEPOCH should be set to 0 when  a table is created.  The \ref oaOffDBICREATIONDATE 
+Conventionally \ref captDBITIMESTART is the time when the data that
+used to produce the calibration was taken.  \ref captDBITIMEEND depends
+on the volatility of the data.  \ref captDBIDETECTORMASK and \ref
+captDBISIMMASK should be set to 1 and \ref captDBITASK and \ref 
+captDBIEPOCH should be set to 0 when  a table is created.  The \ref captDBICREATIONDATE 
 should be set to the date when the calibration process was run.
 
-The \ref oaOffDBIINSERTDATE should be set to the date when the data
+The \ref captDBIINSERTDATE should be set to the date when the data
 was entered into the database.  For MINOS there was a special value
 
 <pre>
@@ -695,11 +700,11 @@ set back to the current time and the data itself written to an update
 files that can be applied at other sites.
 
 
-\subsection oaOffDBITIMESTART  TIMESTART
+\subsection captDBITIMESTART  TIMESTART
 
 The inclusive start time for the validity.
 
-\subsection oaOffDBITIMEEND TIMEEND
+\subsection captDBITIMEEND TIMEEND
 
 The exclusive time for the validity.  The row is valid for time t where
 
@@ -707,7 +712,7 @@ The exclusive time for the validity.  The row is valid for time t where
   TIMESTART &lt;= t &lt; TIMEEND
 </pre>
 
-\subsection oaOffDBIEPOCH  EPOCH
+\subsection captDBIEPOCH  EPOCH
 
 The EPOCH number can run from 0 to 100 and provides the highest level
 of ambiguity resolution, Data with higher EPOCH numbers is always
@@ -719,7 +724,7 @@ improvement has occured in the way the data was geneated.
   old-style tables may not have them. All such tables should no longer be put
   in the database. 
 
-\subsection oaOffDBIREALITY  REALITY
+\subsection captDBIREALITY  REALITY
 
 The REALITY number allows us to store data for altered realities,
 that may be useful in systematic studies.  For example, if we want
@@ -731,7 +736,7 @@ all data is given a reality of 0.
   Note that EPOCH and REALITY are new additions to the VLD table and 
   old-style tables may not have them
 
-\subsection oaOffDBIDETECTORMASK  DETECTORMASK
+\subsection captDBIDETECTORMASK  DETECTORMASK
 
 In MINOS we have near and far detectors and part of the context is
 the detector type.  DETECTORMASK is a mask specifying which detectors
@@ -739,13 +744,13 @@ the data applies to.
 
 We could use this in T2K for sub-detectors or abandon it.
 
-\subsection oaOffDBISIMMASK  SIMMASK
+\subsection captDBISIMMASK  SIMMASK
 
 SIMMASK is a mask specifying what types of data i.e. real or MC the
 data applies to.  
 
 
-\subsection oaOffDBITASK  TASK
+\subsection captDBITASK  TASK
 
 Task provides a way to further select the type of data retrieved. For
 example a Detector Configuration data could have two tasks, one for
@@ -755,7 +760,7 @@ according to the mode of use. The default value is zero.
 
 
 
-\subsection oaOffDBIAGGREGATENO  AGGREGATENO
+\subsection captDBIAGGREGATENO  AGGREGATENO
 
 The calibration data for the entire detector is stored in a single
 table although in practise there may be some granularity in it.  For
@@ -785,7 +790,7 @@ can be accommodated in the aggregate numbering scheme
 e.g. 100 * (sub-detector number) + ( sub-detector internal aggregate number)
 </pre>
 
-\subsection oaOffDBICREATIONDATE  CREATIONDATE
+\subsection captDBICREATIONDATE  CREATIONDATE
 
 We have already seen that the CREATIONDATE serves both to record when
 the data was created and also to resolve ambiguity.
@@ -793,20 +798,20 @@ the data was created and also to resolve ambiguity.
 In MINOS this dual role turned out to be a bad idea; the concepts can
 come into conflict.  For T2K the new EPOCH column has been introduced instead.
 
-\subsection oaOffDBIINSERTDATE  INSERTDATE
+\subsection captDBIINSERTDATE  INSERTDATE
 
 This is the date when the data was entered into the local database
 which is independent of CREATIONDATE.  It's useful for rolling back
 the local database to an earlier state.
 
-\section  oaOffDBIAppNewTables Appendix 4: Adding New Tables and Classes
+\section  captDBIAppNewTables Appendix 4: Adding New Tables and Classes
 
 <ul>
-<li>\ref oaOffDBINewTable
-<li>\ref oaOffDBINewClass
+<li>\ref captDBINewTable
+<li>\ref captDBINewClass
 </ul>
 
-\subsection  oaOffDBINewTable New Table
+\subsection  captDBINewTable New Table
 
 Pick an uppercase table name using underscores to make it readable.  For example
 
@@ -824,7 +829,7 @@ XXX_YYY
 XXX_YYYVLD
 </pre>
 
-See \ref oaOffDBITableDefinitions for the constraints on XXX_YYY and
+See \ref captDBITableDefinitions for the constraints on XXX_YYY and
 the definition of XXX_YYYVLD.
 
 For XXX_YYY the MySQl types supported and the ROOT/C++ types they map
@@ -843,7 +848,7 @@ to are as follows:-
 <tr><td>DATETIME      <td>VldTimeStamp              <td>Backend type
 </table>
 
-\subsection  oaOffDBINewClass New Class
+\subsection  captDBINewClass New Class
 
 Study the demonstration files:-
 
@@ -863,11 +868,11 @@ A process for decomposing information into tables, in a way that minimizes redun
 
 \subsection glossFK Foreign Key
 
-Identifies a field in a table that references a field in another table (the 'candidate key'), thereby associating a set of rows from the first table, to a single row in the second table.  This concept is central to oaOfflineDatabase, where 'SEQNO' is a candidate key in the validity table, referenced by a foreign key in the constants table.  The main function of the package is to follow those links, combining the resulting sets according to its 'disambiguation' rules.
+Identifies a field in a table that references a field in another table (the 'candidate key'), thereby associating a set of rows from the first table, to a single row in the second table.  This concept is central to captDBI, where 'SEQNO' is a candidate key in the validity table, referenced by a foreign key in the constants table.  The main function of the package is to follow those links, combining the resulting sets according to its 'disambiguation' rules.
 
 
 
-\section  oaOffDBIFurtherReading Further Reading
+\section  captDBIFurtherReading Further Reading
 
 <a href="http://www.hep.lancs.ac.uk/nd280Doc/stable/invariant/nd280Doc/database_start-a4.pdf"> A useful user's guide has been written by Abbey Waldron and can be found in the ND280Doc area.
 </a>
@@ -886,7 +891,7 @@ features not currently supported in the T2K interface.
 
 <a href="http://www.hep.lancs.ac.uk/%7Eajf/DatabaseTalkApril2010.pdf">Alex Finch's 2010 talk on databases</a>
 
-For information about the summer-2009 discussions that lead to oaOfflineDatabase, please see:
+For information about the summer-2009 discussions that lead to captDBI, please see:
 
 <a href="http://www-pnp.physics.ox.ac.uk/~west/t2k/discussions/Calibration_Database_Design.ppt">N. West Calibration DB Design Presentation</a>
 
@@ -915,7 +920,7 @@ a define
 when it builds the dictionary files. In the long term I would like people to replace all occurences of
 DbiResultPtr with CP::TDbiResultSetHandle in their source code so that at some point this define can be removed.
 
-All code which previously resided in the MinosDBI package is now included in oaOfflineDatabase and conforms to ND280
+All code which previously resided in the MinosDBI package is now included in captDBI and conforms to ND280
 naming conventions. In addition it uses \ref CP::TDbiLog for error reporting and uses CP::EoaCore via the OA_EXCEPTION macro to throw
 exceptions. 
 

@@ -1,7 +1,7 @@
 /*! 
 \page Future Improvements
 
-\section oaOffDBIFuturePlansTransactionalStorageEngine Upgrade to a Transactional Storage Engine
+\section captDBIFuturePlansTransactionalStorageEngine Upgrade to a Transactional Storage Engine
 
 The schema of the Calibration Database makes extensive use of relations
 between tables based on <i>Foreign Key</i> references. 
