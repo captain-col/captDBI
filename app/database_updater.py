@@ -15,104 +15,41 @@ import subprocess
 # mysql: must be on path (unless in --temporary_tables mode)
 
 
-# Updated 24/02/2012 by Simon Claret - t2kcompute@comp.nd280.org
-#
-# Added --temporary_tables option, for use with src/TTempTableRow.cxx
-#
-# Reason: Temporary Tables are connection-specific, therefore the SQL to CREATE
-#         them must be executed from a connection managed by the MINOS DBI cascade.
-#
-#         Since the parsing of update-files is complicated, this script has been 
-#         adapted to print (but not execute) the generated SQL, rather than 
-#         reimplementing the parsing in C++. The output can then be executed 
-#         through a connection managed by the cascade.
-#
-# The required changes were implemented using the "polymorphism" technique. This 
-# allows the new behavior to be added while minimizing changes to the old code.
-#
-# 1.) Added a FakeDatabaseInterface class that only prints the statements, instead
-#     of executing them.
-#
-# 2.) Refactored TableUpdate into TableUpdate, RealTableUpdate and TempTableUpdate.
-
-# Updated 13/02/2012 by Simon Claret - t2kcompute@comp.nd280.org
-#
-# Goal: add resiliency to TCP connection failures
-#       (Istvan Danko reported mysql connections failing, possibly 
-#        leading to corrupt partial updates in the database
-#        https://bugzilla.nd280.org/show_bug.cgi?id=602)
-#
-#       Proposed solutions:
-#
-#       * Investigate TCP connection failures and try to eliminate them 
-#         [rejected - outside our domain]
-#       * Add logic to retry failed Query() invocations
-#         [accepted - despite retaining the potential for corrupt partial updates]
-#       * Add retry logic, around a true ACID transaction 
-#         [rejected - whilst transactions would be the 'modern' (and safest) 
-#         option, they would require converting tables from myisam to innodb,
-#         with which the legacy MINOS DBI code has not been tested]
-#
-# 1.) DatabaseInterface::Query() - added retry logic for the case where mysql
-#     fails the following errors:
-#
-#     ERROR 2006 (HY000) at line 1: MySQL server has gone away
-#     ERROR 2013 (HY000) at line 1: Lost connection to MySQL server during query
-
-# Updated 07/02/2012 by Simon Claret - t2kcompute@comp.nd280.org
-#
-# Goal: increase performance 
-#       (upload times of ~8 hours experienced by Istvan Danko with large files)
-#
-# 1.) TableUpdate::Apply() - removed the mechanism that grouped rows into NUM_ROWS_PER_QUERY
-#     --> Now, all rows are INSERTed in a single query
-#     Reason: reduces # of TCP roundtrips & index flushes
-#
-# 2.) DatabaseInterface::Query() - modified to pipe query to mysql client via subprocess
-#     Reason: max command-line size exceeded with old '--execute=statement' mechanism
-#
-# Other changes:
-#
-# 3.) Enabled compression (though this is probably not the bottleneck)
-#
-# 4.) Modernized IPC mechanism
-#     * Replaced stdout redirection to temporary files with subprocess pipes
-
-#  File components:-
-#
-#  function Usage             Print usage
-#  class DatabaseInterface    A simple interface to a MySQL Database.
-#  class TableUpdate          A table update for a single aggregate.
-#  class DatabaseUpdater      A database updater that parses an ASCII update file
-#                               into TableUpdate and then applies them using DatabaseInterface.
-
-# http://dev.mysql.com/doc/refman/5.0/en/error-messages-client.html
-# Warning: the only errors retried for are 2006 (CR_SERVER_GONE_ERROR) & 2013 (CR_SERVER_LOST)
-MAX_ATTEMPTS = 3 # of times to retry running a 'mysql' subprocess before giving up
+# Number of times to retry running a 'mysql' subprocess before giving up
+MAX_ATTEMPTS = 3 
 
 def usage():
     print """Database Updater Utility
 
-    Note: Before invoking this utility the following database environmental variables must be set:-
+    Note: Before invoking this utility the following database
+    environmental variables must be set:-
 
-        ENV_TSQL_URL  This is a semi-colon separated list of URLs. Each URL takes the form:-
-                           protocol://host[:port]/[database]
-                      where:
-                         protocol - mysql
-                         host     - host name or IP address of database server
-                         port     - port number
-                         database - name of database
-                       Example: mysql://myhost:3306/test
+    ENV_TSQL_URL This is a semi-colon separated list of URLs. Each
+    URL takes the form:-
+        
+       protocol://host[:port]/[database]
+         where:
+             protocol - mysql
+             host     - host name or IP address of database server
+             port     - port number
+                        database - name of database
+         Example: mysql://myhost:3306/test
 
-        ENV_TSQL_USER  The account user name. If  different names for different databases in the cascade
-                       then this can be a semi-colon separated list in the same order as ENV_TSQL_URL.
-                       If the list is shorter than that list, then the first entry is used for the missing entries.
+         ENV_TSQL_USER  The account user name. If  different names for
+         different databases in the cascade then this can
+         be a semi-colon separated list in the same order
+         as ENV_TSQL_URL.  If the list is shorter than
+         that list, then the first entry is used for the
+         missing entries.
 
-        ENV_TSQL_PSWD  The account password here. As with ENV_TSQL_USER it can be a semi-colon separated list
-                       with the first entry providing the default if the list is shorter than ENV_TSQL_URL.
+         ENV_TSQL_PSWD  The account password here. As with ENV_TSQL_USER
+         it can be a semi-colon separated list with the
+         first entry providing the default if the list is
+         shorter than ENV_TSQL_URL.
 
-        Although the oaOfflineDatabase supports multi-database environmental variables this utility ALWAYS
-        uses the first entry.
+         Although the oaOfflineDatabase supports multi-database
+         environmental variables this utility ALWAYS uses the first
+         entry.
 
     Invocation:  database_updater.py [<options>] <command> [<arg>]
 
@@ -120,18 +57,22 @@ def usage():
 
         --convert_unsigned
                     Convert ANY integer data > 2147483647 to signed before
-                    storing by subtracting 4294967296. Useful for unsigned channel IDs.
+                    storing by subtracting 4294967296. Useful for
+                    unsigned channel IDs.
                     CAUTION: Don't use if table contains BIGINTs.
+                    
         --temporary_tables
-                    * Any time this script would generate a 'CREATE TABLE' statement,
-                    generate 'CREATE TEMPORARY TABLE' instead.  
+                    * Any time this script would generate a 'CREATE
+                      TABLE' statement, generate 'CREATE TEMPORARY
+                      TABLE' instead.
                     * Do not connect to the database
                       --> SEQNOS are local to the temporary Validity Table
                       --> Print generated SQL instead of executing it
                           (non-SQL trace output is also silenced)
-                    Note: any CREATE TABLE statements in the update-file must be
-                    manually modified.
+                    Note: any CREATE TABLE statements in the
+                          update-file must be manually modified.
                     (for use from src/TTempTable.cxx)
+                    
         --debug     Print out all MySQL commands
         --help      Prints this help.
         
@@ -139,42 +80,52 @@ def usage():
               
           apply_global_update <update-file>  
               Applies update using global sequence numbers (SEQNOs)
-              - fails if not authorising DB i.e. does not have a GLOBALSEQNO table
+              - fails if not authorising DB i.e. does not have a
+                GLOBALSEQNO table 
 
           apply_local_update  <update-file>
               Applies update using local sequence numbers (SEQNOs)
 
           drop_table <table-name>
-              Removes table (main and VLD) and any entry in GLOBALSEQNO and LOCALSEQNO tables
-              - asks confirmation if DB is authorising i.e. has a GLOBALSEQNO table
+              Removes table (main and VLD) and any entry in
+                GLOBALSEQNO and LOCALSEQNO tables 
+              - asks confirmation if DB is authorising i.e. has a
+                GLOBALSEQNO table 
 
     <update-file> can contain any number of the following:-
   
     o   Blank lines and comments (# in column 1)
   
     o   SQL  <sql-command>;
-        Any arbitrary SQL command that ends with a ';'.  Can span several lines. 
+        Any arbitrary SQL command that ends with a ';'.  Can span
+           several lines.  
         e.g.  SQL drop table
               if exists DEMO_DB_TABLE;
               
-    o   BEGIN_TABLE <table-name> <start-date> <end-date> <aggregate-number> <creation-date> {<task>} {<key>=<value> ...}
+    o   BEGIN_TABLE <table-name> <start-date> <end-date>
+            <aggregate-number> <creation-date> {<task>} {<key>=<value> ...}
         If not supplied a value of 0 is assumed for <task>.
         Valid <key>=<value> sets are:-
           SIMMASK=<value>  where <value> is one of: 'Data', 'MC' or 'all'
           EPOCH=<value>    where <value> is a small integer in range 0..100
-            Note: If creating the VLD table, this forces it to have EPOCH and REALITY columns
-                  Although it is not required, this should be used for all new entries.
+            Note: If creating the VLD table, this forces it to have
+                  EPOCH and REALITY columns.  Although it is not
+                 required, this should be used for all new entries. 
         If using a <key>=<value> set the task value must also be supplied. 
-        Followed by one or more rows of data, one per line in the form <value>,<value>, ... <value>
-        This utility supplies both SEQNO and ROW_COUNTER to the start of each row
-        e.g.  BEGIN_TABLE DEMO_DB_TABLE  '2009-01-01 00:00:00' '2009-02-00 00:00:00' 0 '2009-04-07 18:00:00' 0 EPOCH=0
+        Followed by one or more rows of data, one per line in the form
+            <value>,<value>, ... <value>
+            
+        This utility supplies both SEQNO and ROW_COUNTER to the start
+        of each row 
+        e.g.  BEGIN_TABLE DEMO_DB_TABLE  '2009-01-01 00:00:00' \
+                '2009-02-00 00:00:00' 0 '2009-04-07 18:00:00' 0 EPOCH=0
               -2006450160, 101, 201, 301, 1.01, 2.01, 3.01
               -2006450170, 102, 202, 302, 1.02, 2.02, 3.02
 
 """
-#---------------------------------------------  DatabaseInterface  --------------------------------------------------
-#---------------------------------------------  DatabaseInterface  --------------------------------------------------
-#---------------------------------------------  DatabaseInterface  --------------------------------------------------
+########################  DatabaseInterface  ########################
+########################  DatabaseInterface  ########################
+########################  DatabaseInterface  ########################
 
 class DatabaseInterface:
     """A simple interface to a MySQL Database.
@@ -197,7 +148,7 @@ class DatabaseInterface:
             if self.IsOK(): print 'DatabaseInterface initialising with account info: ' + self.public_access_string
             else:           print 'MySQL DBI connection failed with account info: ' + self.public_access_string
 
-#---------------------------------------------  DatabaseInterface  --------------------------------------------------
+########################  DatabaseInterface  ########################
 
     def IsOK(self):
         """Return True if able to execute queries."""
@@ -205,13 +156,13 @@ class DatabaseInterface:
         #See if we can run a dummy statement
         return self.Query('select 1',False)
         
-#---------------------------------------------  DatabaseInterface  --------------------------------------------------
+########################  DatabaseInterface  ########################
 
     def GetResults(self):
         """Return the results from the last query."""
         return self.results
 
-#---------------------------------------------  DatabaseInterface  --------------------------------------------------
+########################  DatabaseInterface  ########################
 
     def Query(self,sql,log_error = True):
         """Apply query and return True if successful.
@@ -264,7 +215,7 @@ class DatabaseInterface:
             
         return p.returncode == 0
 
-#---------------------------------------------  DatabaseInterface  --------------------------------------------------
+########################  DatabaseInterface  ########################
 
     def SetAccessString(self):
         """Prepare self.SetAccessString from TSQL environment."""
@@ -277,7 +228,8 @@ class DatabaseInterface:
             print '  ENV_TSQL_URL, ENV_TSQL_USER or ENV_TSQL_PSWD'
             print 'is not defined.'
             return
-        #  Collect server and db and port from from first element of ENV_TSQL_URL.
+        #  Collect server and db and port from from first element of
+        #  ENV_TSQL_URL. 
         mo = re.search(r'//(.*?)/(\w+)',env_url)
         if not mo:
             print 'Cannot parse the environmental variables ENV_TSQL_URL'
@@ -300,15 +252,15 @@ class DatabaseInterface:
         if pswd == '\\0': pswd_opt = ''
         self.access_string  = '%s --compress --host %s %s --user=%s %s' % (db,server,port_opt,user,pswd_opt)
 
-#---------------------------------------------  DatabaseInterface  --------------------------------------------------
+########################  DatabaseInterface  ########################
 
     def TableExists(self,table_name):
         """Return True if table exists."""
         return self.Query('describe ' + table_name,False)
                
-#---------------------------------------------  FakeDatabaseInterface  --------------------------------------------------
-#---------------------------------------------  FakeDatabaseInterface  --------------------------------------------------
-#---------------------------------------------  FakeDatabaseInterface  --------------------------------------------------
+########################  FakeDatabaseInterface  ########################
+########################  FakeDatabaseInterface  ########################
+########################  FakeDatabaseInterface  ########################
 
 class FakeDatabaseInterface:
     """Provides the interface of DatabaseInterface, but simply prints the SQL to STDOUT instead of executing it"""
@@ -328,16 +280,19 @@ class FakeDatabaseInterface:
         return True
 
     def TableExists(self,table_name):
-        # This is a bit bogus, but we do it anyways because TableUpdate::__init__() required it.
-        # we are assuming that the temporary constants table has been created (i.e.
-        # the user did not forget to include 'CREATE TEMPORARY TABLE ...' in the update-file) but cannot
-        # check because --temporary-tables mode functions without ever actually connecting to the db.
-        # --> Would be nice to have a test case for this
+        # This is a bit bogus, but we do it anyways because
+        # TableUpdate::__init__() required it.  we are assuming that
+        # the temporary constants table has been created (i.e.  the
+        # user did not forget to include 'CREATE TEMPORARY TABLE ...'
+        # in the update-file) but cannot check because
+        # --temporary-tables mode functions without ever actually
+        # connecting to the db.  --> Would be nice to have a test case
+        # for this
         return True
         
-#---------------------------------------------  TableUpdate  --------------------------------------------------
-#---------------------------------------------  TableUpdate  --------------------------------------------------
-#---------------------------------------------  TableUpdate  --------------------------------------------------
+########################  TableUpdate  ########################
+########################  TableUpdate  ########################
+########################  TableUpdate  ########################
 
 class TableUpdate :
     """A table update for a single aggregate."""
@@ -365,8 +320,9 @@ class TableUpdate :
         # Parse BEGIN_TABLE line
         mo = re.search(r"^BEGIN_TABLE\s+(\w+)\s+'(.*?)'\s+'(.*?)'\s+(\d+)\s+'(.*?)'(|\s+(.*))$",begin_line)
         #                 BEGIN_TABLE   TNAME   'START'   ' END '   AGGRE   'CREAT' dummy
-        # dummy is matched to <space><options> if 1 or more options exist otherwise is the empty string 
-        # if dummy != "" then <options> is matched to options
+        # dummy is matched to <space><options> if 1 or more options
+        # exist otherwise is the empty string. if dummy != "" then
+        # <options> is matched to options 
         if not mo:
             print "Failing update; cannot parse line: " + begin_line
             self.failed = True
@@ -376,8 +332,9 @@ class TableUpdate :
 
             # Parse out {<task>} {key=value key=value ...}
             options = options.lower()
-            #next two lines grab the task number if it is supplied as a lone digit 
-            #(can be over-written by a subsequent TASK=N)
+            #next two lines grab the task number if it is supplied as
+            #a lone digit  (can be over-written by a subsequent
+            #TASK=N)
             mo = re.match(r"\s*(\d+)(|\s+(.*))$",options)
             if mo: (self.task,dummy,options) = mo.groups()
             while options:
@@ -429,7 +386,7 @@ class TableUpdate :
                 self.failed = True
                 return
 
-#---------------------------------------------  TableUpdate  --------------------------------------------------
+########################  TableUpdate  ########################
 
     def AddRow(self,row_line):
         """Add a row."""
@@ -452,7 +409,7 @@ class TableUpdate :
         self.rows.append(converted_line)
                 
 
-#---------------------------------------------  TableUpdate  --------------------------------------------------
+########################  TableUpdate  ########################
 
     def Apply(self):
         """Apply update and return True if successful.
@@ -522,16 +479,16 @@ class TableUpdate :
         self.applied = True
         return True
     
-#---------------------------------------------  TableUpdate  --------------------------------------------------
+########################  TableUpdate  ########################
 
     def CanApply(self):
         """Return True if no errors have been found processing the data,
         it has not already applied and it has some rows."""
         return not self.failed and not self.applied and self.rows
 
-#---------------------------------------------  RealTableUpdate  --------------------------------------------------
-#---------------------------------------------  RealTableUpdate  --------------------------------------------------
-#---------------------------------------------  RealTableUpdate  --------------------------------------------------
+########################  RealTableUpdate  ########################
+########################  RealTableUpdate  ########################
+########################  RealTableUpdate  ########################
         
 class RealTableUpdate(TableUpdate):
 
@@ -540,12 +497,12 @@ class RealTableUpdate(TableUpdate):
     def __init__(self,parent,begin_line,is_global):
         TableUpdate.__init__(self,parent,begin_line,is_global)
         
-#---------------------------------------------  RealTableUpdate  --------------------------------------------------
+########################  RealTableUpdate  ########################
 
     def need_to_create_vld_tbl(self):
         return not self.dbi.TableExists(self.table_name + "VLD")
 
-#---------------------------------------------  RealTableUpdate  --------------------------------------------------
+########################  RealTableUpdate  ########################
     
     def pop_next_seqno(self):
         seqno = ""
@@ -570,16 +527,16 @@ class RealTableUpdate(TableUpdate):
         
         return seqno
 
-#---------------------------------------------  RealTableUpdate  --------------------------------------------------
+########################  RealTableUpdate  ########################
 
     def RemoveSeqno(self, seqno):
         """Attempt to remove sequence number."""
         self.dbi.Query("DELETE FROM %s    WHERE SEQNO = %s" % (self.table_name,seqno))
         self.dbi.Query("DELETE FROM %sVLD WHERE SEQNO = %s" % (self.table_name,seqno))
         
-#---------------------------------------------  TempTableUpdate  --------------------------------------------------
-#---------------------------------------------  TempTableUpdate  --------------------------------------------------
-#---------------------------------------------  TempTableUpdate  --------------------------------------------------
+########################  TempTableUpdate  ########################
+########################  TempTableUpdate  ########################
+########################  TempTableUpdate  ########################
 
 class TempTableUpdate(TableUpdate):
 
@@ -597,7 +554,7 @@ class TempTableUpdate(TableUpdate):
     def __init__(self,parent,begin_line,is_global):
         TableUpdate.__init__(self,parent,begin_line,is_global)
         
-#---------------------------------------------  TempTableUpdate  --------------------------------------------------
+########################  TempTableUpdate  ########################
 
     def need_to_create_vld_tbl(self):
         if self.table_name+'VLD' in self.__class__.vld_tables:
@@ -606,7 +563,7 @@ class TempTableUpdate(TableUpdate):
             self.__class__.vld_tables[self.table_name+'VLD'] = 1
             return True
     
-#---------------------------------------------  TempTableUpdate  --------------------------------------------------
+########################  TempTableUpdate  ########################
 
     def pop_next_seqno(self):
         seqno = self.__class__.vld_tables[self.table_name+'VLD']
@@ -615,14 +572,14 @@ class TempTableUpdate(TableUpdate):
         self.__class__.vld_tables[self.table_name+'VLD'] = seqno + 1
         return seqno
     
-#---------------------------------------------  TempTableUpdate  --------------------------------------------------
+########################  TempTableUpdate  ########################
 
     def RemoveSeqno(self, seqno):
         pass
         
-#---------------------------------------------  DatabaseUpdater  --------------------------------------------------
-#---------------------------------------------  DatabaseUpdater  --------------------------------------------------
-#---------------------------------------------  DatabaseUpdater  --------------------------------------------------
+########################  DatabaseUpdater  ########################
+########################  DatabaseUpdater  ########################
+########################  DatabaseUpdater  ########################
     
 class DatabaseUpdater :
     """A database updater that applies ASCII update files.
@@ -662,7 +619,7 @@ class DatabaseUpdater :
             usage()
             return
 
-#---------------------------------------------  DatabaseUpdater  --------------------------------------------------
+########################  DatabaseUpdater  ########################
 
     def ExecuteApplyUpdate(self,is_global):
         """Apply updates either local or global sequence numbers."""
@@ -673,9 +630,10 @@ class DatabaseUpdater :
             print "\n Cannot '%s'; cannot find update file '%s'" % (self.command,update_file)
             return
 
-        # IsAuthorising() shall not be executed if self.temporary_tables == True, 
-        # because the option requires command=local_update, making is_global=False
-        # --> Would be nice to set up a test case for this
+        # IsAuthorising() shall not be executed if
+        # self.temporary_tables == True,  because the option requires
+        # command=local_update, making is_global=False --> Would be
+        # nice to set up a test case for this
         if is_global and not self.IsAuthorising():
             print "\n Cannot 'apply_global_update'; connected database is not authorising i.e. does not have a GLOBALSEQNO table"
             return
@@ -711,7 +669,7 @@ class DatabaseUpdater :
             return
         
 
-#---------------------------------------------  DatabaseUpdater  --------------------------------------------------
+########################  DatabaseUpdater  ########################
 
     def ExecuteDropTable(self):
         """Removes table (main and VLD) and any entry in GLOBALSEQNO and LOCALSEQNO tables."""
@@ -748,7 +706,7 @@ class DatabaseUpdater :
                 print "Removing entry from %s" % seqno_table
                 self.dbi.Query("DELETE FROM %s WHERE TABLENAME = '%s'" % (seqno_table,table_name))
                             
-#---------------------------------------------  DatabaseUpdater  --------------------------------------------------
+########################  DatabaseUpdater  ########################
 
     def ExecuteSQL(self,sql_start,file_update):
         """Assemble and execute SQL command.  Return True if no errors when executed."""
@@ -762,13 +720,13 @@ class DatabaseUpdater :
 	        
 
 
-#---------------------------------------------  DatabaseUpdater  --------------------------------------------------
+########################  DatabaseUpdater  ########################
 
     def IsAuthorising(self):
         """Return True if database is authorising i.e. has a GLOBALSEQNO table."""
         return  self.dbi.TableExists('GLOBALSEQNO')
 
-#---------------------------------------------  DatabaseUpdater  --------------------------------------------------
+########################  DatabaseUpdater  ########################
 
     def ParseCommand(self):
         try:  opts, args = getopt.getopt(sys.argv[1:], "ctdh", ["convert_unsigned","temporary_tables","debug","help"])
