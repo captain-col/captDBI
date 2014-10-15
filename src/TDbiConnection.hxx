@@ -39,11 +39,11 @@ class CP::TDbiConnection {
 public:
 
     /// Constructors and destructors.
-    /// Passed in:
+    /// Arguments:
     ///    * url - address of sql server
     ///    * user - username to use
     ///    * password - password to use
-    ///    * macConnects = maximum number of connections to attempt before
+    ///    * maxConnects = maximum number of connections to attempt before
     ///      giving up, default to 20
     ///
     /// This throws CP::EBadConnection() if can not make connection
@@ -128,8 +128,11 @@ public:
     /// TDbiConnection retains ownership
     TSQLServer* GetServer();
 
-    /// Get statement, opening if necessary.
-    /// Caller must take ownership.
+    /// Create a TSQLStatement and open the database if necessary.  The caller
+    /// must take ownership of the new TSQLStatment.  NOTE: To be portable,
+    /// the string must be generic SQL.  This means it should not be used for
+    /// server specific statments (e.g. "show tables" in mysql, or ".tables"
+    /// in sqlite).
     TSQLStatement* CreatePreparedStatement(const std::string& sql);
 
 private:
@@ -144,7 +147,13 @@ private:
     ///  'table1','table2',...
     std::string fExistingTableList;
 
-    /// TSQLServer URL
+    /// The TSQLServer url as provided to the constructor.  This is needed
+    /// since some of the TSQLServer implementations don't use classic URL
+    /// syntax, so we should not digest the URL before passing it to the
+    /// server.
+    std::string fUrlString;
+
+    /// TSQLServer URL as parsed by TUrl
     TUrl fUrl;
 
     /// Username

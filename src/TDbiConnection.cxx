@@ -42,7 +42,7 @@ CP::TDbiConnection::TDbiConnection(const std::string& url      /* = "" */,
                                    const std::string& user     /* = "" */,
                                    const std::string& password /* = "" */,
                                    int maxConnects) :
-
+    fUrlString(url),
     fUrl(url.c_str()),
     fUser(user),
     fPassword(password),
@@ -50,78 +50,63 @@ CP::TDbiConnection::TDbiConnection(const std::string& url      /* = "" */,
     fNumConnectedStatements(0),
     fIsTemporary(true),
     fServer(0) {
-//
-//
-//  Purpose:  Default constructor
 
     fMaxConnectionAttempts = maxConnects;
 
     DbiTrace("Creating CP::TDbiConnection" << "  ");
-
     if (this->Open()) {
-        DbiInfo("Successfully opened connection to: " << this->GetUrl() << "  ");
+        DbiInfo("Successfully opened connection to: "
+                << this->GetUrl() << "  ");
         fUrlValidated =  true;
 
         // Initialise the list existing supported tables.
         this->SetTableExists();
 
-        //  If URL looks O.K., check that both client and server support prepared statements.
+        //  If URL looks O.K., check that both client and server support
+        //  prepared statements.
         if (fUrlValidated) {
-            if (! fServer->HasStatement()) {
-                DbiSevere("  This client does not support prepared statements." << "  ");
+            if (!fServer->HasStatement()) {
+                DbiError("  This client does not support prepared statements."
+                          << "  ");
                 fUrlValidated = false;
             }
 
             std::string serverInfo(fServer->ServerInfo());
-            if (serverInfo < "4.1") {
-                DbiSevere("This MySQL server (" << serverInfo
+            if (!fServer->HasStatement()) {
+                DbiError("This server (" << serverInfo
                           << ") does NOT support prepared statements." << "  ");
                 fUrlValidated = false;
             }
             if (fUrlValidated) {
-                DbiInfo("This client, and MySQL server (" << serverInfo
+                DbiInfo("This client, and server (" << serverInfo
                         << ") supports prepared statements." << "  ");
             }
             else {
-
-                DbiSevere("\n"
-                          << "This version of MySQL does not support prepared statements.\n"
-                          << "\n"
-                          << "Please upgrade to MySQL (client and server) version 4.1 or greater \n"
-                          << "\n"
-                          << "  ");
+                DbiError(
+                    std::endl
+                    << "This server does not support prepared statements."
+                    << std::endl
+                    << "If using MYSQL please upgrade to version >4.1"
+                    << std::endl);
             }
 
         }
     }
-    if (! fUrlValidated) {
-        DbiSevere("FATAL: " << "Aborting due to above errors" << "  ");
+    if (!fUrlValidated) {
+        DbiError("FATAL: " << "Aborting due to above errors" << "  ");
         throw CP::EBadConnection();
     }
     fDbName = fUrl.GetFile();
-
-
 }
 
-//.....................................................................
-
 CP::TDbiConnection::~TDbiConnection() {
-//
-//
-//  Purpose: Destructor
-
-
     DbiTrace("Destroying CP::TDbiConnection" << "  ");
     this->Close(true);
 
 }
-//.....................................................................
-///\verbatim
-///
-///  Purpose: Close server connection unless active (or always if forced) .
-///
-///  Return:  true if connection now closed.
-///\endverbatim
+
+///  Close server connection unless active (or always if forced).  This
+///  returns true if the connection was closed.
 Bool_t CP::TDbiConnection::Close(Bool_t force /* = false */) {
 
     this->ClearExceptionLog();
@@ -133,12 +118,12 @@ Bool_t CP::TDbiConnection::Close(Bool_t force /* = false */) {
         if (! force) {
             DbiInfo("Unable to close connection: " << this->GetUrl()
                     << "; it still has  "
-                    << fNumConnectedStatements << "active statements. " << "  ");
+                    << fNumConnectedStatements << "active statements. ");
             return false;
         }
         DbiInfo("Closing connection: " << this->GetUrl()
                 << "; even though it still has "
-                << fNumConnectedStatements << " active statements. " << "  ");
+                << fNumConnectedStatements << " active statements. ");
     }
 
     delete fServer;
@@ -148,11 +133,8 @@ Bool_t CP::TDbiConnection::Close(Bool_t force /* = false */) {
 
 }
 
-//.....................................................................
-///
-///
-///  Purpose:  Close idle connection. Idle means there are no active connections to this database.
-
+///  Purpose: Close idle connection. Idle means there are no active
+///  connections to this database.
 void CP::TDbiConnection::CloseIdleConnection() {
 
     if (fIsTemporary &&  fNumConnectedStatements == 0) {
@@ -161,23 +143,26 @@ void CP::TDbiConnection::CloseIdleConnection() {
 
 }
 
-
-//.....................................................................
-///\verbatim
-///
-///  Purpose:  Open if necessary and get a prepared statment.
-///
-///  Return:    Statement - Caller must take ownership.
-///             will be 0 if failure.
-///\endverbatim
-TSQLStatement* CP::TDbiConnection::CreatePreparedStatement(const std::string& sql) {
+///  Open the connection if necessary and get a prepared statment.  This
+///  returns a TSQLStatement pointer that is owned by the caller, or NULL if
+///  there is a failure.
+TSQLStatement* CP::TDbiConnection::CreatePreparedStatement(
+    const std::string& sql) {
 
     TSQLStatement* stmt = 0;
     if (! this->Open()) {
         return stmt;
     }
-    stmt = fServer->Statement(sql.c_str());
-    if (! stmt) {
+    try {
+        stmt = fServer->Statement(sql.c_str());
+    }
+    catch (...) {
+        DbiError("Catch statement: " << sql);
+        if (stmt) delete stmt;
+        stmt = NULL;
+    }
+    if (!stmt) {
+        DbiError("Statement failed: " << sql);
         fExceptionLog.AddEntry(*fServer);
     }
     else {
@@ -186,45 +171,35 @@ TSQLStatement* CP::TDbiConnection::CreatePreparedStatement(const std::string& sq
 
     return stmt;
 }
-//.....................................................................
-///\verbatim
+
+///  Open the connection if necessary and return a pointer to a TSQLServer.
 ///
-///  Purpose:  Open if necessary and get a TSQLServer.
+///  The server returned remains is being borrowed from the CP::TDbiConnection
+///  and remains under its ownership and must not be deleted.  However the
+///  caller must invoke the Connect() method on this CP::TDbiConnection before
+///  borrowing it and must invoke the DisConnect() when it has finished using
+///  it to ensure the CP::TDbiConnection does not close it prematurely i.e.:-
 ///
-///  Return:    Server ( = 0 if connection not open).
-///
-///  WARNING:  The server returned remains is being borrowed from the
-///            CP::TDbiConnection and remains under its ownership and must
-///            not be deleted.  However the caller must invoke the
-///            Connect() method on this CP::TDbiConnection before borrowing
-///            it and must invoke the DisConnect() when it has finished
-///            using it to ensure the CP::TDbiConnection does not close it
-///            prematurely i.e.:-
-///
+/// \code
 ///            void Demo(CP::TDbiConnection* con) {
 ///              con->Connect();
 ///              TSQLServer* server = con->GetServer();
 ///              // Do stuff
 ///              con->DisConnect();
 ///            }
-///\endverbatim
+///\endcode
 TSQLServer* CP::TDbiConnection::GetServer() {
-
-
     if (! this->Open()) {
         return 0;
     }
     return fServer;
 }
 
-//.....................................................................
-///\verbatim
-/// Don't ask me why TUrl::GetUrl() is non-const, just accept that it is!
+/// Return a reference to a string containing the URL.  The string is shared,
+/// so make a copy of it before subsequent call to this function.
 ///
-/// Note: This function returns a reference to a shared string; use the
-///       value or make a copy of it before any subsequent call to this
-///       function.
-///\endverbatim
+/// \note Don't ask me why TUrl::GetUrl() is non-const, just accept that it
+/// is!
 const std::string& CP::TDbiConnection::GetUrl() const {
 
 
@@ -235,37 +210,39 @@ const std::string& CP::TDbiConnection::GetUrl() const {
 
 }
 
-//.....................................................................
-///
-///  Purpose:  Open connection if necessary.
-///
-
+///  Open the connection if necessary.
 Bool_t CP::TDbiConnection::Open() {
 
     this->ClearExceptionLog();
-    if (! this->IsClosed()) {
+    if (!this->IsClosed()) {
         return true;
     }
 
-    if (! fUrl.IsValid()) {
+    if (!fUrl.IsValid()) {
         std::ostringstream oss;
-        oss << "Unable to open connection: URL '" << fUrl.GetUrl() << "' is invalid";
+        oss << "Unable to open connection: URL '"
+            << fUrlString << "' is invalid";
         DbiSevere(oss.str() << "  ");
         fExceptionLog.AddEntry(oss.str());
         return false;
     }
 
-    // Make several attempts (or more if URL is known to be O.K.) to open connection.
+    // Make several attempts (or more if URL is known to be O.K.) to open
+    // connection.
     int maxAttempt = fUrlValidated ?  100: fMaxConnectionAttempts ;
     for (int attempt = 1; attempt <= maxAttempt; attempt++) {
-        fServer = TSQLServer::Connect(fUrl.GetUrl(),fUser.c_str(),fPassword.c_str());
-        if (! fServer) {
+        DbiError("Pass " << fUrlString);
+        fServer = TSQLServer::Connect(fUrlString.c_str(),
+                                      fUser.c_str(),
+                                      fPassword.c_str());
+        if (!fServer) {
             std::ostringstream oss;
-            oss << "Failing to open: " << fUrl.GetUrl() << " for user " << fUser
-                << " and password " << fPassword << " (attempt " << attempt << ")";
+            oss << "Failing to open: " << fUrlString 
+                << " for user " << fUser
+                << " and password " << fPassword 
+                << " (attempt " << attempt << ")";
             fExceptionLog.AddEntry(oss.str());
             if (fMaxConnectionAttempts > attempt) {
-
                 if (attempt == 1) {
                     DbiSevere(" retrying ... " << "  ");
                 }
@@ -279,11 +256,12 @@ Bool_t CP::TDbiConnection::Open() {
             if (attempt > 1) {
                 DbiWarn("... Connection opened on attempt " << attempt << "  ");
             }
-            DbiDebug("Successfully opened connection to: " << fUrl.GetUrl() << "  ");
+            DbiDebug("Successfully opened connection to: " 
+                     << fUrlString << "  ");
 
-            // If this is an ASCII database, populate it and make the connection permanent
-            // unless even ASCII DB connections are temporary.
-
+            // If this is an ASCII database, populate it and make the
+            // connection permanent unless even ASCII DB connections are
+            // temporary.
             TString ascii_file = fUrl.GetAnchor();
             if (ascii_file.IsNull()) {
                 return true;
@@ -293,40 +271,32 @@ Bool_t CP::TDbiConnection::Open() {
             CP::TDbiAsciiDbImporter importer(ascii_file,fServer);
             const CP::TDbiExceptionLog& el(importer.GetExceptionLog());
             if (! el.IsEmpty()) {
-//                DbiSevere( "Failed to populate ASCII database from "
-//                           << fUrl.GetUrl() << " " << el << "  ");
                 delete fServer;
                 fServer = 0;
                 return false;
             }
             fIsTemporary = CP::TDbiServices::AsciiDBConectionsTemporary();
             // Add imported tables names.
-            const std::list<std::string> tableNames(importer.GetImportedTableNames());
-            std::list<std::string>::const_iterator itr(tableNames.begin()), itrEnd(tableNames.end());
+            const std::list<std::string> tableNames(
+                importer.GetImportedTableNames());
+            std::list<std::string>::const_iterator itr(tableNames.begin());
+            std::list<std::string>::const_iterator itrEnd(tableNames.end());
             while (itr != itrEnd) {
                 this->SetTableExists(*itr);
                 ++itr;
             }
             return true;
-
         }
     }
-    DbiSevere("... Failed to open a connection to: " << fUrl.GetUrl()
+    DbiSevere("... Failed to open a connection to: " << fUrlString
               << " for user " << fUser << " and pwd " << fPassword << "  ");
 
     return false;
 
-}//
-//  Purpose:  Record an exception that has occurred while a client was using its TSQLServer.
+}
 
-
-//.....................................................................
-///\verbatim
-///
-///  Purpose:  Print all warning at supplied  Msg log level.
-///
-///  Return:    kTRUE if warnings have occurred
-///\endverbatim
+/// Print all warning at supplied Msg log level.  This returns true if
+///warnings have occurred.
 Bool_t CP::TDbiConnection::PrintExceptionLog(Int_t level) const {
 
     switch (level) {
@@ -344,40 +314,26 @@ Bool_t CP::TDbiConnection::PrintExceptionLog(Int_t level) const {
     }
 
     return fExceptionLog.Size() != 0;
-
 }
 
-//.....................................................................
-///
-///  Purpose:  Record an exception that has occurred while a client was using its TSQLServer.
-
+///  Record an exception that has occurred while a client was using its
+///  TSQLServer.
 void  CP::TDbiConnection::RecordException() {
-
     fExceptionLog.AddEntry(*fServer);
-
 }
 
-//.....................................................................
-///\verbatim
-///  Purpose: Add name to list of existing tables (necessary when creating tables)
-///
-///  Note: If tableName is null refresh list from the database.
-///\enbdverbatim
+/// Add name to list of existing tables (necessary when creating tables).  If
+/// tableName is empty then refresh list from the database.
 void  CP::TDbiConnection::SetTableExists(const std::string& tableName) {
 
-    if (tableName == "") {
-        TSQLStatement* stmt =  CreatePreparedStatement("show tables");
-        if (stmt) {
-            if (stmt->Process()) {
-                stmt->StoreResult();
-                while (stmt->NextResultRow()) {
-                    std::string tn(stmt->GetString(0));
-                    this->SetTableExists(tn);
-                }
-            }
-            delete stmt;
-            stmt = 0;
+    if (tableName.empty()) {
+        TList* tableList = fServer->GetTablesList();
+        TIter next(tableList);
+        while (TObject* obj = next()) {
+            std::string tn(obj->GetName());
+            this->SetTableExists(tn);
         }
+        delete tableList;
     }
     else {
         if (! this->TableExists(tableName)) {
@@ -388,55 +344,42 @@ void  CP::TDbiConnection::SetTableExists(const std::string& tableName) {
     }
 }
 
-//.....................................................................
 ///  Purpose: Check to see table exists in connected database.
 Bool_t  CP::TDbiConnection::TableExists(const std::string& tableName) const {
-//
-
     std::string test("'");
     test += tableName;
     test += "'";
     return fExistingTableList.find(test) != std::string::npos;
 }
 
-/// \name T2K-Extensions
-//@{
-
-
-//.....................................................................
-///  \brief Test if this connection supports Temporary Tables.
+///  Test if this connection supports Temporary Tables.  This is a consequence
+///   of privileges granted to the user of the connection, rather than a
+///   property of the database itself.  This returns true if Temporary Tables
+///   are supported or false Temporary Tables are not supported.
 ///
-///   Note: this is a consequence of privileges granted to the user of
-///   the connection, rather than a property of the database itself.
-///
-///  \return    true Temporary Tables supported or false Temporary Tables not supported
-///
-///             Note: false may also indicate there was another undefined problem
-///                   with the connection.  (It would be better to raise an
-///                   exception when these edge cases occur).
-///
-///  \author Simon Claret t2kcompute@comp.nd280.org
-
+///  \note False may also indicate there was another undefined problem with
+///  the connection.  (It would be better to raise an exception when these
+///  edge cases occur).
 bool CP::TDbiConnection::SupportsTmpTbls() {
     bool retVal = false;
-    TSQLStatement* stmt = CreatePreparedStatement("CREATE TEMPORARY TABLE TEST_TDbiConnection_SupportsTmpTbls ( id integer );");
+    TSQLStatement* stmt 
+        = CreatePreparedStatement("CREATE TEMPORARY TABLE"
+                                  " TEST_TDbiConnection_SupportsTmpTbls"
+                                  " ( id integer );");
 
     if (stmt) {
         if (stmt->Process()) {
-            TSQLStatement* stmt2 = CreatePreparedStatement("DROP TABLE TEST_TDbiConnection_SupportsTmpTbls;");
+            TSQLStatement* stmt2 
+                = CreatePreparedStatement(
+                    "DROP TABLE TEST_TDbiConnection_SupportsTmpTbls;");
             if (stmt2 && stmt2->Process()) {
                 retVal = true;
             }
             delete stmt2;
         }
     }
-    else {
-        // Failed to prepare stmt
-        ; // Should hit this case if the connection doesn't support temp tables
-    }
 
     delete stmt;
     return retVal;
 }
-//@}
 
