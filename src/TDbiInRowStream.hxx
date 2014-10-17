@@ -117,6 +117,8 @@ namespace CP {
         CP::TDbiInRowStream& operator>>(UInt_t& dest);
         CP::TDbiInRowStream& operator>>(Long_t& dest);
         CP::TDbiInRowStream& operator>>(ULong_t& dest);
+        CP::TDbiInRowStream& operator>>(Long64_t& dest);
+        CP::TDbiInRowStream& operator>>(ULong64_t& dest);
         CP::TDbiInRowStream& operator>>(Float_t& dest);
         CP::TDbiInRowStream& operator>>(Double_t& dest);
         CP::TDbiInRowStream& operator>>(std::string& dest);

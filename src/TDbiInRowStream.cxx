@@ -135,7 +135,7 @@ CP::TDbiInRowStream::~TDbiInRowStream() {
     int col = this->CurColNum()-1;                                      \
     const CP::TDbiFieldType& fType = this->ColFieldType(col+1);              \
     if ( fType.GetSize() == 8 ) {                                       \
-        dest=fTSQLStatement->GetUInt(col);                \
+        dest=fTSQLStatement->GetULong64(col);                \
     }                                                                   \
     else {                                                              \
         t dest_signed;                                                    \
@@ -169,6 +169,12 @@ CP::TDbiInRowStream& CP::TDbiInRowStream::operator>>(Long_t& dest) {
 }
 CP::TDbiInRowStream& CP::TDbiInRowStream::operator>>(ULong_t& dest) {
     IN3(Long_t);  return *this;
+}
+CP::TDbiInRowStream& CP::TDbiInRowStream::operator>>(Long64_t& dest) {
+    IN2(TDbi::kLongLong, GetLong64);   return *this;
+}
+CP::TDbiInRowStream& CP::TDbiInRowStream::operator>>(ULong64_t& dest) {
+    IN3(Long64_t);  return *this;
 }
 CP::TDbiInRowStream& CP::TDbiInRowStream::operator>>(Float_t& dest) {
     IN2(TDbi::kFloat,GetDouble);  return *this;
