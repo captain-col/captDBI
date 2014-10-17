@@ -18,7 +18,7 @@
   This package provides a \ref captDBIDataRetrieval "C++ Data Retrieval
   API" for answering requests of the form:
 
-  \anchor FunctionalRequest 'For a given event E, get the <b>Calibration Constant</b> X=f(D,S) for channel C'
+  \anchor FunctionalRequest 'For a given event E, get the <b>Calibration Constant</b> X=f(D,S) for channel C' 
   
   by querying pairs of tables in the offline calibration database.  
   
@@ -37,7 +37,8 @@
   
   The work of the API is essentially to calculate X based on the inputs D & S.
   
-  This produces a result set with constants for the entire detector (at a particular D & S).
+  This produces a result set with constants for the entire detector (at a
+  particular D & S).
   
   \anchor AdvancedRequirements 
   
@@ -46,31 +47,38 @@
   The interface supports advanced requirements:
   
   <ul>
-  <li>Some constants are more volatile than others: therefore, they are produced in subsets with different validity periods.
+  <li>Some constants are more volatile than others: therefore, they are
+  produced in subsets with different validity periods.
   <li>Subsets of constants are updated as the ND280 Software evolves.  
   <ul>
-  <li>But processing jobs must yield reproducible results; so, the ability to set S to a previous 
-  date (to "redo" processing with an old set of constants) must be preserved. 
+  <li>But processing jobs must yield reproducible results; so, the ability
+  to set S to a previous date (to "redo" processing with an old set of
+  constants) must be preserved.
   </ul>
   </ul>
   
   These requirements are accommodated through careful design at two levels:
   
   <ul>
-  <li>The underlying <b>Data Structure</b>: a normalized\ref glossNorm "*" \ref captDBIDataStructurePhys "database schema" with a level of indirection between the concepts of <b>Calibration Constants</b> and their <b>Validity intervals</b>
-  <li>The <b>Data Retrieval</b> strategy: a \ref algorithm_description "method" 
-  for solving the aforementioned systems at runtime, combining rows from
-  the database into a set of <b>Calibration Constants</b> satisfying
-  values D and S selected by the user.
+  <li>The underlying <b>Data Structure</b>: a normalized\ref glossNorm "*"
+  \ref captDBIDataStructurePhys "database schema" with a level of
+  indirection between the concepts of <b>Calibration Constants</b> and
+  their <b>Validity intervals</b>
+  <li>The <b>Data Retrieval</b> strategy: a \ref algorithm_description
+  "method" for solving the aforementioned systems at runtime, combining
+  rows from the database into a set of <b>Calibration Constants</b>
+  satisfying values D and S selected by the user.
   </ul>
   
   <hr />
   
-  The core \ref captDBIDataStructure "Data Structure" and \ref captDBIDataRetrieval "Data Retrieval" concepts are those of the
-  repackaged MINOS DBI code, instrumented by a small set of ND280-specific 
-  classes (TResultSetHandle, TTableRow, etc.) \ref data_insertion is implemented
-  by a separate script (database_updater.py). \ref data_distribution is achieved 
-  through a global database replication scheme.
+  The core \ref captDBIDataStructure "Data Structure" and \ref
+  captDBIDataRetrieval "Data Retrieval" concepts are those of the
+  repackaged MINOS DBI code, instrumented by a small set of ND280-specific
+  classes (TResultSetHandle, TTableRow, etc.) \ref data_insertion is
+  implemented by a separate script (database_updater.py). \ref
+  data_distribution is achieved through a global database replication
+  scheme.
   
   <hr />
   
@@ -105,27 +113,32 @@
   The data is physically structured in pairs of relations: 
   
   <ol>
-  <li>A Validity Table (i.e. DEMO_DB_TABLEVLD) - where each row represents a <b>Validity Interval</b> - with a <i>Primary Key Attribute</i> 'SEQNO'
-  <li>A Constants Table (i.e. DEMO_DB_TABLE) - where each row represents an actual <b>Calibration Constant</b> - with a <i>Foreign Key\ref glossFK "*" Attribute</i> 'SEQNO'
+  <li>A Validity Table (i.e. DEMO_DB_TABLEVLD) - where each row represents
+  a <b>Validity Interval</b> - with a <i>Primary Key Attribute</i> 'SEQNO'
+  <li>A Constants Table (i.e. DEMO_DB_TABLE) - where each row represents an
+  actual <b>Calibration Constant</b> - with a <i>Foreign Key\ref glossFK
+  "*" Attribute</i> 'SEQNO'
   </ol>
   
-  Internally, a disjoint set of rows in the Constants Table is associated with a single
-  row in the Validity Table by the value of the SEQNO <i>Foreign Key</i>\ref glossFK "*".  Through this
-  physical relationship, each Validity Table row defines a <b>Validity Interval</b> for
-  a disjoint set of Constants Table rows.
+  Internally, a disjoint set of rows in the Constants Table is associated
+  with a single row in the Validity Table by the value of the
+  SEQNO <i>Foreign Key</i>\ref glossFK "*".  Through this physical
+  relationship, each Validity Table row defines a <b>Validity Interval</b>
+  for a disjoint set of Constants Table rows.
     
-  In the simple case, a <b>Validity Interval</b> is simply a time interval specified by the
-  attributes TIMESTART and TIMEEND.
+  In the simple case, a <b>Validity Interval</b> is simply a time interval
+  specified by the attributes TIMESTART and TIMEEND.
   
-  Since overlaps (and complete overlays) are expected in their time spans, 
-  <b>Validity Intervals</b> may have additional attributes (CREATIONDATE, EPOCH) set
-  for <i>'disambiguation'</i> (deciding which Constants Table row to return when > 1 
-  exists for the same time point).
+  Since overlaps (and complete overlays) are expected in their time spans,
+  <b>Validity Intervals</b> may have additional attributes (CREATIONDATE,
+  EPOCH) set for <i>'disambiguation'</i> (deciding which Constants Table
+  row to return when > 1 exists for the same time point).
   
-  In the more complicated case, <b>Validity Intervals</b> may have other additional 
-  attributes (REALITY, DETECTORMASK, SIMMASK, TASK, AGGREGATENO) set to place them (and 
-  their associated <b>Calibration Constants</b>) in a separate dimension or subcategory. These
-  extra attributes can be used as a <i>discriminant</i> when data is later retrieved.
+  In the more complicated case, <b>Validity Intervals</b> may have other
+  additional attributes (REALITY, DETECTORMASK, SIMMASK, TASK, AGGREGATENO)
+  set to place them (and their associated <b>Calibration Constants</b>) in
+  a separate dimension or subcategory. These extra attributes can be used
+  as a <i>discriminant</i> when data is later retrieved.
   
   For specifications, please see \ref captDBIAppAttributes.
   
@@ -138,35 +151,40 @@
   <ol>
   <li> normalizing\ref glossNorm "*" the data
   <li> selecting good <i>Keys</i>
-  <li> implementing a runtime lookup algorithm that accomplishes the goal while minimizing disk I/O (by exploiting indices on the <i>Keys</i>)
+  <li> implementing a runtime lookup algorithm that accomplishes the goal
+  while minimizing disk I/O (by exploiting indices on the <i>Keys</i>)
   </ol> 
   
-  Here, we will examine the design choices made for (1) and (2), and consider how
-  these enable (3).
+  Here, we will examine the design choices made for (1) and (2), and
+  consider how these enable (3).
   
-  The starting point for a normalization effort is the information in its most 
-  basic de-normalized form (with everything combined in a single relation): that 
-  would mean tagging each event with the value of all the constants in effect.
-  This would make it very easy to answer requests for constants, since one could read 
-  them directly from the event.  But since the elapsed time between events and the 
-  <b>Validity Intervals</b> for sets of <b>Calibration Constants</b> are completely 
-  different, this would imply extreme data duplication (de-normalization).  It
-  also wouldn't make any provisions for updating constants.
+  The starting point for a normalization effort is the information in its
+  most basic de-normalized form (with everything combined in a single
+  relation): that would mean tagging each event with the value of all the
+  constants in effect.  This would make it very easy to answer requests for
+  constants, since one could read them directly from the event.  But since
+  the elapsed time between events and the
+  <b>Validity Intervals</b> for sets of <b>Calibration Constants</b> are
+  completely different, this would imply extreme data duplication
+  (de-normalization).  It also wouldn't make any provisions for updating
+  constants.
   
   A better approach is to identify and separate the 3 types of information
   (Event, <b>Validity Interval</b> and <b>Calibration Constant</b>), and
   recombine them at runtime to answer \ref FunctionalRequest "requests".
   
   This approach requires more sophisticated data decomposition and lookup
-  techniques, but uses much less disk space (by minimizing data duplication) and 
-  makes it possible to accomodate more \ref AdvancedRequirements "advanced requirements".
+  techniques, but uses much less disk space (by minimizing data
+  duplication) and makes it possible to accomodate more \ref
+  AdvancedRequirements "advanced requirements".
   
   The captDBI package then provides a simplified <b>Interface</b> to the
-  data, shielding users from the normalized tables and the lookup algorithm.
-  \anchor algorithm_description The <b>Interface</b> enables a macro-level lookup abstraction, where the date/time 
-  of an Event is the <i>Key</i> through which one obtains the set of <b>Calibration 
-  Constants</b> (the current <i>"best"</i> set, or a <i>"previous"</i> set) for the state 
-  of the detector at the time of the Event.
+  data, shielding users from the normalized tables and the lookup
+  algorithm.  \anchor algorithm_description The <b>Interface</b> enables a
+  macro-level lookup abstraction, where the date/time of an Event is
+  the <i>Key</i> through which one obtains the set of <b>Calibration
+  Constants</b> (the current <i>"best"</i> set, or a <i>"previous"</i> set)
+  for the state of the detector at the time of the Event.
 
   -Example-
   
@@ -180,49 +198,63 @@
   captDBI solves the \ref FunctionalRequest "system":
   
   <ul>
-  <li>(Lookup Validity Table entries matching D & S) --> Set of <b>Validity Intervals</b>
-  <li>(Foreign <i>Key</i> lookup in Constants Table by SEQNO of each <b>Validity Interval</b>) --> Sets of <b>Calibration Constants</b>
+  <li>(Lookup Validity Table entries matching D & S) --> Set of <b>Validity
+  Intervals</b>
+  <li>(Foreign <i>Key</i> lookup in Constants Table by SEQNO of
+  each <b>Validity Interval</b>) --> Sets of <b>Calibration Constants</b>
   <li>Combine sets (apply <i>disambiguation</i> rules), return resulting set.
   </ul>
 
-  The resulting set is similar to what one would have obtained by reading constants 
-  directly off an event in the basic de-normalized form.
+  The resulting set is similar to what one would have obtained by reading
+  constants directly off an event in the basic de-normalized form.
 
 
 
 \section captDBIDataRetrieval Data Retrieval API
 
-The <b>Interface</b> for retrieving data consists of a few C++ classes that wrap MINOS DBI.
-These return the <a href="http://www-numi.fnal.gov/offline_software/srt_public_context/WebDocs/Companion/overview/DatabaseInterface_3.gif"><b>Calibration Constants</b> best satisfying a given <b>"Event Context"</b></a>
+The <b>Interface</b> for retrieving data consists of a few C++ classes that
+wrap MINOS DBI.  These return
+the <a href="http://www-numi.fnal.gov/offline_software/srt_public_context/WebDocs/Companion/overview/DatabaseInterface_3.gif"><b>Calibration
+Constants</b> best satisfying a given <b>"Event Context"</b></a>
 
 Much of the complexity of the database and the software supports deciding which 
-<b>Validity Intervals</b> to combine to satisfy a given <b>Context</b> (while supporting 
-overlapping of intervals and rerunning jobs with earlier versions
-of constants).  This complexity is managed for the user, who can 
-control the decision-making process by adjusting the <b>Context</b> they provide.
+<b>Validity Intervals</b> to combine to satisfy a given <b>Context</b>
+(while supporting overlapping of intervals and rerunning jobs with earlier
+versions of constants).  This complexity is managed for the user, who can
+control the decision-making process by adjusting the <b>Context</b> they
+provide.
 
-To get from an <b>"Event Context"</b> to a set of <b>Calibration Constants</b>, MINOS DBI:
+To get from an <b>"Event Context"</b> to a set of <b>Calibration
+Constants</b>, MINOS DBI:
 
 <ol>
-<li> Retrieves the Validity Table row(s) that satisfy the user-specified <b>Context</b> (i.e. date/time of an event [and possibly REALITY, DETECTORMASK, etc.]) 
-<li> Retrieves the set of Constants Table rows associated to each Validity Table row
-<li> Combines the sets of Constants Table rows, <i>"disambiguating"</i> (picking one row based on a comparison of CREATIONDATE, EPOCH) when multiple rows describe the same channel
+<li> Retrieves the Validity Table row(s) that satisfy the
+user-specified <b>Context</b> (i.e. date/time of an event [and possibly
+REALITY, DETECTORMASK, etc.])
+<li> Retrieves the set of Constants Table rows associated to each Validity
+Table row
+<li> Combines the sets of Constants Table rows, <i>"disambiguating"</i>
+(picking one row based on a comparison of CREATIONDATE, EPOCH) when
+multiple rows describe the same channel
 </ol>
 
-The resulting set of Constants Table rows is returned as a TResultSetHandle (a vector of TTableRows that 
-can be easily iterated and indexed by the user).
+The resulting set of Constants Table rows is returned as a TResultSetHandle
+(a vector of TTableRows that can be easily iterated and indexed by the
+user).
 
-This set of <b>Calibration Constants</b> is an <i>Effective</i> set (possibly 
-containing Constants from multiple <b>Validity Intervals</b>) reflecting the 
-<i>"best"</i> constants currently available for the date/time specified in the 
-<b>Context</b>. If the user wants to <i>"roll-back"</i> to earlier versions of 
-the Constants, the <b>Context</b> passed to MINOS DBI must be 
-specially adjusted.
+This set of <b>Calibration Constants</b> is an <i>Effective</i> set
+(possibly containing Constants from multiple <b>Validity Intervals</b>)
+reflecting the
+<i>"best"</i> constants currently available for the date/time specified in
+the
+<b>Context</b>. If the user wants to <i>"roll-back"</i> to earlier versions
+of the Constants, the <b>Context</b> passed to MINOS DBI must be specially
+adjusted.
   
 \subsection captDBIDataRetrievalDemo Demo
 
-  For the purpose of this demo we will invent a table of TFB
-  calibration constants.  The table will be called DEMO_DB_TABLE.
+  For the purpose of this demo we will invent a table of TFB calibration
+  constants.  The table will be called DEMO_DB_TABLE.
 
   Each row in this table will contain:
 
@@ -265,24 +297,24 @@ to the 15th of February.  The first row has 4 corresponding entries
 has only 3 (perhaps the TFB chip broke?).
 
 The next thing to notice is that although no DEMO_DB_TABLEVLD rows
-satisfies dates before January 1st 2009 or after February 15th, for
-dates between January 15th and February the 1st both entries do; we
-have an overlap.  Overlaps are an essential part of calibration: you
-need to have good constants ready to go long before the previous ones
-are degraded.  However, this means that there is an ambiguity that has
-to be resolved and to achieve that we introduce the CREATIONDATE
-column which is used to resolve ambiguities in favour of the row with
-the later creation date.  Consequently in our example the validity of
-the first row is effectively trimmed to end on January 15th. However there is an additional mechanism 
-depending on a value called the \ref captDBIEPOCH "EPOCH number" which can supersede the CREATIONDATE.
+satisfies dates before January 1st 2009 or after February 15th, for dates
+between January 15th and February the 1st both entries do; we have an
+overlap.  Overlaps are an essential part of calibration: you need to have
+good constants ready to go long before the previous ones are degraded.
+However, this means that there is an ambiguity that has to be resolved and
+to achieve that we introduce the CREATIONDATE column which is used to
+resolve ambiguities in favour of the row with the later creation date.
+Consequently in our example the validity of the first row is effectively
+trimmed to end on January 15th. However there is an additional mechanism
+depending on a value called the \ref captDBIEPOCH "EPOCH number" which can
+supersede the CREATIONDATE.
 
-  Electronic channel IDs have their top (sign) bit set.  The MINOS
-  database doesn't support unsigned integers for historical reasons
-  so, in order to store IDs efficiently, signed integers are used and
-  all consequently channel IDs will be negative.  The interface does
-  support I/O of unsigned variables, so for this example the value
-  -2006450160 will be correctly received as 2288517136 when read into
-  an unsigned integer.
+  Electronic channel IDs have their top (sign) bit set.  The MINOS database
+  doesn't support unsigned integers for historical reasons so, in order to
+  store IDs efficiently, signed integers are used and all consequently
+  channel IDs will be negative.  The interface does support I/O of unsigned
+  variables, so for this example the value -2006450160 will be correctly
+  received as 2288517136 when read into an unsigned integer.
 
 To build and run the demo program (../demo/demo.cxx):
 
@@ -299,10 +331,12 @@ source setup.sh
 
 Notes:
 
-Sourcing setup.sh will configure a database \ref captDBIAppEnvironment "cascade"
-(unless you have already set the relevant environment variables).
+Sourcing setup.sh will configure a database \ref captDBIAppEnvironment
+"cascade" (unless you have already set the relevant environment variables).
 
-If you intend to use temporary tables in step 3, the cascade must contain a connection that supports temporary tables (such a connection can be added by editing caldb_env_setup.sh).
+If you intend to use temporary tables in step 3, the cascade must contain a
+connection that supports temporary tables (such a connection can be added
+by editing caldb_env_setup.sh).
 
 <li>Build the interface library and the demo program
 
@@ -312,16 +346,20 @@ make
 make demo
 \endcode
 
-<li>Create the permanent Constants Table DEMO_DB_TABLE and upload 2 sets of constants to it (automatically, a corresponding Validity Table DEMO_DB_TABLEVLD will be created and a row will be added for each set).
+<li>Create the permanent Constants Table DEMO_DB_TABLE and upload 2 sets of
+constants to it (automatically, a corresponding Validity Table
+DEMO_DB_TABLEVLD will be created and a row will be added for each set).
 
-\code
-../app/database_updater.py apply_local_update ../demo/demo_db_table.update
-\endcode
+\code 
+  ../app/database_updater.py apply_local_update ../demo/demo_db_table.update
+  \endcode
 
-Since this step writes to the database, you will need to \ref captDBIAppEnvironment "configure the cascade" to 
-point to the test database (testnd280calib) and use a writer account.
-
-Alternatively, the demo program can use \ref captDBIAppTmpTbls "Temporary Tables":
+Since this step writes to the database, you will need to \ref
+captDBIAppEnvironment "configure the cascade" to point to the test database
+(testnd280calib) and use a writer account.
+q
+Alternatively, the demo program can use \ref captDBIAppTmpTbls "Temporary
+  Tables": 
 
 \code
 ../app/database_updater.py --temporary_tables apply_local_update ../demo/demo_db_table.tmp.update > ~/my_temp_constant_tables/demo_db_table.tmp.sql
@@ -437,7 +475,9 @@ to loop over all rows, for example in the demo code you will see:-
 \code
   Int_t numRows(rs.GetNumRows());
  ...
-  DbiLog("Applying query at " << UnixTimeToDateTime(current_unix_time) << " ... result set contains "
+  DbiLog("Applying query at " 
+         << UnixTimeToDateTime(current_unix_time) 
+                                << " ... result set contains "
                                 << numRows << " rows as follows:-");
   for (Int_t irow = 0; irow<numRows; ++irow) rs.GetRow(irow)->Print();
 \endcode
@@ -465,7 +505,8 @@ and again there is a (contrived) example in demo.cxx:-
     DbiLog("  required row " << CP::TTfbChannelId(required_id).AsString());
     required_row->Print();
   }
-  else DbiLog("  cannot find required row" << CP::TTfbChannelId(required_id).AsString());
+  else DbiLog("  cannot find required row" 
+              << CP::TTfbChannelId(required_id).AsString());
 \endcode
 
 Once you have access to an individual CP::TDemo_DB_Table you can use
@@ -536,9 +577,15 @@ See \ref captDBIAppNewTables "Appendix 4" for information on defining your own t
   There are 3 potential routes for uploading Constants to the database:
   
   <ol>
-  <li> Using the MINOS C++ DbiTableRow Object -> Serializer -> SQL statements approach.  This involves initializing DbiTableRow objects and persisting them directly to the database, all inside a C++ program. 
-  <li> Executing SQL statements directly on the database, to create the required Constant & Validity Table rows.
-  <li> Using the database_updater.py script, which reads simplified "update-files" containing descriptions of the constants, and executes the appropriate SQL statements on the server (automatically creating corresponding VLD table rows).
+  <li> Using the MINOS C++ DbiTableRow Object -> Serializer -> SQL
+  statements approach.  This involves initializing DbiTableRow objects and
+  persisting them directly to the database, all inside a C++ program.
+  <li> Executing SQL statements directly on the database, to create the
+  required Constant & Validity Table rows.
+  <li> Using the database_updater.py script, which reads simplified
+  "update-files" containing descriptions of the constants, and executes the
+  appropriate SQL statements on the server (automatically creating
+  corresponding VLD table rows).
   </ol>
   
   T2K does not currently expose (1).  Instead, (3) has been adopted. 
@@ -546,20 +593,23 @@ See \ref captDBIAppNewTables "Appendix 4" for information on defining your own t
   Please run 'database_updater.py -h' for usage instructions and a description
   of the update-file format.
   
-  Those who are creating constants will need to create update-files, and run the script on them.
+  Those who are creating constants will need to create update-files, and
+  run the script on them.
 
 
   \section data_distribution Data Distribution
   
-  The calibration database is hosted at TRIUMF, and replicated to mirrors in the EU and at JPARC.  
+  The calibration database is hosted at TRIUMF, and replicated to mirrors
+  in the EU and at JPARC.
 
   Current information about the servers is kept on the
   <a href="http://www.t2k.org/nd280/database/nd280calib">T2K intranet</a>.
 
 \section  captDBIAppEnvironment Appendix 1: Environment Variables
 
-The C++ data retrieval interface maintains a prioritized list of database connections called a 'cascade'.
-When constants need to be retrieved, it uses the first connection that has the required tables.
+The C++ data retrieval interface maintains a prioritized list of database
+connections called a 'cascade'.  When constants need to be retrieved, it
+uses the first connection that has the required tables.
 
 The cascade is configured by setting 3 or 4 environment variables.
 
@@ -576,21 +626,22 @@ ENV_TSQL_USER  The account user name
 
 ENV_TSQL_PSWD  The account password
                
-ENV_TSQL_TMP_TBLS  File containing SQL statements to create and populate temporary
-                   tables.  If specifified, statements will be executed during 
-                   cascade initialization. (OPTIONAL)
+ENV_TSQL_TMP_TBLS  File containing SQL statements to create and populate
+                   temporary tables.  If specifified, statements will be
+                   executed during cascade initialization. (OPTIONAL)
                   
 The variables can be inspected by running: 'printenv | grep TSQL'
 \endcode
 
-By default, cmt/caldb_env_setup.sh sets up a simple cascade with a single connection to the 
-master calibration database at TRIUMF.
+By default, cmt/caldb_env_setup.sh sets up a simple cascade with a single
+connection to the master calibration database at TRIUMF.
 
-A special 'test' database is available, for users to test their constants (and any special 
-software they use to generate/upload constants) before uploading to the 'real' offline 
-calibration database.
+A special 'test' database is available, for users to test their constants
+(and any special software they use to generate/upload constants) before
+uploading to the 'real' offline calibration database.
 
-  Please customize your environment variables according to the following guidelines:
+  Please customize your environment variables according to the following
+  guidelines:
 
 <table>
 <tr>
@@ -613,79 +664,86 @@ calibration database.
 
   with the servers / accounts listed on the   <a href="http://www.t2k.org/nd280/database/nd280calib">T2K intranet</a>.
 
-Note: environment variables may need to be manually 'unset' if they are going to be re-assigned.
+Note: environment variables may need to be manually 'unset' if they are
+going to be re-assigned.
 
 
 \section  captDBIAppTmpTbls Appendix 2: Temporary Tables
 
-In MySQL, users who have been granted the appropriate privileges on a database, can create 
-Temporary Tables on that database.
+In MySQL, users who have been granted the appropriate privileges on a
+database, can create Temporary Tables on that database.
 
 Temporary Tables:
 
 <ol>
 <li> Are associated to a mysql connection
 <ul>
-<li> A Temporary Table created in one connection is not visible from any other connection
-<li> Multiple connections can create (completely unconnected) Temporary Tables with the same name
+<li> A Temporary Table created in one connection is not visible from any
+other connection
+<li> Multiple connections can create (completely unconnected) Temporary
+Tables with the same name
 </ul>
-<li> Only last the lifetime of the connection (they are cleaned up when the client disconnects)
+<li> Only last the lifetime of the connection (they are cleaned up when the
+client disconnects)
 <li> Mask any permanent tables in the same database that have the same name
 </ol>
 
-As recommended by MINOS, T2K provides a special db dedicated to Temporary Tables 
-along with a special writer account limited to that db.  
+As recommended by MINOS, T2K provides a special db dedicated to Temporary
+Tables along with a special writer account limited to that db.
 
 Users who wish to utilize temporary tables should place this db in the
-first position of the \ref captDBIAppEnvironment "cascade".  Thanks to the 
-position of the db in the cascade, temporary tables will automatically mask any
-permanent tables of the same name in a later db.
+first position of the \ref captDBIAppEnvironment "cascade".  Thanks to the
+position of the db in the cascade, temporary tables will automatically mask
+any permanent tables of the same name in a later db.
 
 \subsection captDBIAppTmpTblsInit Initializing Temporary Tables
 
-By definition, temporary tables must be initialized through the same connection
-that reads them.
+By definition, temporary tables must be initialized through the same
+connection that reads them.
 
-In MINOS, constants were uploaded by persisting DbiTableRow objects
-in compiled C++ code.  In this model, the SQL statements for initializing Temporary 
-Tables can be executed through the same mechanism (within a C++ program) that would be used for 
-permanent tables.  The same C++ program can then go on to use the constants it has 
-uploaded (re-using the same cascade, which has maintained its connections).
+In MINOS, constants were uploaded by persisting DbiTableRow objects in
+compiled C++ code.  In this model, the SQL statements for initializing
+Temporary Tables can be executed through the same mechanism (within a C++
+program) that would be used for permanent tables.  The same C++ program can
+then go on to use the constants it has uploaded (re-using the same cascade,
+which has maintained its connections).
 
-T2K introduced a separate method for uploading constants to permanent tables: running
-a separate database_updater.py python process that executes SQL statements directly 
-on the mysql server.  The mysql connection is closed when the script finishes, and 
-cannot be re-used by a C++ calibration program.
+T2K introduced a separate method for uploading constants to permanent
+tables: running a separate database_updater.py python process that executes
+SQL statements directly on the mysql server.  The mysql connection is
+closed when the script finishes, and cannot be re-used by a C++ calibration
+program.
 
-To enable usage of Temporary Tables without re-enabling the C++ upload mechanism,
-T2K added a '--temporary_tables' option to database_updater.py.  When run on a 
-modified update-file (where instances of 'CREATE TABLE' have been changed to 
-'CREATE TEMPORARY TABLE'), this option prints (but does not execute) the SQL 
-for initializing Temporary Tables.
+To enable usage of Temporary Tables without re-enabling the C++ upload
+mechanism, T2K added a '--temporary_tables' option to database_updater.py.
+When run on a modified update-file (where instances of 'CREATE TABLE' have
+been changed to 'CREATE TEMPORARY TABLE'), this option prints (but does not
+execute) the SQL for initializing Temporary Tables.
 
-Users should save this SQL output to a file, and set the environment variable 
-ENV_TSQL_TMP_TBLS to point to it.
+Users should save this SQL output to a file, and set the environment
+variable ENV_TSQL_TMP_TBLS to point to it.
 
-When programs using the \ref captDBIDataRetrieval are run, the constructor of 
-CP::TDbiCascader checks for the presence of this environment 
-variable.  If set, it reads SQL statements out of the file and executes them 
-on the first database in the cascade supporting Temporary Tables.
+When programs using the \ref captDBIDataRetrieval are run, the constructor
+of CP::TDbiCascader checks for the presence of this environment variable.
+If set, it reads SQL statements out of the file and executes them on the
+first database in the cascade supporting Temporary Tables.
 
-This approach allows Temporary Tables to be used without any modifications to C++ 
-client code: any Temporary Tables that have been initialized on the first connection 
-will be used in preference to permanent tables on later connections.
+This approach allows Temporary Tables to be used without any modifications
+to C++ client code: any Temporary Tables that have been initialized on the
+first connection will be used in preference to permanent tables on later
+connections.
 
 
 
 \section  captDBIAppAttributes Appendix 3: Validity Interval Attributes
 
 
-Conventionally \ref captDBITIMESTART is the time when the data that
-used to produce the calibration was taken.  \ref captDBITIMEEND depends
-on the volatility of the data.  \ref captDBIDETECTORMASK and \ref
-captDBISIMMASK should be set to 1 and \ref captDBITASK and \ref 
-captDBIEPOCH should be set to 0 when  a table is created.  The \ref captDBICREATIONDATE 
-should be set to the date when the calibration process was run.
+Conventionally \ref captDBITIMESTART is the time when the data that used to
+produce the calibration was taken.  \ref captDBITIMEEND depends on the
+volatility of the data.  \ref captDBIDETECTORMASK and \ref captDBISIMMASK
+should be set to 1 and \ref captDBITASK and \ref captDBIEPOCH should be set
+to 0 when a table is created.  The \ref captDBICREATIONDATE should be set
+to the date when the calibration process was run.
 
 The \ref captDBIINSERTDATE should be set to the date when the data
 was entered into the database.  For MINOS there was a special value
@@ -714,65 +772,63 @@ The exclusive time for the validity.  The row is valid for time t where
 
 \subsection captDBIEPOCH  EPOCH
 
-The EPOCH number can run from 0 to 100 and provides the highest level
-of ambiguity resolution, Data with higher EPOCH numbers is always
-preferred over lower EPOCH numbers when resolving ambiguities.  In
-general incrementing the EPOCH number should indicate some significant
-improvement has occured in the way the data was geneated.
+The EPOCH number can run from 0 to 100 and provides the highest level of
+ambiguity resolution, Data with higher EPOCH numbers is always preferred
+over lower EPOCH numbers when resolving ambiguities.  In general
+incrementing the EPOCH number should indicate some significant improvement
+has occured in the way the data was geneated.
 
-  Note that EPOCH and REALITY are new additions to the VLD table and 
-  old-style tables may not have them. All such tables should no longer be put
-  in the database. 
+  Note that EPOCH and REALITY are new additions to the VLD table and
+  old-style tables may not have them. All such tables should no longer be
+  put in the database.
 
 \subsection captDBIREALITY  REALITY
 
-The REALITY number allows us to store data for altered realities,
-that may be useful in systematic studies.  For example, if we want
-to see the effect of recalibrationg the detector under the assumption
-that MPPCs have aged somehow, these calibration constants can
-assigned a different REALITY.  This feature is currently unused and
-all data is given a reality of 0.
+The REALITY number allows us to store data for altered realities, that may
+be useful in systematic studies.  For example, if we want to see the effect
+of recalibrationg the detector under the assumption that MPPCs have aged
+somehow, these calibration constants can assigned a different REALITY.
+This feature is currently unused and all data is given a reality of 0.
 
-  Note that EPOCH and REALITY are new additions to the VLD table and 
+  Note that EPOCH and REALITY are new additions to the VLD table and
   old-style tables may not have them
 
 \subsection captDBIDETECTORMASK  DETECTORMASK
 
-In MINOS we have near and far detectors and part of the context is
-the detector type.  DETECTORMASK is a mask specifying which detectors
-the data applies to. 
+In MINOS we have near and far detectors and part of the context is the
+detector type.  DETECTORMASK is a mask specifying which detectors the data
+applies to.
 
 We could use this in T2K for sub-detectors or abandon it.
 
 \subsection captDBISIMMASK  SIMMASK
 
-SIMMASK is a mask specifying what types of data i.e. real or MC the
-data applies to.  
+SIMMASK is a mask specifying what types of data i.e. real or MC the data
+applies to.
 
 
 \subsection captDBITASK  TASK
 
 Task provides a way to further select the type of data retrieved. For
-example a Detector Configuration data could have two tasks, one for
-raw calibration and another for refined calibration.  The aim is that
-Task will allow a particular database table to be sub-divided
-according to the mode of use. The default value is zero.
+example a Detector Configuration data could have two tasks, one for raw
+calibration and another for refined calibration.  The aim is that Task will
+allow a particular database table to be sub-divided according to the mode
+of use. The default value is zero.
 
 
 
 \subsection captDBIAGGREGATENO  AGGREGATENO
 
-The calibration data for the entire detector is stored in a single
-table although in practise there may be some granularity in it.  For
-example:-
+The calibration data for the entire detector is stored in a single table
+although in practise there may be some granularity in it.  For example:-
 
 <ul>
 
 <li>The constants in some sub-detectors are more volatile than others so
-have to be re-calibrated more often. 
+have to be re-calibrated more often.
 
-<li>The calibration procedure only operates on part of the detector at
-a time.  
+<li>The calibration procedure only operates on part of the detector at a
+time.
 
 </ul>
 
@@ -795,8 +851,8 @@ e.g. 100 * (sub-detector number) + ( sub-detector internal aggregate number)
 We have already seen that the CREATIONDATE serves both to record when
 the data was created and also to resolve ambiguity.
 
-In MINOS this dual role turned out to be a bad idea; the concepts can
-come into conflict.  For T2K the new EPOCH column has been introduced instead.
+In MINOS this dual role turned out to be a bad idea; the concepts can come
+into conflict.  For T2K the new EPOCH column has been introduced instead.
 
 \subsection captDBIINSERTDATE  INSERTDATE
 
@@ -813,16 +869,18 @@ the local database to an earlier state.
 
 \subsection  captDBINewTable New Table
 
-Pick an uppercase table name using underscores to make it readable.  For example
+Pick an uppercase table name using underscores to make it readable.  For
+example
 
 <pre>
 XXX_YYY
 </pre>
 
-It is not required to end the table name with _TABLE, but this is common parctice, and makes the associated C++ class easy to identify as part of the DBI.
+It is not required to end the table name with _TABLE, but this is common
+practice, and makes the associated C++ class easy to identify as part of
+the DBI.
 
 You need to create two tables:-
-
 
 <pre>
 XXX_YYY
@@ -864,36 +922,53 @@ TDemo_DB_Table.cxx
 
 \subsection glossNorm Normalization
 
-A process for decomposing information into tables, in a way that minimizes redundancy and dependencies. The decomposition of ND280's calibration data into Events, Validity Intervals and Constants is the result of such a process.
+A process for decomposing information into tables, in a way that minimizes
+redundancy and dependencies. The decomposition of ND280's calibration data
+into Events, Validity Intervals and Constants is the result of such a
+process.
 
 \subsection glossFK Foreign Key
 
-Identifies a field in a table that references a field in another table (the 'candidate key'), thereby associating a set of rows from the first table, to a single row in the second table.  This concept is central to captDBI, where 'SEQNO' is a candidate key in the validity table, referenced by a foreign key in the constants table.  The main function of the package is to follow those links, combining the resulting sets according to its 'disambiguation' rules.
+Identifies a field in a table that references a field in another table (the
+'candidate key'), thereby associating a set of rows from the first table,
+to a single row in the second table.  This concept is central to captDBI,
+where 'SEQNO' is a candidate key in the validity table, referenced by a
+foreign key in the constants table.  The main function of the package is to
+follow those links, combining the resulting sets according to its
+'disambiguation' rules.
 
 
 
 \section  captDBIFurtherReading Further Reading
 
-<a href="http://www.hep.lancs.ac.uk/nd280Doc/stable/invariant/nd280Doc/database_start-a4.pdf"> A useful user's guide has been written by Abbey Waldron and can be found in the ND280Doc area.
+<a href="http://www.hep.lancs.ac.uk/nd280Doc/stable/invariant/nd280Doc/database_start-a4.pdf">
+A useful user's guide has been written by Abbey Waldron and can be found in
+the ND280Doc area.
 </a>
 
-Although the MINOS code has been merged into the ND280 software environment, its 
-basic functionality is largely unchanged.  A comprehensive description of the
-upstream code can be found in the 
-<a href="http://www-numi.fnal.gov/offline_software/srt_public_context/doc/UserManual/node9.html#SECTION00922600000000000000\">MINOS Off-line Software User's Manual Database section
+Although the MINOS code has been merged into the ND280 software
+environment, its basic functionality is largely unchanged.  A comprehensive
+description of the upstream code can be found in the
+<a href="http://www-numi.fnal.gov/offline_software/srt_public_context/doc/UserManual/node9.html#SECTION00922600000000000000\">MINOS
+Off-line Software User's Manual Database section
 </a>For an in-depth understanding of the interface please read that code,
-even though the class names are different and it describes many
-features not currently supported in the T2K interface.
+even though the class names are different and it describes many features
+not currently supported in the T2K interface.
 
-<a href="http://www.t2k.org/nd280/physics/general/2009-10/febcalsoft/24feb2010/lindner_database_summary/view">Thomas Lindner's 2010 Summary of ND280 Database Work</a>
+<a href="http://www.t2k.org/nd280/physics/general/2009-10/febcalsoft/24feb2010/lindner_database_summary/view">Thomas
+Lindner's 2010 Summary of ND280 Database Work</a>
 
-<a href="http://www.t2k.org/nd280/calib/Meetings/2010/17Aug10/caldbsoft/view">P.Litchfield's 2010 talk on Calibration DB Software</a>
+<a href="http://www.t2k.org/nd280/calib/Meetings/2010/17Aug10/caldbsoft/view">P.Litchfield's
+2010 talk on Calibration DB Software</a>
 
-<a href="http://www.hep.lancs.ac.uk/%7Eajf/DatabaseTalkApril2010.pdf">Alex Finch's 2010 talk on databases</a>
+<a href="http://www.hep.lancs.ac.uk/%7Eajf/DatabaseTalkApril2010.pdf">Alex
+Finch's 2010 talk on databases</a>
 
-For information about the summer-2009 discussions that lead to captDBI, please see:
+For information about the summer-2009 discussions that lead to captDBI,
+please see:
 
-<a href="http://www-pnp.physics.ox.ac.uk/~west/t2k/discussions/Calibration_Database_Design.ppt">N. West Calibration DB Design Presentation</a>
+<a href="http://www-pnp.physics.ox.ac.uk/~west/t2k/discussions/Calibration_Database_Design.ppt">N. West
+Calibration DB Design Presentation</a>
 
 <a href="http://www-pnp.physics.ox.ac.uk/~west/t2k/discussions/nd280_offline_database_interface_consultation.html">
 Nick West's consultation document</a>
@@ -906,23 +981,28 @@ Nick West's consultation document</a>
 
 \section Changes Changes from v1r5 to v2r1
 
-The code has undergone major internal changes since v1r5. The immediate effect of these changes is that all existing code which uses
-DbiResultPtr has to make the following change in all corresponding LinkDef files:
+The code has undergone major internal changes since v1r5. The immediate
+effect of these changes is that all existing code which uses DbiResultPtr
+has to make the following change in all corresponding LinkDef files:
 <pre>
-sed -i 's/#pragma link C++ class DbiResultPtr</#pragma link C++ class CP::TDbiResultSetHandle</g' *LinkDef.h
+sed -i 's/#pragma link C++ class DbiResultPtr</#pragma link C++ class
+CP::TDbiResultSetHandle</g' *LinkDef.h
 </pre>
 
-The reason for this change is that the class DbiResultPtr has been renamed as CP::TDbiResultSetHandle. There is
-a define
+The reason for this change is that the class DbiResultPtr has been renamed
+as CP::TDbiResultSetHandle. There is a define
 <pre>
  DbiResultPtr CP::TDbiResultSetHandle
-</pre> in TResultSetHandle.cxx which mean most code does not need changing, however this is not seen by rootcint
-when it builds the dictionary files. In the long term I would like people to replace all occurences of
-DbiResultPtr with CP::TDbiResultSetHandle in their source code so that at some point this define can be removed.
+</pre> in TResultSetHandle.cxx which mean most code does not need changing,
+however this is not seen by rootcint when it builds the dictionary
+files. In the long term I would like people to replace all occurences of
+DbiResultPtr with CP::TDbiResultSetHandle in their source code so that at
+some point this define can be removed.
 
-All code which previously resided in the MinosDBI package is now included in captDBI and conforms to ND280
-naming conventions. In addition it uses \ref CP::TDbiLog for error reporting and uses CP::EoaCore via the OA_EXCEPTION macro to throw
-exceptions. 
+All code which previously resided in the MinosDBI package is now included
+in captDBI and conforms to ND280 naming conventions. In addition it uses
+\ref CP::TDbiLog for error reporting and uses CP::EoaCore via the
+OA_EXCEPTION macro to throw exceptions.
 
 
 
@@ -933,7 +1013,8 @@ exceptions.
 
 // The TableRow subclass' *_LinkDef.h must request a dictionary for
 // the templated CP::TResultSetHandle instantiated on it.  However that
-// class inherits from the backend CP::TDbiResultSetHandle so that dictionary is
+// class inherits from the backend CP::TDbiResultSetHandle so that
+// dictionary is 
 #ifndef USE_NEW_DBI_API 
 #pragma link C++ class CP::TDbiResultSetHandle<CP::TDemo_DB_Table>+;
 #else
