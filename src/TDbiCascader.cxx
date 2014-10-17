@@ -1,9 +1,3 @@
-
-//////////////////////////////////////////////////////////////////////////
-////////////////////////////     ROOT API     ////////////////////////////
-//////////////////////////////////////////////////////////////////////////
-
-
 #include <cstdlib>
 #include <memory>
 #include <sstream>
@@ -20,9 +14,6 @@
 #include <MsgFormat.hxx>
 #include "UtilString.hxx"
 #include <TDbiLog.hxx>
-
-
-
 
 ClassImp(CP::TDbiCascader)
 
@@ -66,7 +57,9 @@ ClassImp(CP::TDbiCascader)
 ///    ENV_TSQL_URL             a semi-colon separated list of URLs
 ///    ENV_TSQL_USER            user name (one or a semi-colon separated list)
 ///    ENV_TSQL_PSWD            password (one or a semi-colon separated list)
-///    ENV_TSQL_TMP_TBLS        path to a file containing SQL statements to create and fill temporary tables (optional T2K extension)
+///    ENV_TSQL_TMP_TBLS        path to a file containing SQL statements to
+///                             create and fill temporary tables (optional T2K
+///                             extension). 
 ///
 ///    or the _UPDATE alternatives e.g. ENV_TSQL_UPDATE_USER
 ///
@@ -75,40 +68,36 @@ ClassImp(CP::TDbiCascader)
 CP::TDbiCascader::TDbiCascader(bool beQuiet):
     fTempCon(-1), fGlobalSeqNoDbNo(-1) {
 
-
-    DbiTrace("Creating CP::TDbiCascader" << "  ");
-
-// Extract args from  ENV_TSQL environmental variables
-    const char*      strUser = gSystem->Getenv("ENV_TSQL_UPDATE_USER");
+    // Extract args from  ENV_TSQL environmental variables
+    const char* strUser = gSystem->Getenv("ENV_TSQL_UPDATE_USER");
     if (! strUser) {
         strUser = gSystem->Getenv("ENV_TSQL_USER");
     }
-    const char*      strPswd = gSystem->Getenv("ENV_TSQL_UPDATE_PSWD");
+    const char* strPswd = gSystem->Getenv("ENV_TSQL_UPDATE_PSWD");
     if (! strPswd) {
         strPswd = gSystem->Getenv("ENV_TSQL_PSWD");
     }
-    const char*       strUrl = gSystem->Getenv("ENV_TSQL_UPDATE_URL");
+    const char* strUrl = gSystem->Getenv("ENV_TSQL_UPDATE_URL");
     if (!strUrl) {
         strUrl = gSystem->Getenv("ENV_TSQL_URL");
     }
-    const char*       strTmpTbls = gSystem->Getenv("ENV_TSQL_UPDATE_TMP_TBLS");
+    const char* strTmpTbls = gSystem->Getenv("ENV_TSQL_UPDATE_TMP_TBLS");
     if (!strTmpTbls) {
         strTmpTbls = gSystem->Getenv("ENV_TSQL_TMP_TBLS");
     }
 
-    std::string userList     = (strUser) ? strUser : "";
-    std::string pswdList     = (strPswd) ? strPswd : "";
-    std::string urlList      = (strUrl) ? strUrl  : "";
-    std::string tmpTbls      = (strTmpTbls) ? strTmpTbls : "";
+    std::string userList = (strUser) ? strUser : "";
+    std::string pswdList = (strPswd) ? strPswd : "";
+    std::string urlList  = (strUrl) ? strUrl  : "";
+    std::string tmpTbls  = (strTmpTbls) ? strTmpTbls : "";
 
-    if (urlList == "" || userList == "" || pswdList == "") {
-        /*
-           If beQuiet is true be mute about why we are failing, leave it to the caller to deal with.
-        */
+    if (urlList.empty()) {
+        // If beQuiet is true be mute about why we are failing, leave it to
+        // the caller to deal with. 
         if (!beQuiet) {
-            std::cout<<"error!"<<std::endl;
-            DbiSevere("Cannnot open a Database cascade;\n"
-                      << "   the environmental variables ENV_TSQL_*:-" << std::endl
+            DbiSevere("Cannot open a Database cascade;\n"
+                      << "   the environmental variables ENV_TSQL_*:-"
+                      << std::endl
                       << "USER: \"" << userList << "\" PSWD:\"" << pswdList
                       << "\" URL:\"" << urlList << std::endl
                       << " are either not defined or empty.\n"
@@ -131,13 +120,15 @@ CP::TDbiCascader::TDbiCascader(bool beQuiet):
         std::string user = (entry >= users.size()) ? users[0] : users[entry];
         std::string pswd = (entry >= pswds.size()) ? pswds[0] : pswds[entry];
 
-        // Handle empty password designated as '\0' (an empty null terminated character string)
+        // Handle empty password designated as '\0' (an empty null terminated
+        // character string)
         if (pswd == "\\0") {
             pswd = "";
         }
 
         CP::TDbiConnection* con;
-        // If we are testing the cascade for validity, just try connecting once, otherwise use defaults.
+        // If we are testing the cascade for validity, just try connecting
+        // once, otherwise use defaults.
         if (!beQuiet) {
             con  = new CP::TDbiConnection(url,user,pswd,1);
         }
@@ -151,7 +142,7 @@ CP::TDbiCascader::TDbiCascader(bool beQuiet):
             continue;
         }
 
-//  Attempt to locate first GlobalSeqNo/GLOBALSEQNO table.
+        //  Attempt to locate first GlobalSeqNo/GLOBALSEQNO table.
         if (fGlobalSeqNoDbNo != -1) {
             continue;
         }
@@ -159,22 +150,34 @@ CP::TDbiCascader::TDbiCascader(bool beQuiet):
         if (! stmtDb.get()) {
             continue;
         }
-        TSQLStatement* stmt = stmtDb->ExecuteQuery("Select * from GLOBALSEQNO where 1=0");
+        TSQLStatement* stmt = stmtDb->ExecuteQuery(
+            "Select * from GLOBALSEQNO where 1=0");
         if (stmt) {
             fGlobalSeqNoDbNo = fConnections.size()-1;
             delete stmt;
             stmt = 0;
         }
 
-//  Check for presence of a DBI_STATE_FLAG table
+        //  Check for presence of a DBI_STATE_FLAG table
 
         if (this->GetTableDbNo("DBI_STATE_FLAGS",entry) != -1) {
-            if (!beQuiet)  DbiSevere("  POSSIBLE VERSION SHEAR DETECTED !!!\n"
-                                         << "    The DBI_STATE_FLAGS table is present on cascade entry " << entry << ".  This table will\n"
-                                         << "    only be introduced to manage backward incompatible changes that could lead\n"
-                                         << "    to version shear between the code and the database.  This version of the\n"
-                                         << "    code does not support the change the presence of that table indicates\n"
-                                         << "    so has to shut down. \n");
+            if (!beQuiet) {
+                DbiSevere(
+                    "  POSSIBLE VERSION SHEAR DETECTED"
+                    << std::endl
+                    << "    The DBI_STATE_FLAGS table is present"
+                    << " on cascade entry " << entry << ".  This table will"
+                    << std::endl
+                    << "    only be introduced to manage backward"
+                    << " incompatible changes that could lead"
+                    << "    to version shear between the code and the database."
+                    << "  This version of the"
+                    << std::endl
+                    << "    code does not support the change the"
+                    << " presence of that table indicates"
+                    << "    so has to shut down." 
+                    << std::endl);
+            }
             fail = true;
         }
     }
@@ -182,12 +185,16 @@ CP::TDbiCascader::TDbiCascader(bool beQuiet):
     DbiInfo(*this);
 
     if (tmpTbls != "") {
-        DbiLog("Cascader is processing Temp Tables File ENV_TSQL_TMP_TBLS=" << tmpTbls);
+        DbiLog("Cascader is processing Temp Tables File ENV_TSQL_TMP_TBLS="
+               << tmpTbls);
         if (ProcessTmpTblsFile(tmpTbls) == -1) {
-            DbiSevere("Temporary Tables file ENV_TSQL_TMP_TBLS=" << tmpTbls << " could not be not processed.");
-            // Abort the job if there was a problem processing ENV_TSQL_TMP_TBLS.
-            // --> Ensures that results will not be produced under the (false) belief that temporary tables were used.
-            // If this is crashing your jobs, simply fix or unset ENV_TSQL_TMP_TBLS.
+            DbiSevere("Temporary Tables file ENV_TSQL_TMP_TBLS=" 
+                      << tmpTbls << " could not be not processed.");
+            // Abort the job if there was a problem processing
+            // ENV_TSQL_TMP_TBLS.  --> Ensures that results will not be
+            // produced under the (false) belief that temporary tables were
+            // used.  If this is crashing your jobs, simply fix or unset
+            // ENV_TSQL_TMP_TBLS.
             fail = true;
         }
     }
@@ -278,10 +285,12 @@ bool CP::TDbiCascader::canConnect() {
 ///   tableName       in    The table for which the SEQNO is required.
 ///   requireGlobal   in    The type of SEQNO required:-
 ///                           > 0  Must be global
-///                           = 0  Must be global if supplied dbNo is authorising
-///                                and table isn't temporary otherwise local
+///                           = 0  Must be global if supplied dbNo is
+///                                authorizing and table isn't temporary
+///                                otherwise local
 ///                           < 0  Must be local
-///   dbNo            in     The entry in the cascade for which the SEQNO is required
+///   dbNo            in     The entry in the cascade for which the SEQNO
+///                          is required
 ///
 ///  Return:    The allocated SEQNO or 0 if failure.
 ///
@@ -290,11 +299,13 @@ bool CP::TDbiCascader::canConnect() {
 ///  Program Notes:-
 ///  =============
 ///
-///  Requests for SEQNOs take account of any pre-existing entries; local entries
-///  should only be used for development and this allows for the LOCALSEQNO table
-///  and the local data to be wiped at different times without causing conflicts.
-///  Global entries should not be a problem as the GLOBALSEQNO table isn't wiped
-///  but it provides protection in case the table is damaged (which has happened!).
+///  Requests for SEQNOs take account of any pre-existing entries; local
+///  entries should only be used for development and this allows for the
+///  LOCALSEQNO table and the local data to be wiped at different times
+///  without causing conflicts.  Global entries should not be a problem as the
+///  GLOBALSEQNO table isn't wiped but it provides protection in case the
+///  table is damaged (which has happened!).
+///
 ///\endverbatim
 Int_t CP::TDbiCascader::AllocateSeqNo(const std::string& tableName,
                                       Int_t requireGlobal, /* =0 */
@@ -307,11 +318,15 @@ Int_t CP::TDbiCascader::AllocateSeqNo(const std::string& tableName,
     if (requireGlobal > 0
         || (requireGlobal == 0 && dbNo == fGlobalSeqNoDbNo && ! isTemporary)) {
         if (fGlobalSeqNoDbNo < 0) {
-            DbiWarn("Unable to issue global SEQNO - no authorising DB in cascade\n"
-                    << "  will issue local one instead" << "  ");
+            DbiWarn("Unable to issue global SEQNO"
+                    << " - no authorising DB in cascade"
+                    << std::endl
+                    << "  will issue local one instead");
         }
         else if (isTemporary) {
-            DbiWarn("Unable to issue global SEQNO - " << tableName << " is temporary\n"
+            DbiWarn("Unable to issue global SEQNO - " 
+                    << tableName << " is temporary"
+                    << std::endl
                     << "  will issue local one instead" << "  ");
         }
         else {
@@ -464,26 +479,30 @@ Int_t CP::TDbiCascader::CreateTemporaryTable(const std::string& tableNameMc,
 //@{
 
 
-///  \brief
-///  Creates and fills temporary tables by executing the statements in SQLFilePath.
+///  Creates and fills temporary tables by executing the statements in
+///  SQLFilePath.
 ///
-///  Reason: Since T2K uses an external python script to create & fill tables (rather
-///          than the MINOS C++ classes), we need a way to execute the SQL generated
-///          by this script on a connection in the cascade.
+///  Reason: Since T2K uses an external python script to create & fill tables
+///          (rather than the MINOS C++ classes), we need a way to execute the
+///          SQL generated by this script on a connection in the cascade.
 ///
-///  Note: fTemporaryTables is only ever accessed by IsTemporaryTable().  It would
-///        probably be best to dispense with fTemporaryTables and reimplement IsTemporaryTable()
-///        to check dynamically.  This would simplify ProcessTmpTblsFile() & ParseTmpTblsSQLLine().
-///  \param[in] SQLFilePath in Path to a file containing SQL statements for creating and filling the temporary tables.
+///  Note: fTemporaryTables is only ever accessed by IsTemporaryTable().  It
+///        would probably be best to dispense with fTemporaryTables and
+///        reimplement IsTemporaryTable() to check dynamically.  This would
+///        simplify ProcessTmpTblsFile() & ParseTmpTblsSQLLine().  \param[in]
+///        SQLFilePath in Path to a file containing SQL statements for
+///        creating and filling the temporary tables.
 ///
-///  \return dbNo of the database on which the SQL was executed or -1 if there was a problem
+///  \return dbNo of the database on which the SQL was executed or -1 if there
+///  was a problem
 ///
 ///  \author Simon Claret t2kcompute@comp.nd280.org
 int CP::TDbiCascader::ProcessTmpTblsFile(const std::string& SQLFilePath) {
     int tempConDbNo = GetTempCon();
 
     if (tempConDbNo == -1) {
-        DbiSevere("Could not find a cascade connection that accepts Temporary Tables.");
+        DbiSevere("Could not find a cascade connection that"
+                  " accepts Temporary Tables.");
         return -1;
     }
 
@@ -513,11 +532,13 @@ int CP::TDbiCascader::ProcessTmpTblsFile(const std::string& SQLFilePath) {
             DbiInfo("Skipped a blank line.");
             break;
         default:
-            DbiSevere("A line in ENV_TSQL_TMP_TBLS=" << SQLFilePath << " appears invalid and was not executed.");
+            DbiSevere("A line in ENV_TSQL_TMP_TBLS=" 
+                      << SQLFilePath
+                      << " appears invalid and was not executed.");
             return -1;
         }
 
-    }//end while
+    }
 
     SQLFileStream.close();
 
@@ -538,10 +559,13 @@ int CP::TDbiCascader::GetTempCon() {
 
             if (fConnections[i]->SupportsTmpTbls()==true) {
                 fTempCon = i;
-                DbiInfo("Cascader set the temporary connection fTempCon to dbNo " << i << " (" << fConnections[i]->GetUrl() << ").");
+                DbiInfo("Cascader set the temporary connection"
+                        << " fTempCon to dbNo " << i 
+                        << " (" << fConnections[i]->GetUrl() << ").");
                 if (fConnections[i]->IsTemporary()) {
                     fConnections[i]->SetPermanent();
-                    DbiInfo("Cascader made connection " << i << " permanent to preserve temporary tables.");
+                    DbiInfo("Cascader made connection " << i 
+                            << " permanent to preserve temporary tables.");
                 }
                 break;
             }
@@ -558,10 +582,13 @@ int CP::TDbiCascader::GetTempCon() {
 ///  \param[in] line A single line from the SQL file
 ///  \param[out] tableName Parsed table name will be written here if found
 ///
-///  \return    LINE_APPEARS_VALID  if the line appears to contain a valid SQL statement or LINE_BLANK if the line is blank or LINE_INVALID if the line is invalid
+///  \return LINE_APPEARS_VALID if the line appears to contain a valid SQL
+///  statement or LINE_BLANK if the line is blank or LINE_INVALID if the line
+///  is invalid
 ///
 ///  \author Simon Claret t2kcompute@comp.nd280.org
-int CP::TDbiCascader::ParseTmpTblsSQLLine(const std::string& line, std::string& tableName) {
+int CP::TDbiCascader::ParseTmpTblsSQLLine(const std::string& line,
+                                          std::string& tableName) {
     // state of the lineItr
     std::string::const_iterator lineItr;
     char prevChar = ' ';
@@ -604,8 +631,8 @@ int CP::TDbiCascader::ParseTmpTblsSQLLine(const std::string& line, std::string& 
 
         }
 
-        // extract table name
-        // need to add test cases for: leading space, trailing space, no leading space, no trailing space
+        // extract table name.  Need to add test cases for: leading space,
+        // trailing space, no leading space, no trailing space
         if (accTblNameModeActive == true) {
             // skip leading spaces
             if (tempTableName.length()==0 && *lineItr==' ') {
@@ -620,7 +647,7 @@ int CP::TDbiCascader::ParseTmpTblsSQLLine(const std::string& line, std::string& 
             }
         }
 
-    }//end for
+    }
 
     if (lineIsEmpty == true) {
         tableName = "";
@@ -633,19 +660,22 @@ int CP::TDbiCascader::ParseTmpTblsSQLLine(const std::string& line, std::string& 
 
 }
 
-///  \brief    Helper function for ProcessTempTablesFile() that executes
-///            an SQL statement.
-///
-///            If a corresponding tableName is provided, it is registered as appropriate.
+///  \brief Helper function for ProcessTempTablesFile() that executes an SQL
+///            statement.  If a corresponding tableName is provided, it is
+///            registered as appropriate.
 ///
 ///  \param[in] line An sql statement.
-///  \param[in] tableName Parsed table name (if this is a CREATE TEMPORARY TABLE statement)
+///
+///  \param[in] tableName Parsed table name (if this is a CREATE TEMPORARY
+///  TABLE statement)
 ///
 ///  \return true success or false failure
 ///
 ///  \author Simon Claret t2kcompute@comp.nd280.org
 
-bool CP::TDbiCascader::ExecTmpTblsSQLStmt(int tempConDbNo, const std::string& line, const std::string& tableName) {
+bool CP::TDbiCascader::ExecTmpTblsSQLStmt(int tempConDbNo,
+                                          const std::string& line,
+                                          const std::string& tableName) {
     TDbiStatement* stmt = CreateStatement(tempConDbNo);
     bool retVal = false;
 
@@ -655,10 +685,13 @@ bool CP::TDbiCascader::ExecTmpTblsSQLStmt(int tempConDbNo, const std::string& li
         // Application-level tableName registration
         if (tableName.length() > 0) {
             GetConnection(tempConDbNo)->SetTableExists(tableName);
-            DbiInfo("Cascader registered table " << tableName << " to connection " << tempConDbNo);
-            if (!(tableName.length() >= 3 && tableName.substr(tableName.length()-3, 3) == "VLD")) {
+            DbiInfo("Cascader registered table " 
+                    << tableName << " to connection " << tempConDbNo);
+            if (!(tableName.length() >= 3 
+                  && tableName.substr(tableName.length()-3, 3) == "VLD")) {
                 fTemporaryTables[tableName] = tempConDbNo;
-                DbiLog("Cascader registered temporary table " << tableName << " to connection " << tempConDbNo);
+                DbiLog("Cascader registered temporary table " 
+                       << tableName << " to connection " << tempConDbNo);
             }
         }
 
@@ -673,11 +706,8 @@ bool CP::TDbiCascader::ExecTmpTblsSQLStmt(int tempConDbNo, const std::string& li
 
 //@}
 
-//.....................................................................
-///
-///
-///  Purpose:  Return a connection to caller (CP::TDbiCascader retains ownership)
-///
+///  Purpose: Return a connection to caller (CP::TDbiCascader retains
+///  ownership)
 const CP::TDbiConnection* CP::TDbiCascader::GetConnection(UInt_t dbNo) const {
 
 
@@ -687,28 +717,19 @@ const CP::TDbiConnection* CP::TDbiCascader::GetConnection(UInt_t dbNo) const {
     return fConnections[dbNo];
 
 }
-//.....................................................................
-///
-///
-///  Purpose:  Return a connection to caller (CP::TDbiCascader retains ownership)
 
+///  Purpose: Return a connection to caller (CP::TDbiCascader retains
+///  ownership)
 CP::TDbiConnection* CP::TDbiCascader::GetConnection(UInt_t dbNo) {
-
-
     if (this->GetStatus(dbNo) == kFailed) {
         return 0;
     }
     return fConnections[dbNo];
-
 }
 
 
-//.....................................................................
 ///  Purpose:  Return Database Name for cascade entry number.
 std::string CP::TDbiCascader::GetDbName(UInt_t dbNo) const {
-//
-//
-
     std::string dbName;
 
     if (dbNo < this->GetNumDb()) {
@@ -721,15 +742,10 @@ std::string CP::TDbiCascader::GetDbName(UInt_t dbNo) const {
 
 }
 
-//.....................................................................
-///
-///
 ///  Purpose:  Return number of first DB in cascade with name dbName.
 ///
 ///  Return:   Database number corresponding to dbName or -1 if none.
 Int_t CP::TDbiCascader::GetDbNo(const std::string& dbName) const {
-
-
     for (unsigned dbNo = 0; dbNo < this->GetNumDb(); ++dbNo) {
         if (dbName == fConnections[dbNo]->GetDbName()) {
             return dbNo;
@@ -741,16 +757,11 @@ Int_t CP::TDbiCascader::GetDbNo(const std::string& dbName) const {
 
 }
 
-//.....................................................................
-///
-///
 ///  Purpose:  Return DB connection status as a string.
 ///
 ///  Arguments:
 ///    dbNo         in    Database number (0..GetNumDb()-1)
 std::string CP::TDbiCascader::GetStatusAsString(UInt_t dbNo) const {
-
-
     Int_t status = GetStatus(dbNo);
 
     switch (status) {
@@ -760,25 +771,21 @@ std::string CP::TDbiCascader::GetStatusAsString(UInt_t dbNo) const {
     }
 
 }
-//.....................................................................
-///
-///
+
 ///  Purpose:  Return cascade number of first database that holds table
 ///            or -1 if none.
 Int_t CP::TDbiCascader::GetTableDbNo(const std::string& tableName,
                                      Int_t selectDbNo /* -1 */) const {
+    // If selectDbNo >= 0 only look in this entry in the cascade.
 
-
-// If selectDbNo >= 0 only look in this entry in the cascade.
-
-// If table name has any lower case letters then fail.
+    // If table name has any lower case letters then fail.
     std::string::const_iterator itr    = tableName.begin();
     std::string::const_iterator itrEnd = tableName.end();
     while (itr != itrEnd) if (islower(*itr++)) {
             return -1;
         }
 
-// Loop over cascade looking for table.
+    // Loop over cascade looking for table.
 
     for (UInt_t dbNoTry = 0; dbNoTry < fConnections.size(); ++dbNoTry) {
         if (selectDbNo >= 0 && (UInt_t) selectDbNo != dbNoTry) {
@@ -793,7 +800,7 @@ Int_t CP::TDbiCascader::GetTableDbNo(const std::string& tableName,
     return -1;
 
 }
-//.....................................................................
+
 ///\verbatim
 ///
 ///  Purpose: Hold temporary connections open
@@ -810,45 +817,34 @@ Int_t CP::TDbiCascader::GetTableDbNo(const std::string& tableName,
 ///  See CP::TDbiConnectionMaintainer for use.
 ///\endverbatim
 void CP::TDbiCascader::HoldConnections() {
-
-
     for (UInt_t dbNo = 0; dbNo < fConnections.size(); ++dbNo) {
         fConnections[dbNo]->ConnectStatement();
     }
 }
 
-//.....................................................................
 ///  Purpose:  Return kTRUE if tableName is temporary in cascade member dbNo
 Bool_t CP::TDbiCascader::IsTemporaryTable(const std::string& tableName,
                                           Int_t dbNo) const {
-//
-//LL
-
-
     std::map<std::string,Int_t>::const_iterator itr
     = fTemporaryTables.find(tableName);
     return (itr != fTemporaryTables.end()
             && (*itr).second == dbNo);
-
 }
 
 
-// Private Locker object
-
-//.....................................................................
 ///\verbatim
-///
 ///  Purpose:  Ctor: Create a lock on a table accessed via connection.
 ///            (will be released by dtor)
 ///  Arguments:
 ///          stmtDB    in  CP::TDbiStatement (given to Lock).
 ///\endverbatim
-CP::TDbiCascader::Lock::Lock(CP::TDbiStatement* stmtDB, const std::string& seqnoTable, const std::string& dataTable) :
+CP::TDbiCascader::Lock::Lock(CP::TDbiStatement* stmtDB, 
+                             const std::string& seqnoTable,
+                             const std::string& dataTable) :
     fStmt(stmtDB),
     fSeqnoTableName(seqnoTable),
     fDataTableName(dataTable),
     fLocked(kFALSE) {
-
 
     if (! fStmt) {
         DbiSevere("Cannot obtain statment to set lock" << "  ");
@@ -858,20 +854,14 @@ CP::TDbiCascader::Lock::Lock(CP::TDbiStatement* stmtDB, const std::string& seqno
     this->SetLock(kTRUE);
 
 }
-//.....................................................................
+
 ///  Purpose:  Dtor: Clear lock
 CP::TDbiCascader::Lock::~Lock() {
-//
-//
-
-
     this->SetLock(kFALSE);
     delete fStmt;
     fStmt = 0;
-
 }
 
-//.....................................................................
 ///\verbatim
 ///
 ///  Purpose:  Set or clear lock.
@@ -884,10 +874,7 @@ CP::TDbiCascader::Lock::~Lock() {
 ///
 ///  No-op if locked otherwise use the LOCK TABLES command.
 ///\endverbatim
-
 void CP::TDbiCascader::Lock::SetLock(Bool_t setting) {
-
-
     if (setting == fLocked || ! fStmt) {
         return;
     }
@@ -895,14 +882,22 @@ void CP::TDbiCascader::Lock::SetLock(Bool_t setting) {
     std::string sql;
 
     if (setting) {
+#ifdef USE_MYSQL_LOCKS
         sql = "LOCK TABLES ";
         sql += fSeqnoTableName + " WRITE";
         if (fDataTableName != "") {
             sql += ", " + fDataTableName  + "VLD WRITE";
         }
+#else
+        sql = "BEGIN;";
+#endif
     }
     else {
+#ifdef USE_MYSQL_LOCKS
         sql = "UNLOCK TABLES;";
+#else
+        sql = "COMMIT;";
+#endif
     }
     DbiLog("Lock requested: " << setting
            << " issuing lock command: " << sql << "  ");
@@ -913,7 +908,7 @@ void CP::TDbiCascader::Lock::SetLock(Bool_t setting) {
     fStmt->PrintExceptions();
 
 }
-//.....................................................................
+
 ///\verbatim
 ///
 ///  Purpose: Release temporary connections held open by HoldConnections.
@@ -931,22 +926,22 @@ void CP::TDbiCascader::Lock::SetLock(Bool_t setting) {
 ///  See CP::TDbiConnectionMaintainer for use.
 ///\endverbatim
 void CP::TDbiCascader::ReleaseConnections() {
-
-
     for (UInt_t dbNo = 0; dbNo < fConnections.size(); ++dbNo) {
         fConnections[dbNo]->DisConnectStatement();
     }
 }
-//.....................................................................
+
 ///\verbatim
 ///
-///  Purpose:  Reserve the next higher available unique (either locally or globally) SEQNO.
-///            in the appropriate SEQNO table.
+///  Purpose:  Reserve the next higher available unique (either locally or
+///            globally) SEQNO. in the appropriate SEQNO table.
 ///
 ///  Arguments:
 ///   tableName       in    The table for which the SEQNO is required.
-///   isGlobal        in    = true - reserve in GLOBALSEQNO table(dbNo must be authorizing)
-///                         = false - reserve in LOCALSEQNO table (creating if required)
+///   isGlobal        in    = true - reserve in GLOBALSEQNO table(dbNo must be
+///                                   authorizing) 
+///                         = false - reserve in LOCALSEQNO table (creating if
+///                                   required) 
 ///   dbNo            in    The entry in the cascade holding the SEQNO table.
 ///
 ///  Return:    The allocated SEQNO or 0 if failure.
@@ -956,12 +951,11 @@ void CP::TDbiCascader::ReleaseConnections() {
 ///  Program Notes:-
 ///  =============
 ///
-///  Requests for local SEQNOs may result in the creation of a LOCALSEQNO table.
-///\endverbatim
+///  Requests for local SEQNOs may result in the creation of a LOCALSEQNO
+///table.  \endverbatim
 Int_t CP::TDbiCascader::ReserveNextSeqNo(const std::string& tableName,
                                          Bool_t isGlobal,
                                          UInt_t dbNo) const {
-
     CP::TDbiString sql;
 
     std::string seqnoTableName = isGlobal ? "GLOBALSEQNO" : "LOCALSEQNO";
@@ -990,7 +984,8 @@ Int_t CP::TDbiCascader::ReserveNextSeqNo(const std::string& tableName,
                 << " LASTUSEDSEQNO  INT )";
 
             DbiLog("Database: " << dbNo
-                   << " create local SEQNO table query: " << sql.c_str() << "  ");
+                   << " create local SEQNO table query: " 
+                   << sql.c_str() << "  ");
             stmtDb->ExecuteUpdate(sql.c_str());
             if (stmtDb->PrintExceptions()) {
                 return 0;
@@ -998,7 +993,8 @@ Int_t CP::TDbiCascader::ReserveNextSeqNo(const std::string& tableName,
             sql.Clear();
             sql << "INSERT INTO " <<  seqnoTableName << " VALUES ('*',0)";
             DbiLog("Database: " << dbNo
-                   << " prime local SEQNO table query: " << sql.c_str() << "  ");
+                   << " prime local SEQNO table query: " 
+                   << sql.c_str() << "  ");
             stmtDb->ExecuteUpdate(sql.c_str());
             if (stmtDb->PrintExceptions()) {
                 return 0;
@@ -1006,12 +1002,12 @@ Int_t CP::TDbiCascader::ReserveNextSeqNo(const std::string& tableName,
         }
     }
 
-// Lock seqno table by creating a lock object on the stack.
-// Table will be unlocked when lock object destroyed.
+    // Lock seqno table by creating a lock object on the stack.  Table will be
+    // unlocked when lock object destroyed.
 
     std::string dataTable;
-// Only pass in table name if it's not temporary and exists in
-// the selected DB otherwise Lock will try to lock a non-existent table.
+    // Only pass in table name if it's not temporary and exists in the
+    // selected DB otherwise Lock will try to lock a non-existent table.
     if (! this->IsTemporaryTable(tableName,dbNo)
         && tableNameExists) {
         dataTable = tableName;
@@ -1022,10 +1018,11 @@ Int_t CP::TDbiCascader::ReserveNextSeqNo(const std::string& tableName,
         return 0;
     }
 
-// Find row containing last used SeqNo for this table.
-// Not that comparison is case insensitive.
+    // Find row containing last used SeqNo for this table.
+    // Not that comparison is case insensitive.
     sql.Clear();
-    sql << "select * from " << seqnoTableName << " where TABLENAME = '*' or TABLENAME = '";
+    sql << "select * from " << seqnoTableName
+        << " where TABLENAME = '*' or TABLENAME = '";
     sql << tableName + "' order by TABLENAME";
     DbiLog(" query: " << sql.c_str() << "  ");
     TSQLStatement* stmt = stmtDb->ExecuteQuery(sql.c_str());
@@ -1049,14 +1046,15 @@ Int_t CP::TDbiCascader::ReserveNextSeqNo(const std::string& tableName,
     stmt = 0;
     DbiLog("  query returned last used seqno: " << seqNoTable << "  ");
 
-//  If the table exists, make sure that the seqNo hasn't already been used.
-//  This is paranoia code and expensive, so only do the check once for
-//  each tableName/isGlobal/dbNo combination.
+    //  If the table exists, make sure that the seqNo hasn't already been
+    //  used.  This is paranoia code and expensive, so only do the check once
+    //  for each tableName/isGlobal/dbNo combination.
 
     static std::string checkedCombinations;
     std::ostringstream combination;
     combination << ":" << tableName << isGlobal << dbNo << ":";
-    bool notChecked = checkedCombinations.find(combination.str()) == std::string::npos;
+    bool notChecked = (checkedCombinations.find(combination.str())
+                       == std::string::npos);
     if (notChecked) {
         checkedCombinations += combination.str();
     }
@@ -1086,16 +1084,21 @@ Int_t CP::TDbiCascader::ReserveNextSeqNo(const std::string& tableName,
         if (minValue > seqNoTable) {
             DbiSevere("Database: " << dbNo << " "
                       << seqnoTableName << " has last used SEQNO of "
-                      << seqNoTable << " for table " << tableName
-                      << ",\n    but the highest SEQNO in the band " << seqNoMin << " to " << seqNoMax
-                      << " is " <<  minValue << " for that table\n    "
-                      << seqnoTableName << " is out of date! It will be updated for " << tableName << "  ");
+                      << seqNoTable << " for table " << tableName << ","
+                      << std::endl
+                      << "    but the highest SEQNO in the band " 
+                      << seqNoMin << " to " << seqNoMax
+                      << " is " <<  minValue << " for that table"
+                      << std::endl
+                      << seqnoTableName 
+                      << " is out of date! It will be updated for " 
+                      << tableName << "  ");
             seqNoTable = minValue;
         }
     }
 
 
-//  Update last used SeqNo and record in table.
+    //  Update last used SeqNo and record in table.
     sql.Clear();
     sql << "delete from " << seqnoTableName << " where TABLENAME='";
     sql << tableName + "'";
@@ -1117,19 +1120,13 @@ Int_t CP::TDbiCascader::ReserveNextSeqNo(const std::string& tableName,
     }
 
     return seqNoTable;
-
 }
-//.....................................................................
+
 ///  Purpose: Set connection permanent.
 void CP::TDbiCascader::SetPermanent(UInt_t dbNo,
                                     Bool_t permanent /* = true */) {
-//
-//
-
-
     if (dbNo < fConnections.size()) {
         fConnections[dbNo]->SetPermanent(permanent);
     }
-
 }
 
