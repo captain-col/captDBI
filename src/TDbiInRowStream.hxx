@@ -78,7 +78,7 @@ namespace CP {
                         const std::string& fillOpts = "");
         virtual ~TDbiInRowStream();
 
-// State testing member functions
+        // State testing member functions
         Bool_t CurColExists() const;
         std::string CurColString() const;
         std::string CurColValue() const {
@@ -97,8 +97,8 @@ namespace CP {
         const TDbiTableProxy* GetTableProxy() const {
             return fTableProxy;
         }
-/// IsBeforeFirst not needed for ROOT API, but leave a dummy
-/// for now so as not to disturb TDbiInRowStream API.
+        /// IsBeforeFirst not needed for ROOT API, but leave a dummy
+        /// for now so as not to disturb TDbiInRowStream API.
         Bool_t IsBeforeFirst() const {
             return false;
         };
@@ -107,7 +107,7 @@ namespace CP {
         }
         void RowAsCsv(std::string& row) const;
 
-// State changing member functions
+        // State changing member functions
 
         CP::TDbiInRowStream& operator>>(Bool_t& dest);
         CP::TDbiInRowStream& operator>>(Char_t& dest);
@@ -130,36 +130,35 @@ namespace CP {
         Bool_t LoadCurValue() const;
         TString GetStringFromTSQL(Int_t col) const;
 
-// Data members
+        // Data members
 
-/// Current row in query (0...)
+        /// Current row in query (0...)
         Int_t fCurRow;
 
-/// Cascade no. of source
+        /// Cascade no. of source
         UInt_t fDbNo;
 
-/// Owned TDbiStatement. May be 0.
-/// It's only use is to create a TSQLStatement in the ctor but it is not
-/// destroyed until the dtor to prevent a premature attempt to close the
-/// connection.
+        /// Owned TDbiStatement. May be 0.  It's only use is to create a
+        /// TSQLStatement in the ctor but it is not destroyed until the dtor
+        /// to prevent a premature attempt to close the connection.
         TDbiStatement* fStatement;
 
-/// Pointer to owned statement, may be 0.
+        /// Pointer to owned statement, may be 0.
         TSQLStatement* fTSQLStatement;
 
-/// True is result set missing or exhausted.
+        /// True is result set missing or exhausted.
         Bool_t fExhausted;
 
-/// TDbiTableProxy that produced this set.
+        /// TDbiTableProxy that produced this set.
         const TDbiTableProxy* fTableProxy;
 
-/// Buffer for assembling value
+        /// Buffer for assembling value
         mutable  std::string fValString;
 
-/// Optional fill options.
+        /// Optional fill options.
         std::string fFillOpts;
 
-        ClassDef(TDbiInRowStream,0)     //ResultSet from Query to database table
+        ClassDef(TDbiInRowStream,0)
 
     };
 };

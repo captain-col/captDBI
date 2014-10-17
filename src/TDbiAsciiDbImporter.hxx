@@ -58,27 +58,25 @@ namespace CP {
         void  LoadTable(const TString& url);
 
 
-/// Status of import procedure, fStatus < 400 status is OK
+        /// Status of import procedure, fStatus < 400 status is OK
         Int_t fStatus;
 
-/// Log of exceptions generated.
+        /// Log of exceptions generated.
         TDbiExceptionLog fExceptionLog;
 
-/// List of imported table names
+        /// List of imported table names
         std::list<std::string> fImportedTableNames;
 
 
-/// Where to import data. Not owned.
+        /// Where to import data. Not owned.
         TSQLServer* fServer;
 
-/// Helper class used to prepare a single table.  May be null
+        /// Helper class used to prepare a single table.  May be null
         TDbiAsciiTablePreparer* fTablePreparer;
 
 
-        ClassDef(TDbiAsciiDbImporter,0)// class used to create a temporary ASCII database
+        ClassDef(TDbiAsciiDbImporter,0)
     };
 };
-
-
-#endif // DBIASCIIDBIMPORTER_H
+#endif
 

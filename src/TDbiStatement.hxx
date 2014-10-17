@@ -58,7 +58,8 @@ namespace CP {
 
         /// Database I/O
 
-        /// Give caller a TSQLStatement of results (Process() and StoreResult() already performed.).
+        /// Give caller a TSQLStatement of results (Process() and
+        /// StoreResult() already performed.).
         TSQLStatement* ExecuteQuery(const TString& sql="");
 
         /// Apply an update and return success/fail.

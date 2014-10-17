@@ -46,14 +46,11 @@ CP::TDbiAsciiDbImporter::TDbiAsciiDbImporter():
 }
 
 //___________________________________________________________________
-CP::TDbiAsciiDbImporter::TDbiAsciiDbImporter(const TString& url,TSQLServer* server):
+CP::TDbiAsciiDbImporter::TDbiAsciiDbImporter(const TString& url,
+                                             TSQLServer* server):
     fServer(server),
     fTablePreparer(0) {
-    // ctor
-
-
     DbiTrace("Creating CP::TDbiAsciiDbImporter "  << (void*) this << "  ");
-
     Import(url,server);
 }
 
@@ -217,8 +214,6 @@ Int_t CP::TDbiAsciiDbImporter::Import(const TString& url,TSQLServer* server) {
 
 //___________________________________________________________________
 Bool_t CP::TDbiAsciiDbImporter::IsValid() const {
-    //
-
     return (fStatus < HTTP_BAD_REQUEST);
 }
 

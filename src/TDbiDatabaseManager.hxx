@@ -43,14 +43,15 @@ namespace CP {
 
     class TDbiDatabaseManager :public CP::TDbiCfgConfigurable {
 
-        friend class TDbiValidate;      //Allow TDbiValidate access to dtor and
-        // fCascader
+        //Allow TDbiValidate access to dtor and fCascader
+        friend class TDbiValidate;
+
     public:
 
-// State testing member functions
+        // State testing member functions
         void ShowStatistics() const;
 
-// State changing member functions
+        // State changing member functions
         static TDbiDatabaseManager& Instance();
         static       Bool_t IsActive() {
             return fgInstance ? kTRUE: kFALSE;
@@ -70,21 +71,22 @@ namespace CP {
 
     protected:
 
-// Constructors (protected because singleton).
+        // Constructors (protected because singleton).
         TDbiDatabaseManager();
         virtual ~TDbiDatabaseManager();
 
     private:
 
-// State changing member functions
+        // State changing member functions
 
         void SetConfigFromEnvironment();
 
     public:
 
-/// Helper class to handle deletion of singleton TDbiDatabaseManager
+        /// Helper class to handle deletion of singleton TDbiDatabaseManager
         struct Cleaner {
-            static int fgCount; // counts #includes
+            // counts #includes
+            static int fgCount;
             Cleaner() {
                 this->Increment();
             }
@@ -102,39 +104,37 @@ namespace CP {
 
     private:
 
-// Disabled (not implemented) copy constructor and asignment.
+        // Disabled (not implemented) copy constructor and asignment.
 
         TDbiDatabaseManager(const TDbiDatabaseManager&);
         CP::TDbiDatabaseManager& operator=(const CP::TDbiDatabaseManager&);
 
-// State testing member functions
+        // State testing member functions
         void ApplySqlCondition() const;
         void ApplySqlCondition(TDbiTableProxy* proxy) const;
 
-// Data members
-
-/// Cascader
+        /// Cascader
         TDbiCascader* fCascader;
 
-/// Default optional condition.
+        /// Default optional condition.
         std::string fSqlCondition;
 
 #ifndef __CINT__  // Hide map from CINT; complains: missing Streamer() etc.
-/// TableName::RowName -> TableProxy
+        /// TableName::RowName -> TableProxy
         std::map<std::string,TDbiTableProxy*> fTPmap;
 #endif  // __CINT__
 
-/// Epoch Rollback  for each table.
+        /// Epoch Rollback  for each table.
         TDbiEpochRollback fEpochRollback;
 
-/// Rollback dates for each table.
+        /// Rollback dates for each table.
         TDbiRollbackDates fRollbackDates;
 
-/// Lists of SimFlag associations.
+        /// Lists of SimFlag associations.
         TDbiSimFlagAssociation fSimFlagAss;
 
 
-/// Holds only instance
+        /// Holds only instance
         static TDbiDatabaseManager* fgInstance;
 
         ClassDef(TDbiDatabaseManager,0)   // Singleton register TDbiTableProxys.

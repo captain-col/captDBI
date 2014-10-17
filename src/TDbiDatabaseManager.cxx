@@ -25,7 +25,7 @@ ClassImp(CP::TDbiDatabaseManager)
 
 
 CP::TDbiDatabaseManager* CP::TDbiDatabaseManager::fgInstance       = 0;
-int                    CP::TDbiDatabaseManager::Cleaner::fgCount = 0;
+int CP::TDbiDatabaseManager::Cleaner::fgCount = 0;
 
 //    Definition of all member functions (static or otherwise)
 //    *******************************************************
@@ -34,8 +34,6 @@ int                    CP::TDbiDatabaseManager::Cleaner::fgCount = 0;
 
 //.....................................................................
 
-CP::TDbiDatabaseManager::TDbiDatabaseManager() :
-    fCascader(0) {
 //
 //
 //  Purpose:  Constructor
@@ -55,25 +53,17 @@ CP::TDbiDatabaseManager::TDbiDatabaseManager() :
 //  =============
 
 //  None.
-
-
-// Create cascader for database access.
+CP::TDbiDatabaseManager::TDbiDatabaseManager() :
+    fCascader(0) {
 
     fCascader = new CP::TDbiCascader;
 
-// Get any environment configuration.
-
+    // Get any environment configuration.
     this->SetConfigFromEnvironment();
 
-    DbiTrace("Creating CP::TDbiDatabaseManager"
-             << "  ");
-
-
+    DbiTrace("Creating CP::TDbiDatabaseManager");
 }
 
-//.....................................................................
-
-CP::TDbiDatabaseManager::~TDbiDatabaseManager() {
 //
 //
 //  Purpose: Destructor
@@ -89,12 +79,11 @@ CP::TDbiDatabaseManager::~TDbiDatabaseManager() {
 //  =============
 //
 //  o  Destroy all CP::TDbiTableProxies if Shutdown required.
-
-
+CP::TDbiDatabaseManager::~TDbiDatabaseManager() {
 
     if (CP::TDbiExceptionLog::GetGELog().Size()) {
         DbiInfo("Database Global Exception Log contains "
-                << CP::TDbiExceptionLog::GetGELog().Size() << " entries:-" << "  ");;
+                << CP::TDbiExceptionLog::GetGELog().Size() << " entries:-");
         CP::TDbiExceptionLog::GetGELog().Print();
     }
 
@@ -107,9 +96,10 @@ CP::TDbiDatabaseManager::~TDbiDatabaseManager() {
 
     DbiInfo("DatabaseInterface shutting down..." << "  ");
 
-// Destroy all owned objects.
+    // Destroy all owned objects.
 
-    for (std::map<std::string,CP::TDbiTableProxy*>::iterator itr = fTPmap.begin();
+    for (std::map<std::string,CP::TDbiTableProxy*>::iterator itr 
+             = fTPmap.begin();
          itr != fTPmap.end();
          ++itr) {
         CP::TDbiTableProxy* tp = (*itr).second;
@@ -126,9 +116,6 @@ CP::TDbiDatabaseManager::~TDbiDatabaseManager() {
 
 }
 
-//.....................................................................
-
-void CP::TDbiDatabaseManager::ApplySqlCondition() const {
 //
 //
 //  Purpose: Apply Sql condition to existing CP::TDbiTableProxys.
@@ -140,17 +127,17 @@ void CP::TDbiDatabaseManager::ApplySqlCondition() const {
 //
 //  o Apply global Sql condition, together with any prevailing rollback to
 //    all existing CP::TDbiTableProxys.
-
-    std::map<std::string,CP::TDbiTableProxy*>::const_iterator itr = fTPmap.begin();
-    std::map<std::string,CP::TDbiTableProxy*>::const_iterator itrEnd = fTPmap.end();
+void CP::TDbiDatabaseManager::ApplySqlCondition() const {
+    std::map<std::string,CP::TDbiTableProxy*>::const_iterator itr
+        = fTPmap.begin();
+    std::map<std::string,CP::TDbiTableProxy*>::const_iterator itrEnd 
+        = fTPmap.end();
     for (; itr != itrEnd; ++itr) {
         this->ApplySqlCondition(itr->second);
     }
 }
 
-//.....................................................................
 
-void CP::TDbiDatabaseManager::ApplySqlCondition(CP::TDbiTableProxy* proxy) const {
 //
 //
 //  Purpose: Apply Sql condition to specific CP::TDbiTableProxy.
@@ -160,6 +147,8 @@ void CP::TDbiDatabaseManager::ApplySqlCondition(CP::TDbiTableProxy* proxy) const
 //
 //  Contact:   N. West
 //
+void CP::TDbiDatabaseManager::ApplySqlCondition(
+    CP::TDbiTableProxy* proxy) const {
 
     std::string sqlFull = fSqlCondition;
     const std::string tableName(proxy->GetTableName());
@@ -173,7 +162,8 @@ void CP::TDbiDatabaseManager::ApplySqlCondition(CP::TDbiTableProxy* proxy) const
         sqlFull += date;
         sqlFull += "\'";
     }
-    const std::string& epoch_condition = fEpochRollback.GetEpochCondition(tableName);
+    const std::string& epoch_condition
+        = fEpochRollback.GetEpochCondition(tableName);
     if (epoch_condition.size()) {
         if (sqlFull.size()) {
             sqlFull += " and ";
@@ -184,29 +174,22 @@ void CP::TDbiDatabaseManager::ApplySqlCondition(CP::TDbiTableProxy* proxy) const
     proxy->SetSqlCondition(sqlFull);
 }
 
-//.....................................................................
-
 void CP::TDbiDatabaseManager::ClearRollbacks() {
-
     fEpochRollback.Clear();
     fRollbackDates.Clear();
     this->ApplySqlCondition();
 }
 
-//.....................................................................
-
 void CP::TDbiDatabaseManager::ClearSimFlagAssociation() {
-
     fSimFlagAss.Clear();
 }
-//.....................................................................
+
 ///
 ///
 ///  Purpose:  Reconfigure after internal registry update.
 ///
 ///
 ///    Throws  EBadTDbiRegistryKeys()  if TDbiRegistry contains any unknown keys
-void CP::TDbiDatabaseManager::Config() {
 //  Contact:   N. West
 //
 //  Specification:-
@@ -218,7 +201,7 @@ void CP::TDbiDatabaseManager::Config() {
 //  =============
 
 //  None.
-
+void CP::TDbiDatabaseManager::Config() {
     TDbiRegistry& reg = this->GetConfig();
 
     //Load up SimFlag Associations and remove them from the TDbiRegistry.
@@ -237,8 +220,8 @@ void CP::TDbiDatabaseManager::Config() {
     if (reg.Get("Level2Cache",dir)) {
         // Expand any environmental variables.
         TString tmp(dir);
-        //  March 2004 ExpandPathName returns false even if it works, so test for failure
-        //  by looking for an unexpanded symbol.
+        //  March 2004 ExpandPathName returns false even if it works, so test
+        //  for failure by looking for an unexpanded symbol.
         gSystem->ExpandPathName(tmp);
         if (tmp.Contains("$")) {
             dir = "./";
@@ -265,7 +248,8 @@ void CP::TDbiDatabaseManager::Config() {
                 fCascader->SetPermanent(dbNo);
             }
             DbiInfo("Making all database connections permanent" << "  ");
-            // Inform CP::TDbiServices so that CP::TDbiConnection can check when opening new connections.
+            // Inform CP::TDbiServices so that CP::TDbiConnection can check
+            // when opening new connections.
             CP::TDbiServices::fAsciiDBConectionsTemporary = false;
         }
         else {
@@ -273,7 +257,8 @@ void CP::TDbiDatabaseManager::Config() {
                 fCascader->SetPermanent(dbNo,false);
             }
             DbiInfo("Forcing all connections, including ASCII DB, to be temporary" << "  ");
-            // Inform CP::TDbiServices so that CP::TDbiConnection can check when opening new connections.
+            // Inform CP::TDbiServices so that CP::TDbiConnection can check
+            // when opening new connections.
             CP::TDbiServices::fAsciiDBConectionsTemporary = true;
         }
     }

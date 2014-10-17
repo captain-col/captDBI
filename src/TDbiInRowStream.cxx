@@ -28,7 +28,6 @@ ClassImp(CP::TDbiInRowStream)
 //    -  ordered: ctors, dtor, operators then in alphabetical order.
 
 
-//.....................................................................
 ///\verbatim
 ///
 ///  Purpose:  Default constructor
@@ -65,13 +64,6 @@ CP::TDbiInRowStream::TDbiInRowStream(CP::TDbiStatement* stmtDb,
     fTableProxy(tableProxy),
     fFillOpts(fillOpts) {
 
-
-//  Program Notes:-
-//  =============
-
-//  None.
-
-
     DbiTrace("Creating CP::TDbiInRowStream" << "  ");
 
     if (stmtDb) {
@@ -102,14 +94,7 @@ CP::TDbiInRowStream::TDbiInRowStream(CP::TDbiStatement* stmtDb,
 ///
 ///  o  Destroy ResultSet and owned CP::TDbiStatement if any.
 ///\endverbatim
-
 CP::TDbiInRowStream::~TDbiInRowStream() {
-
-//  Program Notes:-
-//  =============
-
-//  None.
-
 
     DbiTrace("Destroying CP::TDbiInRowStream" << "  ");
     delete fTSQLStatement;
@@ -138,15 +123,14 @@ CP::TDbiInRowStream::~TDbiInRowStream() {
         IncrementCurCol();                      \
     }                                         \
      
-// Handling reading of unsigned application data stored as signed database data.
-// Both GetInt(int) and GetString(int) return the signed data correctly.
-// So first read into signed equivalent, then copy and finally
-// trim off leading extended sign bits beyond the capacity of
-// the database column.
-// For BIGINT (size 8) make an exception.  It's used only as
-// an alternative to unsigned int and getUInt(int) (but not GetInt(int))
-// returns it correctly so can load directly into destination
-// Caution: Column numbering in TSQLStatement starts at 0.
+// Handling reading of unsigned application data stored as signed database
+// data.  Both GetInt(int) and GetString(int) return the signed data
+// correctly.  So first read into signed equivalent, then copy and finally
+// trim off leading extended sign bits beyond the capacity of the database
+// column.  For BIGINT (size 8) make an exception.  It's used only as an
+// alternative to unsigned int and getUInt(int) (but not GetInt(int)) returns
+// it correctly so can load directly into destination Caution: Column
+// numbering in TSQLStatement starts at 0.
 #define IN3(t)                                                      \
     int col = this->CurColNum()-1;                                      \
     const CP::TDbiFieldType& fType = this->ColFieldType(col+1);              \
@@ -236,10 +220,10 @@ std::string& CP::TDbiInRowStream::AsString(TDbi::DataTypes type) {
 
     CP::TDbiFieldType  reqdt(type);
 
-//  Place table value string in value string buffer.
+    //  Place table value string in value string buffer.
 
     Bool_t fail = ! LoadCurValue();
-// Internally columns number from zero.
+    // Internally columns number from zero.
     UInt_t col = CurColNum();
     IncrementCurCol();
 
@@ -251,15 +235,15 @@ std::string& CP::TDbiInRowStream::AsString(TDbi::DataTypes type) {
         return fValString;
     }
 
-//  Check for compatibility with required data type.
+    //  Check for compatibility with required data type.
 
     const CP::TDbiFieldType& actdt = MetaData()->ColFieldType(col);
 
     if (reqdt.IsCompatible(actdt)) {
         Bool_t smaller = reqdt.IsSmaller(actdt);
-//  Allow one character String to be stored in Char
-        if (reqdt.GetConcept() == TDbi::kChar && fValString.size() == 1
-           ) {
+        //  Allow one character String to be stored in Char
+        if (reqdt.GetConcept() == TDbi::kChar 
+            && fValString.size() == 1) {
             smaller = kFALSE;
         }
         if (smaller) {
@@ -269,8 +253,8 @@ std::string& CP::TDbiInRowStream::AsString(TDbi::DataTypes type) {
                     << " (" << MetaData()->ColName(col) << ")"
                     << " value \"" << fValString
                     << "\" of type " << actdt.AsString()
-                    << " may be truncated before storing in " << reqdt.AsString()
-                    <<  "  ");
+                    << " may be truncated before storing in "
+                    << reqdt.AsString());
         }
     }
     else {

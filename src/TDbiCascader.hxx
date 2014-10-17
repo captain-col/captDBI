@@ -42,11 +42,13 @@ class CP::TDbiCascader {
 
 public:
 
-    /// Check we can connect to the database defined in the environment variables. Allows a
-    /// user program to skip using the database if it doesn't need to and it is not there, or
-    /// if it does need it then die in a civilised manner.
+    /// Check we can connect to the database defined in the environment
+    /// variables. Allows a user program to skip using the database if it
+    /// doesn't need to and it is not there, or if it does need it then die in
+    /// a civilised manner.
     static bool canConnect();
-    friend class TDbiValidate;      //Allow TDbiValidate access SetAuthorisingEntry
+    //Allow TDbiValidate access SetAuthorisingEntry
+    friend class TDbiValidate;
 
     enum Status { kFailed, kClosed, kOpen };
 
@@ -88,8 +90,10 @@ public:
     UInt_t GetNumDb() const {
         return fConnections.size();
     }
-    Int_t  GetTableDbNo(const std::string& tableName, Int_t selectDbNo = -1) const;
-    Bool_t TableExists(const std::string& tableName, Int_t selectDbNo = -1) const {
+    Int_t  GetTableDbNo(const std::string& tableName,
+                        Int_t selectDbNo = -1) const;
+    Bool_t TableExists(const std::string& tableName,
+                       Int_t selectDbNo = -1) const {
         return this->GetTableDbNo(tableName,selectDbNo) >= 0;
     }
 
@@ -97,10 +101,11 @@ public:
 
     Int_t CreateTemporaryTable(const std::string& tableName,
                                const std::string& tableDescr);
-    int ProcessTmpTblsFile(const std::string& SQLFilePath); // (T2K Extension)
-    int GetTempCon(); // (T2K Extension)
-    int ParseTmpTblsSQLLine(const std::string& line, std::string& tableName); // (T2K Extension)
-    bool ExecTmpTblsSQLStmt(int tempConDbNo, const std::string& line, const std::string& tableName); // (T2K Extension)
+    int ProcessTmpTblsFile(const std::string& SQLFilePath);
+    int GetTempCon();
+    int ParseTmpTblsSQLLine(const std::string& line, std::string& tableName);
+    bool ExecTmpTblsSQLStmt(int tempConDbNo, const std::string& line,
+                            const std::string& tableName);
 
     void HoldConnections();
     void ReleaseConnections();
@@ -142,14 +147,12 @@ private:
     static const int LINE_BLANK = 0;
     static const int LINE_INVALID = -1;
 
-
-
-
     /// Private Locker object used by TDbiCascader
     class Lock {
 
     public:
-        Lock(TDbiStatement* stmtDB, const std::string& seqnoTable, const std::string& dataTable);
+        Lock(TDbiStatement* stmtDB, const std::string& seqnoTable, 
+             const std::string& dataTable);
         ~Lock();
 
         Bool_t IsLocked() const {
@@ -160,15 +163,14 @@ private:
 
         void SetLock(Bool_t setting = kTRUE);
 
-        TDbiStatement* fStmt;            // Statement to be used to issue lock
-        std::string fSeqnoTableName;  // The SEQNO table that is locked
-        std::string fDataTableName;   // The data table that is locked
-        Bool_t fLocked;          // Lock status
+        TDbiStatement* fStmt;        // Statement to be used to issue lock
+        std::string fSeqnoTableName; // The SEQNO table that is locked
+        std::string fDataTableName;  // The data table that is locked
+        Bool_t fLocked;              // Lock status
 
     };
 
-    ClassDef(TDbiCascader,0)     //A cascade of TDbiConnectionss
-
+    ClassDef(TDbiCascader,0)
 };
 #endif
 
