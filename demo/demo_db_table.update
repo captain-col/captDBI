@@ -8,25 +8,30 @@
 #      Any arbitrary SQL command that ends with a ';'.  
 #      Can span several lines (see below for example).
 #
-#  3)  BEGIN_TABLE <table-name> <start-date> <end-date> <aggregate-number> <creation-date> {<task>} {<key>=<value> ...]
-#      Followed by one or more rows of data, one per line in the form <value>,<value>, ... <value>
-#      This utility supplies both SEQNO and ROW_COUNTER to the start of each row
+#  3)  BEGIN_TABLE <table-name> <start-date> <end-date> \
+#             <aggregate-number> <creation-date> {<task>} {<key>=<value> ...]
+#      Followed by one or more rows of data, one per line in the form
+#           <value>,<value>, ... <value> 
+#      This utility supplies both SEQNO and ROW_COUNTER to the start of
+#           each row.  The BEGIN_TABLE command must be on one line.
 
-
-#  Just to be safe, drop any existing tables
+#  Just to be safe, drop any existing tables.  This means that the demo can
+# be run multiple times, but DO NOT COPY THIS INTO YOUR OWN CODE UNLESS YOU
+# ACTUALLY WANT TO DROP THE DATA.
 
 SQL drop table if exists DEMO_DB_TABLE;
 SQL drop table if exists DEMO_DB_TABLEVLD;
 
-#  Now create the DEMO_DB_TABLE table (database_updater.py will create the DEMO_DB_TABLEVLD table)
+# Now create the DEMO_DB_TABLE table (database_updater.py will create the
+#   DEMO_DB_TABLEVLD table automatically)
 
 SQL CREATE TABLE DEMO_DB_TABLE(
        SEQNO INTEGER not null,
        ROW_COUNTER INTEGER not null,
-       E_CHAN_ID   INT,
-       I_PARM1     INT,
-       I_PARM2     INT,
-       I_PARM3     INT,
+       E_CHAN_ID   INTEGER,
+       I_PARM1     INTEGER,
+       I_PARM2     INTEGER,
+       I_PARM3     INTEGER,
        F_PARM1     FLOAT,
        F_PARM2     FLOAT,
        F_PARM3     FLOAT,
@@ -44,5 +49,3 @@ BEGIN_TABLE DEMO_DB_TABLE  '2009-01-15 00:00:00' '2009-02-15 00:00:00' 0 '2009-0
 -2006450160, 105, 205, 305, 1.05, 2.05, 3.05
 -2006450170, 106, 206, 306, 1.06, 2.06, 3.06
 -2006450180, 107, 207, 307, 1.07, 2.07, 3.07
-
-
