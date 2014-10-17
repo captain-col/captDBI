@@ -17,6 +17,7 @@ author captain-sw@simpa.lbl.gov
 use captainPolicy 
 use captEvent 
 use ROOT v* LCG_Interfaces
+use sqlite v* LCG_Interfaces
 
 # Build methods to include.
 document version version *.cxx *.hxx *_LinkDef.h
