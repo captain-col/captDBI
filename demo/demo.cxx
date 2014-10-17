@@ -25,7 +25,7 @@
 #include "TDbiLog.hxx"
 #include "TDemo_DB_Table.hxx"
 #include "TResultSetHandle.hxx"
-#include "TTFBChannelId.hxx"
+#include "TChannelId.hxx"
 
 #include "DatabaseUtils.hxx"
 #include <iostream>
@@ -74,12 +74,12 @@ int main() {
                 = rs.GetRowByIndex(required_id);
             if (required_row) {
                 DbiLog("  required row "
-                       << CP::TTFBChannelId(required_id).AsString());
+                       << CP::TChannelId(required_id).AsString());
                 required_row->Print();
             }
             else {
                 DbiLog("  cannot find required row" 
-                       << CP::TTFBChannelId(required_id).AsString());
+                       << CP::TChannelId(required_id).AsString());
             }
         }
     }
