@@ -65,12 +65,63 @@ CP::TDbiFieldType::TDbiFieldType(Int_t type,
     TString name(typeName);
     name.ToUpper();
 
+    // Handle the standard SQL types.
+    if (name.BeginsWith("INT")) {
+        this->Init(TDbi::kInt);
+        return;
+    }
+    else if (name == "SMALLINT") {
+        this->Init(TDbi::kShort);
+        return;
+    }
+    else if (name == "BIGINT") {
+        this->Init(TDbi::kLongLong);
+        return;
+    }
+    else if (name == "NUMERIC") {
+        this->Init(TDbi::kLongLong);
+        return;
+    }
+    else if (name == "FLOAT") {
+        this->Init(TDbi::kFloat);
+        return;
+    }
+    else if (name == "REAL") {
+        this->Init(TDbi::kFloat);
+        return;
+    }
+    else if (name.BeginsWith("DOUBLE")) {
+        this->Init(TDbi::kDouble);
+        return;
+    }
+    else if (name.BeginsWith("CHAR")) {
+        this->Init(TDbi::kString);
+        return;
+    }
+    else if (name.BeginsWith("VARCHAR")) {
+        this->Init(TDbi::kString);
+        return;
+    }
+    else if (name.BeginsWith("DATE")) {
+        this->Init(TDbi::kDate);
+        return;
+    }
+    else if (name.BeginsWith("TIME")) {
+        this->Init(TDbi::kDate);
+        return;
+    }
+
+
+    DbiSevere("Non-standard SQL data-type encountered: " << name 
+              << " (behavior is undefined)");
+
     // Handle integer types.
 
     if (type == TSQLServer::kSQL_INTEGER || type == TSQLServer::kSQL_NUMERIC) {
 
-        // TSQLServer reports e.g. int(32) as size 32, (even though maximum display is 11)
-        // so treat any type starting int or INT as size kMaxInt (i.e. standard 4 byte int)
+        // TSQLServer reports e.g. int(32) as size 32, (even though maximum
+        // display is 11) so treat any type starting int or INT as size
+        // kMaxInt (i.e. standard 4 byte int)
         if (name.BeginsWith("INT")) {
             size = kMaxInt;
         }
@@ -149,7 +200,10 @@ CP::TDbiFieldType::TDbiFieldType(Int_t type,
 
     // Anything else is bad news!
 
-    DbiSevere("Unable to form SQL CP::TDbiFieldType from: " << type << "  ");
+    DbiSevere("Unable to form SQL type from: " 
+              << typeName
+              << " " << type
+              << " "  << size);
     this->Init(TDbi::kUnknown);
 
 }
@@ -337,16 +391,17 @@ std::string CP::TDbiFieldType::AsSQLString() const {
     case  TDbi::kBool    :   os << "CHAR";          break;
 
     case  TDbi::kUTiny   :
-    case  TDbi::kTiny    :   os << "TINYINT";       break;
-
+    case  TDbi::kTiny    :
     case  TDbi::kShort   :
     case  TDbi::kUShort  :   os << "SMALLINT";      break;
 
     case  TDbi::kInt     :
-    case  TDbi::kUInt    :   os << "INT";           break;
+    case  TDbi::kUInt    :   os << "INTEGER";           break;
 
     case  TDbi::kLong    :
-    case  TDbi::kULong   :   os << "BIGINT";        break;
+    case  TDbi::kULong   :
+    case  TDbi::kLongLong    :
+    case  TDbi::kULongLong   :   os << "BIGINT";        break;
 
     case  TDbi::kFloat   :   os << "FLOAT";         break;
 
@@ -498,7 +553,7 @@ void CP::TDbiFieldType::Init(Int_t type  /* Type as defined by TDbi::DataTypes *
         break;
 
     default :
-        DbiSevere("Unable to form Root CP::TDbiFieldType from: " << type << "  ");
+        DbiSevere("Unable to form ROOT type from: " << type << " " << size);
         fType      = TDbi::kUnknown;
         fConcept   = TDbi::kUnknown;
         fSize      = 0;

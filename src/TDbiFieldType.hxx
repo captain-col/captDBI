@@ -7,36 +7,23 @@
 ////////////////////////////     ROOT API     ////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-/**
- *
- * $Id: TDbiFieldType.hxx,v 1.1 2011/01/18 05:49:20 finch Exp $
- *
- * \class CP::TDbiFieldType
- *
- *
- * \brief
- * <b>Concept</b> Database neutral table column field types.
- *
- * \brief
- * <b>Purpose</b> To provide mappings and check compatibility between
- * database types and application types.
- *
- * Contact: A.Finch@lancaster.ac.uk
- *
- *
- */
 
 #include "TDbi.hxx"
 
 #include <string>
 
 namespace CP {
+    /// Database neutral table column field types.  This handles non-standard
+    /// type names used by some SQL implementations (MySQL seems to be a
+    /// particularly bad offender) and translates them into standard types.
     class TDbiFieldType {
 
 
     public:
 
-        enum PrecisionLimits { kMaxTinyInt       = 4,
+        /// The maximum number of characters needed to display an object of
+        /// this type.
+        enum PrecisionLimits { kMaxTinyInt       = 4, // MySQL special
                                kMaxSmallInt      = 6,
                                kMaxInt           = 11,
                                kMaxChar          = 3,
@@ -44,7 +31,7 @@ namespace CP {
                                kMaxMySQLText     = 65535
                              };
 
-// Constructors and destructors.
+        // Constructors and destructors.
         TDbiFieldType(Int_t type = TDbi::kInt);
         TDbiFieldType(Int_t type,
                       Int_t size,
@@ -54,7 +41,7 @@ namespace CP {
                       Int_t size);
         virtual ~TDbiFieldType();
 
-// State testing member functions
+        // State testing member functions
 
         std::string AsString() const;
         std::string AsSQLString() const;
@@ -80,7 +67,7 @@ namespace CP {
         }
 
 
-// State modifying member functions
+        // State modifying member functions
 
         void SetUnsigned() {
             if (this->IsSigned()) {
@@ -93,13 +80,13 @@ namespace CP {
 
         void Init(Int_t type, Int_t size = -1);
 
-// Data members
+        // Data members
 
-/// Concept e.g. kInt or kFloat
+        /// Concept e.g. kInt or kFloat
         unsigned int fConcept;
-/// Size in bytes(0 if unknown).
+        /// Size in bytes(0 if unknown).
         unsigned int fSize;
-/// Concept e.g. kShort or kDouble
+        /// Concept e.g. kShort or kDouble
         unsigned int fType;
 
         ClassDef(TDbiFieldType,0)        // Table column field types.
