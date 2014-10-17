@@ -35,7 +35,9 @@ std::ostream& CP::operator<<(std::ostream& os, const CP::TVldContext& vldc) {
 
 //_____________________________________________________________________________
 CP::TVldContext::TVldContext(const CP::TEventContext& context)
-    : fDetector(CP::DbiDetector::kNear), fSimFlag(CP::DbiSimFlag::kData), fTimeStamp(context.GetTimeStamp(),0) {
+    : fDetector(CP::DbiDetector::kNear), 
+      fSimFlag(CP::DbiSimFlag::kData), 
+      fTimeStamp(context.GetTimeStamp(),0) {
     // constructor from T2K context
     if (context.GetPartition() & CP::TEventContext::kMCData) {
         fSimFlag = CP::DbiSimFlag::kMC;

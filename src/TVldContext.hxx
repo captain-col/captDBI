@@ -3,7 +3,8 @@
  *
  * \ingroup Validity
  *
- * \brief A tag for identifying the required "context" when interfacing with the DBI.
+ * \brief A tag for identifying the required "context" when interfacing with
+ * the DBI.
  *
  *
  *
