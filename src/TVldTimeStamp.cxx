@@ -1,32 +1,3 @@
-////////////////////////////////////////////////////////////////////////////
-// $Id: TVldTimeStamp.cxx,v 1.1 2011/01/18 05:49:20 finch Exp $
-//
-// The CP::TVldTimeStamp encapsulates the seconds and ns since EPOCH
-//
-// This extends (and isolates) struct timespec
-//    struct timespec
-//       {
-//          time_t   tv_sec;   /* seconds */
-//          long     tv_nsec;  /* nanoseconds */
-//       }
-//    time_t seconds is relative to Jan 1, 1970 00:00:00 UTC
-//
-// Due to ROOT/CINT limitations CP::TVldTimeStamp does not explicitly
-// hold a timespec struct; attempting to do so means the Streamer
-// must be hand written.  Instead we have chosen to simply contain
-// similar fields within the private area of this class.
-//
-// NOTE: the use of time_t (and its default implementation as a 32 int)
-//       implies overflow conditions occurs somewhere around
-//       Jan 18, 19:14:07, 2038.
-//       If this experiment is still going when it becomes significant
-//       someone will have to deal with it.
-//
-// Author:  R. Hatcher 2000.04.19
-//          R. Hatcher 2000.12.20 -- convert from TDatime to struct timespec
-//
-////////////////////////////////////////////////////////////////////////////
-
 #include "TVldTimeStamp.hxx"
 #include <TDbiLog.hxx>
 #include <MsgFormat.hxx>
@@ -48,7 +19,6 @@ ClassImp(CP::TVldTimeStamp)
 
 const Int_t kNsPerSec = 1000000000;
 
-//_____________________________________________________________________________
 std::ostream& CP::operator<<(std::ostream& os, const CP::TVldTimeStamp& ts) {
     if (os.good()) {
         if (os.tie()) {
@@ -112,13 +82,13 @@ CP::TVldTimeStamp::TVldTimeStamp(UInt_t year, UInt_t month,
 CP::TVldTimeStamp::TVldTimeStamp(UInt_t date, UInt_t time, UInt_t nsec,
                                  Bool_t isUTC, Int_t secOffset)
     : fSec(0), fNanoSec(0) {
-    // Create a CP::TVldTimeStamp and set it to the specified date, time, nanosec.
-    // If !isUTC then it is assumed to be the standard local time zone.
+    // Create a CP::TVldTimeStamp and set it to the specified date, time,
+    // nanosec.  If !isUTC then it is assumed to be the standard local time
+    // zone.
 
     Set(date, time, nsec, isUTC, secOffset);
 }
 
-//_____________________________________________________________________________
 const char* CP::TVldTimeStamp::AsString(Option_t* option) const {
     // Return the date & time as a string.
     //
@@ -139,20 +109,21 @@ const char* CP::TVldTimeStamp::AsString(Option_t* option) const {
     //   "2001-01-02 10:11:12.9999999999-0800"  if PST
     //      * uses "-" as date separator as specified in ISO 8601
     //      * uses "." rather than preferred "," for decimal separator
-    //      * -HHMM is the difference between local and UTC (if behind, + if ahead).
+    //      * -HHMM is the difference between local and UTC (if behind,
+    //           + if ahead).
     //   The "-HHMM" is replaced with "Z" if given as UTC.
     //   To be strictly conforming it should use "T" instead of the
     //   blank separating the date and time.
     //
     // Option "2" returns as {sec,nsec} integers.
     //
-    // Option "s" returns "2001-01-02 18:11:12" with an implied UTC,
-    // overrides "l" option.
+    // Option "s" returns an SQL compatible time as "2001-01-02 18:11:12" 
+    //       with an implied UTC.  This overrides the "l" option.
 
     // Internally uses a circular list of buffers to avoid problems
     // using AsString multiple times in a single statement.
 
-    const int nbuffers = 8;     // # of buffers
+    const int nbuffers = 16;     // # of buffers
 
     static char formatted[nbuffers][64];  // strftime fields substituted
     static char formatted2[nbuffers][64]; // nanosec field substituted
@@ -164,7 +135,7 @@ const char* CP::TVldTimeStamp::AsString(Option_t* option) const {
 
     if (opt.Contains("2")) {
         // return string formatted as integer {sec,nsec}
-        sprintf(formatted[ibuffer], "{%d,%d}", fSec, fNanoSec);
+        snprintf(formatted[ibuffer],64, "{%lld,%d}", fSec, fNanoSec);
         return formatted[ibuffer];
     }
 
@@ -198,10 +169,10 @@ const char* CP::TVldTimeStamp::AsString(Option_t* option) const {
         format = SQL;
     }
 
+    // Deal with possible mismatch of types of fSec and the time_t required by
+    // functions
+    time_t seconds = (time_t) fSec;  
     struct tm* ptm;
-    time_t seconds = (time_t) fSec;   // deal with possible mismatch of types
-    // of fSec and the time_t required
-    // by functions
 
     // get the components into a tm struct
     ptm = (asLocal) ? localtime(&seconds) : gmtime(&seconds);
@@ -219,7 +190,7 @@ const char* CP::TVldTimeStamp::AsString(Option_t* option) const {
     if (ptr) {
         *ptr = '%';   // substitute % for #
     }
-    sprintf(formatted2[ibuffer], formatted[ibuffer], fNanoSec);
+    snprintf(formatted2[ibuffer],64, formatted[ibuffer], fNanoSec);
 
     return formatted2[ibuffer];
 }
@@ -235,7 +206,8 @@ void CP::TVldTimeStamp::Copy(CP::TVldTimeStamp& ts) const {
 
 //_____________________________________________________________________________
 Int_t CP::TVldTimeStamp::GetDate(Bool_t inUTC, Int_t secOffset,
-                                 UInt_t* year, UInt_t* month, UInt_t* day) const {
+                                 UInt_t* year, 
+                                 UInt_t* month, UInt_t* day) const {
     // Return date in form of 19971224 (i.e. 24/12/1997),
     // if non-zero pointers supplied for year, month, day fill those as well
 
@@ -253,7 +225,6 @@ Int_t CP::TVldTimeStamp::GetDate(Bool_t inUTC, Int_t secOffset,
     }
 
     return (1900+ptm->tm_year)*10000 + (1+ptm->tm_mon)*100 + ptm->tm_mday;
-
 }
 
 //_____________________________________________________________________________
@@ -486,7 +457,7 @@ void CP::TVldTimeStamp::NormalizeNanoSec() {
         fNanoSec += kNsPerSec;
         fSec -= 1;
     }
-    // deal with values inf fNanoSec greater than one sec
+    // deal with values of fNanoSec greater than one sec
     while (fNanoSec >= kNsPerSec) {
         fNanoSec -= kNsPerSec;
         fSec += 1;
@@ -554,7 +525,6 @@ time_t CP::TVldTimeStamp::MktimeFromUTC(tm_t* tmstruct) {
 //_____________________________________________________________________________
 Bool_t CP::TVldTimeStamp::IsLeapYear(Int_t year) {
     // Is the given year a leap year.
-
 
     // The calendar year is 365 days long, unless the year is exactly divisible
     // by 4, in which case an extra day is added to February to make the year
