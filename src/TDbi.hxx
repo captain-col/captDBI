@@ -56,6 +56,8 @@ namespace TDbi {
                      kUInt,      // concept
                      kLong,
                      kULong,
+                     kLongLong,
+                     kULongLong,
                      kFloat,     // concept
                      kDouble,
                      kString,    // concept
@@ -64,7 +66,8 @@ namespace TDbi {
                    };
 
 
-    enum DbTypes {  kMySQL         = 0
+    enum DbTypes {  kMySQL         = 0,
+                    kSqlite        = 1,
                  };
 
     enum AbortTest { kDisabled,

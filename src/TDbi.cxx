@@ -192,7 +192,7 @@ CP::TVldTimeStamp TDbi::MakeTimeStamp(const std::string& sqlDateTime,
 //  Purpose:  Convert SQL DateTime string to CP::TVldTimeStamp.
 //
 //  Arguments:
-//    sqlDateTime  in   SQL DateTime string to be convered.
+//    sqlDateTime  in   SQL DateTime string to be converted.
 //    ok           in    Optional return flag
 //                       If not supplied, report illegal dates
 //
