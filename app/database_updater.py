@@ -5,6 +5,7 @@ import getopt
 import os
 import re
 import sys
+import gzip
 
 import subprocess
 
@@ -709,9 +710,15 @@ class DatabaseUpdater :
             print " i.e. does not have a GLOBALSEQNO table"
             return
 
+        # Open the input file.  It might be a compressed file, so this
+        # is where we check.
+        if re.search(r'.*gz$', update_file):
+            file_update = gzip.open(update_file)
+        else:
+            file_update = open(update_file)
+            
         # Read the update file and create a list of TableUpdate
         tu = None
-        file_update = open(update_file)
         for line in file_update:
             # Ignore blank lines and comments
             if re.search(r'^\s*$',line) or re.search(r'^\s*#',line): continue
