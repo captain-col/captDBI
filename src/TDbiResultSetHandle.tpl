@@ -291,8 +291,10 @@ namespace CP {
         ///
         ///  Arguments:
         ///    tableName    in    Name of table to use.
-        ///    seqno        in    The SEQNO of validity record that satisfies the query.
-        ///    dbNo         in    The database number holding the validity record
+        ///    seqno        in    The SEQNO of validity record that
+	///                       satisfies the query. 
+        ///    dbNo         in    The database number holding the validity
+	///                       record 
         ///    abortTest    in    Test which if failed triggers abort.
         ///
         ///  Return:    n/a
@@ -338,7 +340,8 @@ namespace CP {
         ///  Specification:-
         ///  =============
         ///
-        ///  o  Disconnect any associated Results and destroy TDbiResultSetHandle.
+        ///  o  Disconnect any associated Results and destroy
+        ///    TDbiResultSetHandle. 
 
 
         ///  Program Notes:-

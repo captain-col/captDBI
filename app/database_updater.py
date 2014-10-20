@@ -165,7 +165,7 @@ class DatabaseInterface:
         """Return True if able to execute queries."""
         if not self.access_string: return False
         #See if we can run a dummy statement
-        return self.Query('select 1',False)
+        return self.Query('select 1;',False)
         
 ########################  DatabaseInterface  ########################
 
@@ -484,7 +484,9 @@ class TableUpdate :
         necessary. 
         If it fails it attempts to remove any data already committed."""
 
-        if not self.CanApply(): return False
+        if not self.CanApply():
+            print "Cannot apply this data."
+            return False
 
         # If required, create VLD table.
         
@@ -509,7 +511,9 @@ class TableUpdate :
             # sql += ",key TIMEEND (TIMEEND)"
             sql += ");"
             
-            if not self.dbi.Query(sql): return False
+            if not self.dbi.Query(sql):
+                print "Cannot create vld table"
+                return False
         
         if self.parent.temporary_tables == False:
             print "  Updating %s validity '%s' - '%s' aggregate %s task %s..."\
@@ -526,16 +530,28 @@ class TableUpdate :
                    for (seqno, row_num, row) in \
                    zip([self.seqno]*len(self.rows), \
                        range(len(self.rows)+1)[1:], self.rows) ]
-        
-        sql = "INSERT INTO %s VALUES %s;" % ( self.table_name, \
-                                              ", ".join(chunks) )
 
-        if not self.dbi.Query(sql):
-            print "Update has failed"
-            print "--> Attempting to remove any data"
-            self.RemoveSeqno(self.seqno)
-            return False
-            
+        dataLine = ""
+        for chunk in chunks:
+            if len(dataLine) > 1: dataLine += ", "
+            dataLine += chunk
+            if len(dataLine) > 2000:
+                sql = "INSERT INTO %s VALUES %s;" % (self.table_name, dataLine)
+                if not self.dbi.Query(sql):
+                    print "Update has failed: " + sql
+                    print "--> Attempting to remove any data"
+                    self.RemoveSeqno(self.seqno)
+                    return False
+                dataLine = ""
+
+        if len(dataLine) > 0:
+            sql = "INSERT INTO %s VALUES %s;" % (self.table_name, dataLine)
+            if not self.dbi.Query(sql):
+                print "Update has failed: " + sql
+                print "--> Attempting to remove any data"
+                self.RemoveSeqno(self.seqno)
+                return False
+
         # Add VLD entry
 
         sql  = "INSERT INTO %sVLD VALUES (" % self.table_name
@@ -742,11 +758,11 @@ class DatabaseUpdater :
 
         # Apply last update
         if not tu:
-            print "\n Cannot '%s'; update file '%s' is empty." \
-              % (self.command,update_file)
+            print "No table data in '%s': will only apply SQL statements." \
+              % (update_file)
             return
         if not tu.Apply():
-            print "\n Aborting '%s'; file '%s' with bad update." \
+            print "Aborting '%s'; file '%s' with bad update." \
               % (self.command,update_file)
             return
         
