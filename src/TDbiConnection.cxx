@@ -231,7 +231,6 @@ Bool_t CP::TDbiConnection::Open() {
     // connection.
     int maxAttempt = fUrlValidated ?  100: fMaxConnectionAttempts ;
     for (int attempt = 1; attempt <= maxAttempt; attempt++) {
-        DbiError("Pass " << fUrlString);
         fServer = TSQLServer::Connect(fUrlString.c_str(),
                                       fUser.c_str(),
                                       fPassword.c_str());
