@@ -244,7 +244,8 @@ CP::TVldTimeStamp TDbi::MakeTimeStamp(const std::string& sqlDateTime,
         else {
             static int bad_date_count = 0;
             if (++bad_date_count <= 20) {
-                const char* last = (bad_date_count == 20) ? "..Last Message.. " : "";
+                const char* last = (bad_date_count == 20) ?
+                    "..Last Message.. " : "";
                 DbiSevere("Bad date string: " << sqlDateTime
                           << " parsed as "
                           << input.year  << " "
@@ -351,6 +352,3 @@ TDbi:: {
 }
 
 */
-
-
-
