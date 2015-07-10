@@ -353,7 +353,7 @@ Bool_t CP::TDbiSqlValPacket::CreateTable(UInt_t dbNo) const {
     }
 
     // Locate required CP::TDbiStatement.
-    std::auto_ptr<CP::TDbiStatement> stmtDb(CP::TDbiDatabaseManager::Instance()
+    std::unique_ptr<CP::TDbiStatement> stmtDb(CP::TDbiDatabaseManager::Instance()
                                             .GetCascader()
                                             .CreateStatement(dbNo));
     if (! stmtDb.get()) {
@@ -1062,9 +1062,10 @@ Bool_t CP::TDbiSqlValPacket::Store(UInt_t dbNo, Bool_t replace) const {
     }
 
     // Locate required CP::TDbiStatement.
-    std::auto_ptr<CP::TDbiStatement> stmtDb(CP::TDbiDatabaseManager::Instance()
-                                            .GetCascader()
-                                            .CreateStatement(dbNo));
+    std::unique_ptr<CP::TDbiStatement>
+        stmtDb(CP::TDbiDatabaseManager::Instance()
+               .GetCascader()
+               .CreateStatement(dbNo));
     if (! stmtDb.get()) {
         DbiWarn("Attempting to write to non-existant cascade entry " << dbNo
                 << "  ");

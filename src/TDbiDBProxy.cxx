@@ -172,8 +172,9 @@ void CP::TDbiDBProxy::FindTimeBoundaries(const CP::TVldContext& vc,
     CP::DbiDetector::Detector_t    detType(vc.GetDetector());
     CP::DbiSimFlag::SimFlag_t       simFlg(vc.GetSimFlag());
 
-// Use an std::auto_ptr to manage ownership of CP::TDbiStatement and TSQLStatement
-    std::auto_ptr<CP::TDbiStatement> stmtDb(fCascader.CreateStatement(dbNo));
+// Use an std::unique_ptr to manage ownership of CP::TDbiStatement and
+// TSQLStatement
+    std::unique_ptr<CP::TDbiStatement> stmtDb(fCascader.CreateStatement(dbNo));
 
     for (int i_limit =1; i_limit <= 4; ++i_limit) {
         CP::TDbiString sql("select ");
@@ -197,7 +198,7 @@ void CP::TDbiDBProxy::FindTimeBoundaries(const CP::TVldContext& vc,
         DbiVerbose("  FindTimeBoundaries query no. " << i_limit
                    << " SQL:" <<sql.c_str() << "  ");
 
-        std::auto_ptr<TSQLStatement> stmt(stmtDb->ExecuteQuery(sql.c_str()));
+        std::unique_ptr<TSQLStatement> stmt(stmtDb->ExecuteQuery(sql.c_str()));
         stmtDb->PrintExceptions(CP::TDbiLog::DebugLevel);
 
 //  If the query returns data, convert to a time stamp and trim the limits
@@ -638,7 +639,7 @@ Bool_t CP::TDbiDBProxy::RemoveSeqNo(UInt_t seqNo,
                << " RemoveSeqNo SQL: " << sql.c_str() << "  ");
 
 //  Apply query.
-    std::auto_ptr<CP::TDbiStatement> stmtDb(fCascader.CreateStatement(dbNo));
+    std::unique_ptr<CP::TDbiStatement> stmtDb(fCascader.CreateStatement(dbNo));
     if (! stmtDb.get()) {
         return false;
     }
@@ -699,7 +700,7 @@ Bool_t CP::TDbiDBProxy::ReplaceInsertDate(const CP::TVldTimeStamp& ts,
                << sql.c_str() << "  ");
 
 //  Apply query.
-    std::auto_ptr<CP::TDbiStatement> stmtDb(fCascader.CreateStatement(dbNo));
+    std::unique_ptr<CP::TDbiStatement> stmtDb(fCascader.CreateStatement(dbNo));
     if (! stmtDb.get()) {
         return false;
     }
@@ -757,7 +758,7 @@ Bool_t CP::TDbiDBProxy::ReplaceSeqNo(UInt_t oldSeqNo,
                << " ReplaceSeqNo SQL: " << sql.c_str() << "  ");
 
 //  Apply query.
-    std::auto_ptr<CP::TDbiStatement> stmtDb(fCascader.CreateStatement(dbNo));
+    std::unique_ptr<CP::TDbiStatement> stmtDb(fCascader.CreateStatement(dbNo));
     if (! stmtDb.get()) {
         return false;
     }

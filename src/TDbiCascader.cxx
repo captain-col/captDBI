@@ -146,7 +146,7 @@ CP::TDbiCascader::TDbiCascader(bool beQuiet):
         if (fGlobalSeqNoDbNo != -1) {
             continue;
         }
-        std::auto_ptr<CP::TDbiStatement>  stmtDb(new CP::TDbiStatement(*con));
+        std::unique_ptr<CP::TDbiStatement>  stmtDb(new CP::TDbiStatement(*con));
         if (! stmtDb.get()) {
             continue;
         }
@@ -358,7 +358,7 @@ Int_t CP::TDbiCascader::AllocateSeqNo(const std::string& tableName,
 ///  consider:-
 ///
 ///  #include <memory>
-///  auto_ptr<CP::TDbiStatement> stmt(cascader.CreateStatement(dbNo));
+///  unique_ptr<CP::TDbiStatement> stmt(cascader.CreateStatement(dbNo));
 ///
 ///\endverbatim
 CP::TDbiStatement* CP::TDbiCascader::CreateStatement(UInt_t dbNo) const {
@@ -425,7 +425,7 @@ Int_t CP::TDbiCascader::CreateTemporaryTable(const std::string& tableNameMc,
     std::string sqlMakeTable;
 
     Int_t dbNoAcc       = -1;
-    std::auto_ptr<CP::TDbiStatement> stmtDb;
+    std::unique_ptr<CP::TDbiStatement> stmtDb;
     for (UInt_t dbNoTry = 0; dbNoTry < fConnections.size(); ++dbNoTry) {
         stmtDb.reset(this->CreateStatement(dbNoTry));
         if (stmtDb.get()) {
@@ -962,7 +962,7 @@ Int_t CP::TDbiCascader::ReserveNextSeqNo(const std::string& tableName,
     bool seqnoTableNameExists = this->TableExists(seqnoTableName,dbNo);
     bool tableNameExists      = this->TableExists(tableName,dbNo);
 
-    std::auto_ptr<CP::TDbiStatement> stmtDb(this->CreateStatement(dbNo));
+    std::unique_ptr<CP::TDbiStatement> stmtDb(this->CreateStatement(dbNo));
     if (! stmtDb.get()) {
         return 0;
     }
