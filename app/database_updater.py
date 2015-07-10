@@ -443,7 +443,7 @@ class TableUpdate :
                         return
 
                 # Deal with DETECTORMASK=
-                elif key == "DETECTORMASK":
+                elif key == "detectormask":
                     if value == "mcaptain" : self.detectormask = 1
                     elif value == "captain" : self.detectormask = 2
                     else:
