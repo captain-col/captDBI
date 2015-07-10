@@ -946,19 +946,19 @@ namespace CP {
         Int_t detMask        = vrng.GetDetectorMask();
         Int_t simMask        = vrng.GetSimMask();
 
-        fDetType = CP::DbiDetector::kUnknown;
-        if      ( detMask & CP::DbiDetector::kFar )      fDetType = CP::DbiDetector::kFar;
-        else if ( detMask & CP::DbiDetector::kNear)      fDetType = CP::DbiDetector::kNear;
-        else if ( detMask & CP::DbiDetector::kCalDet)    fDetType = CP::DbiDetector::kCalDet;
-        else if ( detMask & CP::DbiDetector::kCalib)     fDetType = CP::DbiDetector::kCalib;
-        else if ( detMask & CP::DbiDetector::kTestStand) fDetType = CP::DbiDetector::kTestStand;
-        else if ( detMask & CP::DbiDetector::kMapper)    fDetType = CP::DbiDetector::kMapper;
+        fDetType
+            = CP::DbiDetector::Detector_t(detMask&CP::DbiDetector::FullMask());
 
         fSimType = CP::DbiSimFlag::kUnknown;
-        if      ( simMask & CP::DbiSimFlag::kData)        fSimType = CP::DbiSimFlag::kData;
-        else if ( simMask & CP::DbiSimFlag::kMC)          fSimType = CP::DbiSimFlag::kMC;
-        else if ( simMask & CP::DbiSimFlag::kReroot)      fSimType = CP::DbiSimFlag::kReroot;
-        else if ( simMask & CP::DbiSimFlag::kDaqFakeData) fSimType = CP::DbiSimFlag::kDaqFakeData;
+        if ( simMask & CP::DbiSimFlag::kData) {
+            fSimType = CP::DbiSimFlag::kData;
+        }	 
+        else if ( simMask & CP::DbiSimFlag::kMC) {
+            fSimType = CP::DbiSimFlag::kMC;
+        }
+        else if ( simMask & CP::DbiSimFlag::kDaqFakeData) {
+            fSimType = CP::DbiSimFlag::kDaqFakeData;
+        }
 
     }
 

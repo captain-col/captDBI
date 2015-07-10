@@ -27,7 +27,6 @@ namespace CP {
             kData         = 0x01,
             kDaqFakeData  = 0x02,
             kMC           = 0x04,
-            kReroot       = 0x08
         } SimFlag_t;
 
         Int_t       FullMask();

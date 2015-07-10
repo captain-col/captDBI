@@ -21,9 +21,10 @@ ClassImp(CP::TDbiConfigStream)
 //   *********************************
 
 
-CP::TVldContext  CP::TDbiConfigStream::fgDefaultContext(CP::DbiDetector::kNear,
-                                                        CP::DbiSimFlag::kData,
-                                                        CP::TVldTimeStamp());
+CP::TVldContext  CP::TDbiConfigStream::fgDefaultContext(
+    CP::DbiDetector::kDefault,
+    CP::DbiSimFlag::kData,
+    CP::TVldTimeStamp());
 
 //    Definition of all member functions (static or otherwise)
 //    *******************************************************

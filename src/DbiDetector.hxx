@@ -19,37 +19,29 @@
 #endif
 #endif
 
-// Make "DetectorType" a synonym for "Detector"
-//typedef DetectorType Detector;
-//#define DetectorType Detector
 
 namespace CP {
     namespace DbiDetector {
         typedef enum EDetector {
             kUnknown   = 0x00,
-            kNear      = 0x01,
-            kFar       = 0x02,
-            kCalDet    = 0x04,
-            kCalib     = 0x04,
-            kTestStand = 0x08,
-            kMapper    = 0x10
+            kmCAPTAIN  = 0x01,
+            kCAPTAIN   = 0x02,
+            kDefault   = 0x01,  // Set the default mask for TDbiConfigStream...
         } Detector_t;
 
-        // no ctor or dtor's - this class consists of only static members
-
+        /// Return the DbiDetector mask with all bits set.
         Int_t       FullMask();
 
-        // Translation enum to/from character strings
-
+        /// Translate the detector enum into a static constant character array.
         const Char_t*          AsString(Detector_t detector);
-        DbiDetector::Detector_t   CharToEnum(Char_t c);
-        Char_t*                MaskToString(Int_t mask);
-        DbiDetector::Detector_t   StringToEnum(const Char_t* chars, Int_t maxChar=0);
-        Int_t                  StringToMask(const Char_t* chars, Int_t maxChar=0);
+
+        /// Translate the detector enum as a pure integer into a static
+        /// character array that is valid until the next call to this method.
+        const Char_t*          MaskToString(Int_t mask);
 
     }
 
-// make "DetectorType" a synonym for "Detector"
+    // make "DetectorType" a synonym for "Detector"
     namespace DbiDetectorType = DbiDetector;
 }
 

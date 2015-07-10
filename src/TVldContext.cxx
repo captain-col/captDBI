@@ -3,7 +3,7 @@
 //
 // CP::TVldContext
 //
-// CP::TVldContext is tag for identifying the required "context" when
+// CP::TVldContext is the tag for identifying the required "context" when
 // interfacing with the DBI
 //
 // Author:  R. Hatcher 2000.05.03
@@ -14,7 +14,6 @@
 
 #include <TDbiLog.hxx>
 #include <MsgFormat.hxx>
-//CVSID("$Id: TVldContext.cxx,v 1.1 2011/01/18 05:49:20 finch Exp $");
 
 ClassImp(CP::TVldContext)
 
@@ -35,13 +34,22 @@ std::ostream& CP::operator<<(std::ostream& os, const CP::TVldContext& vldc) {
 
 //_____________________________________________________________________________
 CP::TVldContext::TVldContext(const CP::TEventContext& context)
-    : fDetector(CP::DbiDetector::kNear), 
+    : fDetector(CP::DbiDetector::kUnknown), 
       fSimFlag(CP::DbiSimFlag::kData), 
       fTimeStamp(context.GetTimeStamp(),0) {
+
     // constructor from T2K context
-    if (context.GetPartition() & CP::TEventContext::kMCData) {
+    if (context.IsMC()) {
         fSimFlag = CP::DbiSimFlag::kMC;
     }
+
+    if (context.IsMiniCAPTAIN()) {
+        fDetector = CP::DbiDetector::kmCAPTAIN;
+    }
+    if (context.IsCAPTAIN()) {
+        fDetector = CP::DbiDetector::kCAPTAIN;
+    }
+
 }
 
 //_____________________________________________________________________________
@@ -90,7 +98,8 @@ void CP::TVldContext::Print(Option_t* option) const {
 Bool_t CP::TVldContext::IsNull() const {
     // Return true if this was initialized by default ctor
     // we can only test detector type and simflag
-    return fDetector==CP::DbiDetector::kUnknown && fSimFlag == CP::DbiSimFlag::kUnknown;
+    return fDetector==CP::DbiDetector::kUnknown
+        && fSimFlag == CP::DbiSimFlag::kUnknown;
 
 }
 

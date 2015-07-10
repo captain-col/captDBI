@@ -6,21 +6,19 @@
 
 //_____________________________________________________________________________
 Int_t CP::DbiDetector::FullMask() {
-    return kNear|kFar|kCalib|kTestStand|kMapper;
+    return kmCAPTAIN|kCAPTAIN;
 }
 //_____________________________________________________________________________
 const Char_t* CP::DbiDetector::AsString(Detector_t detector) {
     switch (detector) {
     case kUnknown:   return "Unknown";    break;
-    case kNear:      return "Near";       break;
-    case kFar:       return "Far";        break;
-    case kCalDet:    return "CalDet";     break;
-    case kTestStand: return "TestStand";  break;
-    case kMapper:    return "Mapper";     break;
+    case kmCAPTAIN:  return "mCAPTAIN";   break;
+    case kCAPTAIN:   return "CAPTAIN";    break;
     default:         return "?Unknown?";  break;
     }
 }
 
+#ifdef JUNK
 //_____________________________________________________________________________
 CP::DbiDetector::Detector_t CP::DbiDetector::CharToEnum(Char_t c) {
     switch (c) {
@@ -52,9 +50,10 @@ CP::DbiDetector::Detector_t CP::DbiDetector::CharToEnum(Char_t c) {
         return kUnknown;
     }
 }
+#endif
 
 //_____________________________________________________________________________
-Char_t* CP::DbiDetector::MaskToString(Int_t mask) {
+const Char_t* CP::DbiDetector::MaskToString(Int_t mask) {
     // Return a mask of Detector as a string
     //
     // Result is a pointer to a statically allocated string.
@@ -82,63 +81,6 @@ Char_t* CP::DbiDetector::MaskToString(Int_t mask) {
     *ptr++ = 0; // ensure trailing 0
 
     return newstring;
-}
-
-//_____________________________________________________________________________
-CP::DbiDetector::Detector_t CP::DbiDetector::StringToEnum(const Char_t* chars, Int_t maxChar) {
-    // convert a set of chars to a valid enum
-
-    Int_t mask = CP::DbiDetector::StringToMask(chars,maxChar);
-
-    switch (mask) {
-    case kUnknown:   return kUnknown;    break;
-    case kNear:      return kNear;       break;
-    case kFar:       return kFar;        break;
-    case kCalib:     return kCalib;      break;
-    case kTestStand: return kTestStand;  break;
-    case kMapper:    return kMapper;     break;
-    default:         return kUnknown;    break;
-    }
-
-}
-
-//_____________________________________________________________________________
-Int_t CP::DbiDetector::StringToMask(const Char_t* chars, Int_t maxChar) {
-    // convert a set of chars to a mask of enum's
-    // simple tests for unique characters: {n,f,c,t,m}
-
-    Int_t mask  = 0;
-
-    TString thestring(chars);
-    if (maxChar>0 && maxChar<thestring.Length()) {
-        thestring.Resize(maxChar);
-    }
-
-    thestring.ToLower();
-    if (thestring.Contains("n")) {
-        mask |= kNear;
-    }
-    if (thestring.Contains("f")) {
-        mask |= kFar;
-    }
-    if (thestring.Contains("c")) {
-        mask |= kCalib;
-    }
-    // For the unusual case of TestStand require something more than
-    // just the first char.  Sue K. points out that passing "CalDet"
-    // (as opposed to "Calib") triggers kTestStand if we don't
-    // make this additional requirement.
-    //if (thestring.Contains("t")) mask |= kTestStand;
-    if (thestring.Contains("test")) {
-        mask |= kTestStand;
-    }
-    if (thestring.Contains("m")) {
-        mask |= kMapper;
-    }
-
-
-
-    return mask;
 }
 
 //_____________________________________________________________________________

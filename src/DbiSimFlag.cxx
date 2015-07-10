@@ -8,7 +8,7 @@
 //_____________________________________________________________________________
 
 Int_t CP::DbiSimFlag::FullMask() {
-    return kData|kDaqFakeData|kMC|kReroot;
+    return kData|kDaqFakeData|kMC;
 }
 
 //_____________________________________________________________________________
@@ -21,7 +21,6 @@ const Char_t* CP::DbiSimFlag::AsString(SimFlag_t simFlag) {
     case kData:        return "Data";        break;
     case kDaqFakeData: return "DaqFakeData"; break;
     case kMC:          return "MC";          break;
-    case kReroot:      return "Reroot";      break;
     default:           return "?Data?";      break;
     }
 }
@@ -70,7 +69,6 @@ CP::DbiSimFlag::SimFlag_t CP::DbiSimFlag::StringToEnum(const Char_t* chars, Int_
     case kData:        return kData;        break;
     case kDaqFakeData: return kDaqFakeData; break;
     case kMC:          return kMC;          break;
-    case kReroot:      return kReroot;      break;
     default:           return kUnknown;     break;
     }
 
@@ -99,9 +97,6 @@ Int_t CP::DbiSimFlag::StringToMask(const Char_t* chars, Int_t maxChar) {
     if (thestring.Contains("m")) {
         mask |= kMC;
     }
-    if (thestring.Contains("r")) {
-        mask |= kReroot;
-    }
 
     return mask;
 }
@@ -116,7 +111,6 @@ Int_t CP::DbiSimFlag::Compact(SimFlag_t simFlag) {
     case kData:        return  0;  break;
     case kDaqFakeData: return  1;  break;
     case kMC:          return  2;  break;
-    case kReroot:      return  3;  break;
     default:           return -1;  break;
     }
 
@@ -131,7 +125,6 @@ CP::DbiSimFlag::SimFlag_t CP::DbiSimFlag::Expand(Int_t compactSimFlag) {
     case  0:  return kData;        break;
     case  1:  return kDaqFakeData; break;
     case  2:  return kMC;          break;
-    case  3:  return kReroot;      break;
     default:  return kUnknown;     break;
     }
 }

@@ -29,7 +29,7 @@ macro_append linkdef_dependencies " version "
 document doxygen doxygen -group=documentation *.cxx *.hxx   ../doc/*.dox
 
 # The library to be build
-library captDBI *.cxx *.hxx $(bin)dict/*.cxx
+library captDBI *.cxx *.hxx *.tpl $(bin)dict/*.cxx
 macro_append captDBI_dependencies " linkdef "
 
 # Build information used by packages that use this one.

@@ -107,6 +107,7 @@ def usage():
             <aggregate-number> <creation-date> {<task>} {<key>=<value> ...}
         If not supplied a value of 0 is assumed for <task>.
         Valid <key>=<value> sets are:-
+          DETECTORMASK=<value> where <value> is CAPTAIN or mCAPTAIN
           SIMMASK=<value>  where <value> is one of: 'Data', 'MC' or 'all'
           EPOCH=<value>    where <value> is a small integer in range 0..100
             Note: If creating the VLD table, this forces it to have
@@ -367,7 +368,7 @@ class TableUpdate :
         self.start_date       = ""
         # End date parsed from BEGIN_TABLE line
         self.end_date         = ""
-        # Hardwired, at least for now
+        # Overridden by the optoin DETECTORMASK=
         self.detectormask     = "1"
         # Overridden by the option SIMMASK=
         self.simmask          = "1"
@@ -438,6 +439,15 @@ class TableUpdate :
                         else: raise
                     except:
                         print "Failing update; bad EPOCH: '%s'" % value
+                        self.failed = True
+                        return
+
+                # Deal with DETECTORMASK=
+                elif key == "DETECTORMASK":
+                    if value == "mcaptain" : self.detectormask = 1
+                    elif value == "captain" : self.detectormask = 2
+                    else:
+                        print "Failing update; bad DETECTORMASK: '%s'" % value
                         self.failed = True
                         return
                     
