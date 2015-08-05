@@ -162,7 +162,7 @@ TSQLStatement* CP::TDbiConnection::CreatePreparedStatement(
         stmt = NULL;
     }
     if (!stmt) {
-        DbiError("Statement failed: " << sql);
+        // DbiError("Statement failed: " << sql);
         fExceptionLog.AddEntry(*fServer);
     }
     else {
