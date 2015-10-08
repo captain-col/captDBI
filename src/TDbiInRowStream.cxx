@@ -63,12 +63,22 @@ CP::TDbiInRowStream::TDbiInRowStream(CP::TDbiStatement* stmtDb,
     fExhausted(true),
     fTableProxy(tableProxy),
     fFillOpts(fillOpts) {
-
     DbiTrace("Creating CP::TDbiInRowStream" << "  ");
 
     if (stmtDb) {
+        DbiTrace("Query database: " << sql.c_str());
         fTSQLStatement = stmtDb->ExecuteQuery(sql.c_str());
         if (fTSQLStatement && fTSQLStatement->NextResultRow()) {
+#define DEBUG_ROW_RESULT
+#ifdef DEBUG_ROW_RESULT
+            DbiTrace("Statement " << fTSQLStatement->ClassName()
+                     << " fields " << fTSQLStatement->GetNumFields()
+                     << " columns " << NumCols());
+            std::string row;
+            RowAsCsv(row);
+            DbiTrace("Query result: " << row);
+#endif
+            DbiTrace("Not exhausted");
             fExhausted = false;
         }
         stmtDb->PrintExceptions(CP::TDbiLog::DebugLevel);
@@ -236,7 +246,7 @@ std::string& CP::TDbiInRowStream::AsString(TDbi::DataTypes type) {
     if (fail) {
         std::string udef = reqdt.UndefinedValue();
         DbiSevere("... value \"" << udef
-                  << "\" will be substitued." <<  "  ");
+                  << "\" will be substituted." <<  "  ");
         fValString = udef;
         return fValString;
     }
@@ -307,10 +317,9 @@ Bool_t CP::TDbiInRowStream::CurColExists() const {
     Int_t col = CurColNum();
 
     if (IsExhausted()) {
-        DbiSevere("In table " << TableNameTc()
-                  << " attempting to access row " << fCurRow
-                  << " column " << col
-                  << " but only " << fCurRow << " rows in table."  << "  ");
+        DbiSevere("Table " << TableNameTc()
+                  << " exhausted at row " << fCurRow
+                  << " column " << col);
         return kFALSE;
     }
 
@@ -318,8 +327,7 @@ Bool_t CP::TDbiInRowStream::CurColExists() const {
     if (col > numCols) {
         DbiSevere("In table " << TableNameTc()
                   << " row " << fCurRow
-                  << " attempting to access column "<< col
-                  << " but only " << NumCols() << " in table ."  << "  ");
+                  << NumCols() << " in table, but accessing " << col);
         return kFALSE;
     }
 
@@ -486,7 +494,8 @@ void CP::TDbiInRowStream::RowAsCsv(std::string& row) const {
 
     Int_t maxCol = this->NumCols();
     for (Int_t col = 1; col <= maxCol; ++col) {
-        // Deal with NULL values.  Caution: Column numbering in TSQLStatement starts at 0.
+        // Deal with NULL values.  Caution: Column numbering in TSQLStatement
+        // starts at 0.
         if (fTSQLStatement->IsNull(col-1)) {
             row += "NULL";
             if (col < maxCol) {
@@ -532,6 +541,3 @@ void CP::TDbiInRowStream::RowAsCsv(std::string& row) const {
         }
     }
 }
-
-
-

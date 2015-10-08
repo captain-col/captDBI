@@ -68,12 +68,12 @@ namespace CP {
     private:
 
 
-// Data members
-
-/// The underlying string
+        // Data members
+        
+        /// The underlying string
         std::string fString;
 
-        ClassDef(TDbiString,0)     // output string stream
+        ClassDef(TDbiString,0);
 
     };
 };

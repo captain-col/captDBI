@@ -146,19 +146,21 @@ CP::TDbiCache::~TDbiCache() {
 ///  are always removed from the beginning so sub-cache is a FIFO.
 ///\endverbatim
 void CP::TDbiCache::Adopt(CP::TDbiResultSet* res,bool generateKey) {
-
+    DbiTrace("Adopt TDbiResultSet " << res);
+    
     if (! res) {
+        DbiTrace("Return on NULL TDbiResultSet");
         return;
     }
     int aggNo = res->GetValidityRec().GetAggregateNo();
 
-//  Prime sub-cache if necessary.
+    //  Prime sub-cache if necessary.
     if (! this->GetSubCache(aggNo)) {
         ResultList_t emptyList;
         fCache[aggNo] = emptyList;
     }
 
-//  Purge expired entries and add new result to cache.
+    // Purge expired entries and add new result to cache.
     ResultList_t& subCache = fCache[aggNo];
     Purge(subCache, res);
     subCache.push_back(res);
@@ -166,7 +168,7 @@ void CP::TDbiCache::Adopt(CP::TDbiResultSet* res,bool generateKey) {
     ++fNumAdopted;
     DbiDebug("Adopting result for " << res->TableName()
              << "  " <<   res->GetValidityRecGlobal()
-             << "\nCache size now " << fCurSize << "  ");
+             << " Cache size now " << fCurSize << "  ");
     if (fCurSize > fMaxSize) {
         fMaxSize = fCurSize;
     }

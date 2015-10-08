@@ -178,7 +178,8 @@ const CP::TDbiValidityRec* CP::TDbiValRecSet::GetTableRow(UInt_t rowNum) const {
 //  None.
 
     return fResult ?
-           dynamic_cast<const CP::TDbiValidityRec*>(fResult->GetTableRow(rowNum))
+           dynamic_cast<const CP::TDbiValidityRec*>(
+               fResult->GetTableRow(rowNum))
            : 0;
 }
 

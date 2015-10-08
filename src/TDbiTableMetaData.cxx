@@ -31,7 +31,7 @@ CP::TDbiTableMetaData::ColumnAttributes CP::TDbiTableMetaData::fgDummy;
 
 //.....................................................................
 
-CP::TDbiTableMetaData::TDbiTableMetaData(const std::string& tableName) :
+CP::TDbiTableMetaData::TDbiTableMetaData(std::string tableName) :
     fNumCols(0),
     fTableName(tableName) {
 //
@@ -42,10 +42,12 @@ CP::TDbiTableMetaData::TDbiTableMetaData(const std::string& tableName) :
 //  =============
 
 //  This is filled by the owning CP::TDbiTableProxy, as it is too low level to
-//  use the cascade to fill itself, hence the friend status granted to CP::TDbiDBProxy.
+//  use the cascade to fill itself, hence the friend status granted to
+//  CP::TDbiDBProxy.
 
 
-    DbiTrace("Creating CP::TDbiTableMetaData" << "  ");
+    DbiTrace("Creating CP::TDbiTableMetaData " << fTableName
+             << " " << tableName);
 
 }
 
@@ -57,7 +59,7 @@ CP::TDbiTableMetaData::~TDbiTableMetaData() {
 //  Purpose: Destructor
 
 
-    DbiTrace("Destroying CP::TDbiTableMetaData" << "  ");
+    DbiTrace("Destroying CP::TDbiTableMetaData " << fTableName);
 
 }
 
@@ -108,7 +110,8 @@ void CP::TDbiTableMetaData::ExpandTo(UInt_t colNum) {
 
 //.....................................................................
 
-const  CP::TDbiTableMetaData::ColumnAttributes&  CP::TDbiTableMetaData::GetAttributes(Int_t colNum) const {
+const  CP::TDbiTableMetaData::ColumnAttributes&
+CP::TDbiTableMetaData::GetAttributes(Int_t colNum) const {
 
 // Return a column attributes (will be dummy entry if requesting invalid column)
 
@@ -154,13 +157,16 @@ std::string CP::TDbiTableMetaData::GetToken(const char*& strPtr) {
 
 //.....................................................................
 
-CP::TDbiTableMetaData::ColumnAttributes& CP::TDbiTableMetaData::SetAttributes(Int_t colNum) {
+CP::TDbiTableMetaData::ColumnAttributes&
+CP::TDbiTableMetaData::SetAttributes(Int_t colNum) {
 
-// Return a column attributes (will be dummy entry if requesting invalid column)
+    // Return a column attributes (will be dummy entry if requesting invalid
+    // column)
 
     this->ExpandTo(colNum);
-    // Using const metho so must cast away constness.
-    return const_cast<CP::TDbiTableMetaData::ColumnAttributes&>(this->GetAttributes(colNum));
+    // Using const method so must cast away constness.
+    return const_cast<CP::TDbiTableMetaData::ColumnAttributes&>(
+        this->GetAttributes(colNum));
 
 }
 
@@ -221,7 +227,7 @@ void CP::TDbiTableMetaData::SetFromSql(const std::string& sql) {
     while (delim != ")") {
         std::string name = CP::TDbiTableMetaData::GetToken(strPtr);
 
-//  Deal with INDEX and PRIMARY KEY
+        //  Deal with INDEX and PRIMARY KEY
         if (name == "INDEX" ||  name == "KEY" || name == "PRIMARY") {
             if (name == "PRIMARY" || name == "KEY") {
                 delim = CP::TDbiTableMetaData::GetToken(strPtr);
@@ -234,7 +240,7 @@ void CP::TDbiTableMetaData::SetFromSql(const std::string& sql) {
             continue;
         }
 
-//  Collect name and type.
+        //  Collect name and type.
         ++col;
         this->SetColName(name,col);
         this->SetColIsNullable(col);
@@ -255,7 +261,7 @@ void CP::TDbiTableMetaData::SetFromSql(const std::string& sql) {
                << " type " << this->ColFieldType(col).AsString()
                << " precision " << precision << "  ");
 
-//  Collect optional qualifiers.
+        //  Collect optional qualifiers.
 
         while (delim != ","  &&  delim != ")") {
             std::string opt2 = CP::TDbiTableMetaData::GetToken(strPtr);
@@ -273,7 +279,8 @@ void CP::TDbiTableMetaData::SetFromSql(const std::string& sql) {
                 delim = opt2;
             }
             else {
-                DbiWarn("Column: " << col << " name " << name << " type " << ft.AsString()
+                DbiWarn("Column: " << col
+                        << " name " << name << " type " << ft.AsString()
                         << " ignoring unknown option: " << delim << "  ");
                 delim = opt2;
             }

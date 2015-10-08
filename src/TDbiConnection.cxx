@@ -154,6 +154,7 @@ TSQLStatement* CP::TDbiConnection::CreatePreparedStatement(
         return stmt;
     }
     try {
+        DbiTrace("CreatePreparedStatement: " << sql);
         stmt = fServer->Statement(sql.c_str());
     }
     catch (...) {
@@ -162,7 +163,7 @@ TSQLStatement* CP::TDbiConnection::CreatePreparedStatement(
         stmt = NULL;
     }
     if (!stmt) {
-        // DbiError("Statement failed: " << sql);
+        DbiWarn("Statement failed: " << sql);
         fExceptionLog.AddEntry(*fServer);
     }
     else {

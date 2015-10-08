@@ -28,7 +28,6 @@
 #include "TVldTimeStamp.hxx"
 
 #include <string>
-#include <sstream>
 
 namespace CP {
     class TDbiCache;

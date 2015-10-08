@@ -33,21 +33,19 @@ ClassImp(CP::TDbiStatement)
 
 //.....................................................................
 
-CP::TDbiStatement::TDbiStatement(CP::TDbiConnection& conDb) :
-    fConDb(conDb) {
-//
-//
-//  Purpose:  Constructor
-//
-//  Arguments:  None.
-//
-//  Return:
-//
-//  conDb    in    The connection associated with the statement.
-//
-
-
-    DbiTrace("Creating CP::TDbiStatement" << "  ");
+CP::TDbiStatement::TDbiStatement(CP::TDbiConnection& conDb): fConDb(conDb) {
+    //
+    //
+    //  Purpose:  Constructor
+    //
+    //  Arguments:  None.
+    //
+    //  Return:
+    //
+    //  conDb    in    The connection associated with the statement.
+    //
+    
+    DbiTrace("Creating CP::TDbiStatement for" << fConDb.GetDbName());
     fConDb.ConnectStatement();
 
 }
@@ -55,25 +53,23 @@ CP::TDbiStatement::TDbiStatement(CP::TDbiConnection& conDb) :
 //.....................................................................
 
 CP::TDbiStatement::~TDbiStatement() {
-//
-//
-//  Purpose: Destructor
-
-    DbiTrace("Destroying CP::TDbiStatement" << "  ");
-
+    DbiTrace("Destroying CP::TDbiStatement for " << fConDb.GetDbName());
     fConDb.DisConnectStatement();
 }
 
 //.....................................................................
 
-TSQLStatement* CP::TDbiStatement::CreateProcessedStatement(const TString& sql /* ="" */) {
+TSQLStatement*
+CP::TDbiStatement::CreateProcessedStatement(const TString& sql /* ="" */) {
+    // Attempt to create a processed statement (caller must delete).  Return
+    // NULL if failure.
 
-// Attempt to create a processed statement (caller must delete).  Return 0 if failure.
-
+    DbiInfo("CreateProcessedStatement:" << fConDb.GetDbName()
+            << ":" << sql << "  ");
     TSQLStatement* stmt = fConDb.CreatePreparedStatement(sql.Data());
     if (! stmt) {
         this->AppendExceptionLog(fConDb);
-        return 0;
+        return NULL;
     }
     if (stmt->Process()) {
         return stmt;
@@ -81,22 +77,21 @@ TSQLStatement* CP::TDbiStatement::CreateProcessedStatement(const TString& sql /*
     this->AppendExceptionLog(stmt);
     delete stmt;
     stmt = 0;
-    return 0;
-
+    return NULL;
 }
 
 
 //.....................................................................
 
 TSQLStatement* CP::TDbiStatement::ExecuteQuery(const TString& sql) {
-//
-//
-//  Purpose:  Execute SQL.
-//  Return:   TSQLStatement with Process() and StoreResult() already performed.
+    //  Purpose:  Execute SQL.
+    //
+    //  Return: TSQLStatement with Process() and StoreResult() already
+    //  performed.
 
     this->ClearExceptionLog();
 
-    DbiInfo("SQL:" << fConDb.GetDbName() << ":" << sql << "  ");
+    DbiInfo("ExecuteQuery:" << fConDb.GetDbName() << ":" << sql << "  ");
     TSQLStatement* stmt = this->CreateProcessedStatement(sql);
     if (! stmt) {
         return 0;
@@ -107,8 +102,8 @@ TSQLStatement* CP::TDbiStatement::ExecuteQuery(const TString& sql) {
         stmt = 0;
     }
 
-    // Final sanity check: If there is a statement then the exception log should still
-    // be clear otherwise it should not be.
+    // Final sanity check: If there is a statement then the exception log
+    // should still be clear otherwise it should not be.
     if (stmt) {
         if (! fExceptionLog.IsEmpty()) {
             delete stmt;
@@ -117,7 +112,8 @@ TSQLStatement* CP::TDbiStatement::ExecuteQuery(const TString& sql) {
     }
     else if (fExceptionLog.IsEmpty()) {
         std::ostringstream oss;
-        oss << "Unknown failure (no execption but no TSQLStatement either executing " << sql;
+        oss << "Unknown failure (no exception but no TSQLStatement"
+            << " executing " << sql;
         fExceptionLog.AddEntry(oss.str().c_str());
     }
     return stmt;
@@ -127,16 +123,13 @@ TSQLStatement* CP::TDbiStatement::ExecuteQuery(const TString& sql) {
 //.....................................................................
 
 Bool_t CP::TDbiStatement::ExecuteUpdate(const TString& sql) {
-//
-//
-//  Purpose:  Translate SQL if required and Execute.
-//
-//  Return true if all updates successful.
-
-
+    //  Purpose:  Translate SQL if required and Execute.
+    //
+    //  Return true if all updates successful.
+    
     this->ClearExceptionLog();
 
-    DbiInfo("SQL:" << fConDb.GetDbName() << ":" << sql << "  ");
+    DbiInfo("ExecuteUpdate:" << fConDb.GetDbName() << ":" << sql << "  ");
     bool ok = fConDb.GetServer()->Exec(sql.Data());
     if (! ok) {
         fConDb.RecordException();

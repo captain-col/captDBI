@@ -70,9 +70,21 @@ CP::TDbiResultSetNonAgg::TDbiResultSetNonAgg(CP::TDbiInRowStream* resultSet,
     CP::TDbiResultSet(resultSet,vrec,sqlQualifiers),
     fBuffer(0) {
 
+    DbiTrace("Start TDbiResultSetNonAgg");
     this->DebugCtor();
 
-    if (! resultSet || resultSet->IsExhausted() || ! tableRow) {
+    if (!resultSet) {
+        DbiTrace("NULL result set: Return without filling");
+        return;
+    }
+
+    if (resultSet->IsExhausted()) {
+        DbiTrace("Exhausted result set: Return without filling");
+        return;
+    }
+
+    if (!tableRow) {
+        DbiTrace("No table row: Return without filling");
         return;
     }
 
@@ -80,41 +92,44 @@ CP::TDbiResultSetNonAgg::TDbiResultSetNonAgg(CP::TDbiInRowStream* resultSet,
         CP::TDbiTimerManager::gTimerManager.RecFillAgg(vrec->GetAggregateNo());
     }
 
-//Move to first row if result set not yet started.
+    //Move to first row if result set not yet started.
     CP::TDbiInRowStream& rs = *resultSet;
     if (rs.IsBeforeFirst()) {
+        DbiTrace("Fetch row");
         rs.FetchRow();
     }
     if (rs.IsExhausted()) {
+        DbiTrace("Exhausted after fetch row");
         return;
     }
 
-//Check and load sequence number if necessary.
+    //Check and load sequence number if necessary.
     Int_t seqNo = 0;
     if (dropSeqNo && rs.CurColName() == "SEQNO") {
         rs >> seqNo;
         rs.DecrementCurCol();
     }
 
-// Main (non-VLD) tables have a ROW_COUNTER (which has to be ignored when reading).
+    // Main (non-VLD) tables have a ROW_COUNTER (which has to be ignored when
+    // reading).
     bool hasRowCounter = ! rs.IsVLDTable();
 
-// Create and fill table row object and move result set onto next row.
-
+    // Create and fill table row object and move result set onto next row.
     while (! rs.IsExhausted()) {
-
-//  If stripping off sequence numbers check the next and quit,
-//  having restored the last, if it changes.
+        DbiTrace("Loop result stream " << seqNo);
+        //  If stripping off sequence numbers check the next and quit,
+        //  having restored the last, if it changes.
         if (seqNo != 0) {
             Int_t nextSeqNo;
             rs >> nextSeqNo;
             if (nextSeqNo != seqNo) {
+                DbiTrace("Next seq number " << nextSeqNo);
                 rs.DecrementCurCol();
                 break;
             }
         }
 
-//  Strip off ROW_COUNTER if present.
+        //  Strip off ROW_COUNTER if present.
         if (hasRowCounter) {
             rs.IncrementCurCol();
         }
@@ -123,6 +138,7 @@ CP::TDbiResultSetNonAgg::TDbiResultSetNonAgg(CP::TDbiInRowStream* resultSet,
             CP::TDbiTimerManager::gTimerManager.StartSubWatch(3);
         }
         row->SetOwner(this);
+        DbiTrace("Fill user row class: " << vrec);
         row->Fill(rs,vrec);
         if (vrec) {
             CP::TDbiTimerManager::gTimerManager.StartSubWatch(2);
@@ -136,12 +152,15 @@ CP::TDbiResultSetNonAgg::TDbiResultSetNonAgg(CP::TDbiInRowStream* resultSet,
 
     //Flag that data was read from Database.
     this->SetResultsFromDb();
-    if (seqNo  == 0)
+    if (seqNo  == 0) {
         DbiInfo("Created unaggregated VLD result set no. of rows: "
                 << this->GetNumRows() << "  ");
-    else  DbiInfo("Created unaggregated result set for SeqNo: " << seqNo
-                      << " no. of rows: " << this->GetNumRows() << "  ");
-
+    }
+    else  {
+        DbiInfo("Created unaggregated result set for SeqNo: " << seqNo
+                << " no. of rows: " << this->GetNumRows() << "  ");
+    }
+    
 }
 
 
@@ -210,12 +229,13 @@ CP::TDbiResultKey* CP::TDbiResultSetNonAgg::CreateKey() const {
 
 void CP::TDbiResultSetNonAgg::DebugCtor() const {
 
-    DbiTrace("Creating CP::TDbiResultSetNonAgg" << (void*) this << "  ");
+    DbiTrace("Creating CP::TDbiResultSetNonAgg " << (void*) this << "  ");
     static const CP::TDbiResultSetNonAgg* that = 0;
     if (this == that) {
-        std::cout << "debug " << (void*) this << std::endl;
+        DbiError("Class not constructed");
     }
 }
+
 //.....................................................................
 ///\verbatim
 ///

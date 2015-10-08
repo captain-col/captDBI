@@ -305,9 +305,9 @@ void CP::TDbiDatabaseManager::Config() {
 
 //.....................................................................
 
-CP::TDbiTableProxy& CP::TDbiDatabaseManager::GetTableProxy
-(const std::string& tableNameReq,
- const CP::TDbiTableRow* tableRow) {
+CP::TDbiTableProxy&
+CP::TDbiDatabaseManager::GetTableProxy(const std::string& tableNameReq,
+                                       const CP::TDbiTableRow* tableRow) {
 //
 //
 //  Purpose:  Locate, or if necessary create, CP::TDbiTableProxy for
@@ -336,6 +336,10 @@ CP::TDbiTableProxy& CP::TDbiDatabaseManager::GetTableProxy
 // Force upper case name.
     std::string tableName = CP::UtilString::ToUpper(tableNameReq);
     std::string proxyName = tableName;
+
+    DbiTrace("Proxy request " << tableNameReq);
+    DbiTrace("Proxy table   " << tableName);
+    DbiTrace("Proxy name    " << proxyName);
 
     proxyName.append("::");
     proxyName.append(tableRow->ClassName());

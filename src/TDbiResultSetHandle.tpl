@@ -404,10 +404,12 @@ namespace CP {
         ///  Program Notes:-
         ///  =============
 
-        ///  The Disconnect message is sent to CP::TDbiResultSet so that CP::TDbiCache
-        ///  knows when its CP::TDbiResultSet objects are free of clients.
+        ///  The Disconnect message is sent to CP::TDbiResultSet so that
+        ///  CP::TDbiCache knows when its CP::TDbiResultSet objects are free
+        ///  of clients.
 
         if ( fResult && CP::TDbiDatabaseManager::IsActive() ) {
+            DbiTrace("Have result and manager is active, so disconnect");
             fResult->Disconnect();
         }
         fResult = 0;
@@ -652,8 +654,8 @@ namespace CP {
 
         if ( ! fResult ) return 0;
 
-        DbiTrace( "\n\nStarting next query: direction "
-                  << ( forwards ?  "forwards" : "backwards" ) << "\n" << "  ");
+        DbiTrace( "Starting next query: direction "
+                  << ( forwards ?  "forwards" : "backwards" ) << "" << "  ");
 
         const CP::TDbiValidityRec& vrec = fResult->GetValidityRec();
         const CP::TVldRange& vrnge      = vrec.GetVldRange();
@@ -706,18 +708,24 @@ namespace CP {
         ///  =============
 
         ///  None.
-
+	
+        DbiTrace( "Start NewQuery: " << vc
+                  << " task " << task
+                  << " window" << findFullTimeWindow);
         if ( ! CP::TDbiDatabaseManager::IsActive() ) {
+            DbiTrace( "Manager not active: "
+                      << vc  << " task " << task);
             fResult = 0;
             return 0;
         }
         fDetType = vc.GetDetector();
         fSimType = vc.GetSimFlag();
-
-        DbiTrace( "\n\nStarting context query: "
-                  << vc  << " task " << task << "\n" << "  ");
-
-        CP::TDbiTimerManager::gTimerManager.RecBegin(fTableProxy.GetTableName(), sizeof(T));
+        
+        DbiTrace( "Starting context query: "
+                  << vc  << " task " << task);
+        
+        CP::TDbiTimerManager::gTimerManager.RecBegin(
+            fTableProxy.GetTableName(), sizeof(T));
         Disconnect();
         fResult = fTableProxy.Query(vc,task,findFullTimeWindow);
         fResult->Connect();
@@ -726,12 +734,12 @@ namespace CP {
         if ( this->ApplyAbortTest() ) {
             DbiSevere( "FATAL: "
                        << "while applying validity context query for "
-                       << vc.AsString() << " with task " << task << "  ");
+                       << vc.AsString() << " with task " << task);
             throw  CP::EQueryFailed();
         }
-        DbiTrace( "\nCompleted context query: "
+        DbiTrace( "Completed context query: "
                   << vc  << " task " << task
-                  << " Found:  " << fResult->GetNumRows() << " rows\n" << "  ");
+                  << " Found:  " << fResult->GetNumRows() << " rows");
         return fResult->GetNumRows();
 
     }
@@ -775,9 +783,9 @@ namespace CP {
         fDetType = context.GetDetector();
         fSimType = context.GetSimFlag();
 
-        DbiTrace( "\n\nStarting extended context query: "
+        DbiTrace( "Starting extended context query: "
                   << context.GetString()  << " task " << task
-                  << " data " << data << " fillOpts " << fillOpts << "\n" <<"  ");
+                  << " data " << data << " fillOpts " << fillOpts << "" <<"  ");
 
         CP::TDbiTimerManager::gTimerManager.RecBegin(fTableProxy.GetTableName(), sizeof(T));
         Disconnect();
@@ -792,10 +800,10 @@ namespace CP {
             throw  CP::EQueryFailed();
         }
 
-        DbiTrace( "\n\nCompleted extended context query: "
+        DbiTrace( "Completed extended context query: "
                   << context.GetString()  << " task " << task
                   << " data " << data << " fillOpts" << fillOpts
-                  << " Found:  " << fResult->GetNumRows() << " rows\n" << "  ");
+                  << " Found:  " << fResult->GetNumRows() << " rows" << "  ");
 
         return fResult->GetNumRows();
 
@@ -831,8 +839,8 @@ namespace CP {
             fResult = 0;
             return 0;
         }
-        DbiTrace( "\n\nStarting CP::TDbiValidityRec query: "
-                  << vrec << "\n" << "  ");
+        DbiTrace( "Starting CP::TDbiValidityRec query: "
+                  << vrec << "" << "  ");
 
         this->SetContext(vrec);
         CP::TDbiTimerManager::gTimerManager.RecBegin(fTableProxy.GetTableName(), sizeof(T));
@@ -848,9 +856,9 @@ namespace CP {
                        << vrec << "  ");
             throw  CP::EQueryFailed();
         }
-        DbiTrace( "\n\nCompletedCP::TDbiValidityRec query: "
+        DbiTrace( "CompletedCP::TDbiValidityRec query: "
                   << vrec
-                  << " Found:  " << fResult->GetNumRows() << " rows\n"  << "  ");
+                  << " Found:  " << fResult->GetNumRows() << " rows"  << "  ");
         return fResult->GetNumRows();
 
     }
@@ -886,8 +894,8 @@ namespace CP {
             fResult = 0;
             return 0;
         }
-        DbiTrace( "\n\nStarting SeqNo query: "
-                  << seqNo << "\n" << "  ");
+        DbiTrace( "Starting SeqNo query: "
+                  << seqNo << "" << "  ");
         CP::TDbiTimerManager::gTimerManager.RecBegin(fTableProxy.GetTableName(), sizeof(T));
         Disconnect();
         fResult = fTableProxy.Query(seqNo,dbNo);
@@ -899,9 +907,9 @@ namespace CP {
             throw  CP::EQueryFailed();
         }
         this->SetContext(fResult->GetValidityRec());
-        DbiTrace( "\n\nCompleted SeqNo query: "
+        DbiTrace( "Completed SeqNo query: "
                   << seqNo
-                  << " Found:  " << fResult->GetNumRows() << " rows\n" << "  ");
+                  << " Found:  " << fResult->GetNumRows() << " rows" << "  ");
         return fResult->GetNumRows();
 
     }

@@ -30,10 +30,14 @@ public:
         TResultInputStream ris(rs);
         this->Fill(ris);
     }
+#define PURE_VIRTUAL_FILL
+#ifdef PURE_VIRTUAL_FILL
+    virtual void Fill(CP::TResultInputStream& ris) = 0;
+#else
     virtual void Fill(CP::TResultInputStream& ris) {
-        DbiError("Calling base class CP::TTableRow::Fill method - this should be redefined in subclass");
-
+        DbiError("CP::TTableRow::Fill undefined in subclass");
     }
+#endif
     virtual TTableRow* MakeTableRow() const =0;
 
     /// Return class name but strip off leading "CP::T"
