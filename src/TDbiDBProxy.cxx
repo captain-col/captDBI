@@ -50,30 +50,30 @@ ClassImp(CP::TDbiDBProxy)
 
 //.....................................................................
 
-CP::TDbiDBProxy::TDbiDBProxy(CP::TDbiCascader& cascader,
-                             const std::string& tableName,
-                             const CP::TDbiTableMetaData* metaData,
-                             const CP::TDbiTableMetaData* metaValid,
-                             const CP::TDbiTableProxy* tableProxy) :
-    fCascader(cascader),
+CP::TDbiDBProxy::TDbiDBProxy(
+    CP::TDbiCascader& cascader,
+    const std::string& tableName,
+    const CP::TDbiTableMetaData* metaData,
+    const CP::TDbiTableMetaData* metaValid,
+    const CP::TDbiTableProxy* tableProxy): fCascader(cascader),
     fMetaData(metaData),
     fMetaValid(metaValid),
     fTableName(tableName),
     fTableProxy(tableProxy) {
-//
-//
-//  Purpose:  Constructor
-//
-//  Arguments:
-//  cascader   in   Reference to one and only cascader
-//  tableName  in   Table name.
-//  metaData   in   Meta data for main table.
-//  metaValid  in   Meta data for validity.
-//  tableProxy in   Owning CP::TDbiTableProxy.
-//
+    //  Purpose:  Constructor
+    //
+    //  Arguments:
+    //  cascader   in   Reference to one and only cascader
+    //  tableName  in   Table name.
+    //  metaData   in   Meta data for main table.
+    //  metaValid  in   Meta data for validity.
+    //  tableProxy in   Owning CP::TDbiTableProxy.
+
+    DbiTrace("Create CP::TDbiDBProxy "
+             << fTableName << " at " << this);
 
 
-}
+    }
 
 //.....................................................................
 
@@ -97,54 +97,53 @@ void CP::TDbiDBProxy::FindTimeBoundaries(const CP::TVldContext& vc,
                                          Bool_t resolveByCreationDate,
                                          CP::TVldTimeStamp& start,
                                          CP::TVldTimeStamp& end) const {
-//
-//
-//  Purpose: Find next time boundaries beyond standard time gate.
-//
-//  Arguments:
-//    vc                    in    The Validity Context for the query.
-//    task                  in    The task of the query.
-//    dbNo                  in    Database number in cascade (starting at 0).
-//    lowestPriorityVrec    in    Lowest priority VLD in the time gate
-//    resolveByCreationDate in  The method for resolving VLDs:
-//                                 if true use CREATIONDATE (MINOS scheme)
-//                                 if false use EPOCH,TIMESTART,INSERTDATE (T2K scheme)
-//    start                 out   Lower time boundary or CP::TVldTimeStamp(0,0) if none
-//    end                   out   Upper time boundary or CP::TVldTimeStamp(0x7FFFFFFF,0) if none
-//
-//  Specification:-
-//  =============
-//
-//  o Find the next time boundary (either TIMESTART or TIMEEND)
-//    outside the current time gate that is potentionally of higher priority.
-//
-//  Explanation:-
-//  ===========
-//
-//
-//  In oder to keep the number of VLDs to a manageable level when doing a
-//  Standard Context query, a time gate around the context is imposed and
-//  any VLD rejected if it does not overlap the query. However, this
-//  implies that the maximum validity of the query result set is also
-//  limited by the time gate and hence the interface will again have to
-//  query the database when a context outside the time gate is
-//  requested. This function attempts to open up the validity of the
-//  result set by looking for the nearest start or end of a VLD outside
-//  the time gate that is of higher priority. In MINOS, priority is just
-//  CREATIONDATE, so the function just looks for VLDs with a higher
-//  CREATIONDATE.  For T2K the priority scheme is more complicated:
-//  EPOCH,TIMESTART,INSERTDATE and it is not possible to construct a SQL
-//  query that only considers higher priority VLDs so the function makes a
-//  simplification and only rejects VLDs with a lower EPOCH number.  The
-//  consequence of this is that it may accept VLDs that are of a lower
-//  priority than the current one and hence the result set validity does
-//  not get opened up to its full extent.  All this means is that the
-//  interface will have to make another query earlier that it need do but
-//  at least it will not miss a VLD boundary and should still keep the current
-//  results longer than it would have if this function had not been
-//  called.
+    //
+    //
+    //  Purpose: Find next time boundaries beyond standard time gate.
+    //
+    //  Arguments:
+    //    vc                    in    The Validity Context for the query.
+    //    task                  in    The task of the query.
+    //    dbNo                  in    Database number in cascade (starting at 0).
+    //    lowestPriorityVrec    in    Lowest priority VLD in the time gate
+    //    resolveByCreationDate in  The method for resolving VLDs:
+    //                                 if true use CREATIONDATE (MINOS scheme)
+    //                                 if false use EPOCH,TIMESTART,INSERTDATE (T2K  scheme)
+    //    start                 out   Lower time boundary or CP::TVldTimeStamp(0,0)  if none
+    //    end                   out   Upper time boundary or CP::TVldTimeStamp(0x7F FFFFFF,0) if none
+    //
+    //  Specification:-
+    //  =============
+    //
+    //  o Find the next time boundary (either TIMESTART or TIMEEND)
+    //    outside the current time gate that is potentionally of higher priority.
+    //
+    //  Explanation:-
+    //  ===========
+    //
+    //  In oder to keep the number of VLDs to a manageable level when doing a
+    //  Standard Context query, a time gate around the context is imposed and
+    //  any VLD rejected if it does not overlap the query. However, this
+    //  implies that the maximum validity of the query result set is also
+    //  limited by the time gate and hence the interface will again have to
+    //  query the database when a context outside the time gate is
+    //  requested. This function attempts to open up the validity of the
+    //  result set by looking for the nearest start or end of a VLD outside
+    //  the time gate that is of higher priority. In MINOS, priority is just
+    //  CREATIONDATE, so the function just looks for VLDs with a higher
+    //  CREATIONDATE.  For T2K the priority scheme is more complicated:
+    //  EPOCH,TIMESTART,INSERTDATE and it is not possible to construct a SQL
+    //  query that only considers higher priority VLDs so the function makes a
+    //  simplification and only rejects VLDs with a lower EPOCH number.  The
+    //  consequence of this is that it may accept VLDs that are of a lower
+    //  priority than the current one and hence the result set validity does
+    //  not get opened up to its full extent.  All this means is that the
+    //  interface will have to make another query earlier that it need do but
+    //  at least it will not miss a VLD boundary and should still keep the current
+    //  results longer than it would have if this function had not been
+    //  called.
 
-    DbiVerbose("FindTimeBoundaries for table " <<  fTableName
+    DbiTrace("FindTimeBoundaries for table " <<  fTableName
                << " context " << vc
                << " task " << task
                << " Lowest priority VLD creation date: " <<  lowestPriorityVrec.GetCreationDate()
@@ -152,11 +151,11 @@ void CP::TDbiDBProxy::FindTimeBoundaries(const CP::TVldContext& vc,
                << " resolve by: " << (resolveByCreationDate ? "CREATIONDATE" : "EPOCH")
                << " database " << dbNo << "  ");
 
-//  Set the limits wide open
+    //  Set the limits wide open
     start = CP::TVldTimeStamp(0,0);
     end   = CP::TVldTimeStamp(0x7FFFFFFF,0);
 
-//  Construct a Time Gate on the current date.
+    //  Construct a Time Gate on the current date.
 
     const CP::TVldTimeStamp curVTS = vc.GetTimeStamp();
     Int_t timeGate = TDbi::GetTimeGate(this->GetTableName());
@@ -167,25 +166,25 @@ void CP::TDbiDBProxy::FindTimeBoundaries(const CP::TVldContext& vc,
     std::string startGateString(TDbi::MakeDateTimeString(startGate));
     std::string endGateString(TDbi::MakeDateTimeString(endGate));
 
-// Extract information for CP::TVldContext.
+    // Extract information for CP::TVldContext.
 
     CP::DbiDetector::Detector_t    detType(vc.GetDetector());
     CP::DbiSimFlag::SimFlag_t       simFlg(vc.GetSimFlag());
 
-// Use an std::unique_ptr to manage ownership of CP::TDbiStatement and
-// TSQLStatement
+    // Use an std::unique_ptr to manage ownership of CP::TDbiStatement and
+    // TSQLStatement
     std::unique_ptr<CP::TDbiStatement> stmtDb(fCascader.CreateStatement(dbNo));
 
     for (int i_limit =1; i_limit <= 4; ++i_limit) {
         CP::TDbiString sql("select ");
         if (i_limit == 1) sql  << "min(TIMESTART) from " << fTableName
-                                   << "VLD where TIMESTART > '" << endGateString << "' ";
+                               << "VLD where TIMESTART > '" << endGateString << "' ";
         if (i_limit == 2) sql  << "min(TIMEEND) from " << fTableName
-                                   << "VLD where TIMEEND > '" << endGateString  << "' ";
+                               << "VLD where TIMEEND > '" << endGateString  << "' ";
         if (i_limit == 3) sql  << "max(TIMESTART) from " << fTableName
-                                   << "VLD where TIMESTART < '" << startGateString << "' ";
+                               << "VLD where TIMESTART < '" << startGateString << "' ";
         if (i_limit == 4) sql  << "max(TIMEEND) from " << fTableName
-                                   << "VLD where TIMEEND < '" << startGateString  << "' ";
+                               << "VLD where TIMEEND < '" << startGateString  << "' ";
         sql << " and DetectorMask & " << static_cast<unsigned int>(detType)
             << " and SimMask & " << static_cast<unsigned int>(simFlg)
             << " and  Task = " << task;
@@ -195,13 +194,13 @@ void CP::TDbiDBProxy::FindTimeBoundaries(const CP::TVldContext& vc,
         else {
             sql << " and EPOCH >= " << lowestPriorityVrec.GetEpoch();
         }
-        DbiVerbose("  FindTimeBoundaries query no. " << i_limit
+        DbiTrace("  FindTimeBoundaries query no. " << i_limit
                    << " SQL:" <<sql.c_str() << "  ");
 
         std::unique_ptr<TSQLStatement> stmt(stmtDb->ExecuteQuery(sql.c_str()));
         stmtDb->PrintExceptions(CP::TDbiLog::DebugLevel);
 
-//  If the query returns data, convert to a time stamp and trim the limits
+        //  If the query returns data, convert to a time stamp and trim the limits
         TString date;
         if (! stmt.get() || ! stmt->NextResultRow() || stmt->IsNull(0)) {
             continue;
@@ -211,7 +210,7 @@ void CP::TDbiDBProxy::FindTimeBoundaries(const CP::TVldContext& vc,
             continue;
         }
         CP::TVldTimeStamp ts(TDbi::MakeTimeStamp(date.Data()));
-        DbiVerbose("  FindTimeBoundaries query result: " << ts << "  ");
+        DbiTrace("  FindTimeBoundaries query result: " << ts << "  ");
         if (i_limit <= 2 && ts < end) {
             end   = ts;
         }
@@ -221,16 +220,16 @@ void CP::TDbiDBProxy::FindTimeBoundaries(const CP::TVldContext& vc,
 
     }
 
-    DbiVerbose("FindTimeBoundaries for table " <<  fTableName
+    DbiTrace("FindTimeBoundaries for table " <<  fTableName
                << " found " << start << " .. " << end << "  ");
 
 }
 //.....................................................................
 
 UInt_t CP::TDbiDBProxy::GetNumDb() const {
-//
-//
-//  Purpose:  Return the number of databases in the cascade.
+    //
+    //
+    //  Purpose:  Return the number of databases in the cascade.
 
     return fCascader.GetNumDb();
 
@@ -243,33 +242,33 @@ Bool_t CP::TDbiDBProxy::HasEpoch() const {
 //.....................................................................
 
 CP::TDbiInRowStream*  CP::TDbiDBProxy::QueryAllValidities(UInt_t dbNo,UInt_t seqNo) const {
-//
-//
-//  Purpose:  Apply all validities query to database..
-//
-//  Arguments:
-//    dbNo         in    Database number in cascade (starting at 0).
-//    seqNo        in    Just this SEQNO if >0 or all if 0 [default: 0]
-//
-//  Return:    New CP::TDbiResultSet object.
-//             NB  Caller is responsible for deleting..
-//
-//  Contact:   N. West
-//
-//  Specification:-
-//  =============
-//
-//  o Ask for every row in associated validity range table and return
-//    query results qualifying selection by fSqlCondition if defined.
+    //
+    //
+    //  Purpose:  Apply all validities query to database..
+    //
+    //  Arguments:
+    //    dbNo         in    Database number in cascade (starting at 0).
+    //    seqNo        in    Just this SEQNO if >0 or all if 0 [default: 0]
+    //
+    //  Return:    New CP::TDbiResultSet object.
+    //             NB  Caller is responsible for deleting..
+    //
+    //  Contact:   N. West
+    //
+    //  Specification:-
+    //  =============
+    //
+    //  o Ask for every row in associated validity range table and return
+    //    query results qualifying selection by fSqlCondition if defined.
 
-//  Program Notes:-
-//  =============
+    //  Program Notes:-
+    //  =============
 
-//  This function is provided to support database maintenance
-//  rather than standard CP::TDbi related I/O
+    //  This function is provided to support database maintenance
+    //  rather than standard CP::TDbi related I/O
 
 
-// Generate SQL for validity table.
+    // Generate SQL for validity table.
 
     CP::TDbiString sql;
 
@@ -288,10 +287,10 @@ CP::TDbiInRowStream*  CP::TDbiDBProxy::QueryAllValidities(UInt_t dbNo,UInt_t seq
     }
     sql  << ";" << '\0';
 
-    DbiVerbose("Database: " << dbNo
+    DbiTrace("Database: " << dbNo
                << " query: " << sql.GetString() << "  ");
 
-//  Apply query and return result..
+    //  Apply query and return result..
 
     CP::TDbiStatement* stmtDb = fCascader.CreateStatement(dbNo);
     return new CP::TDbiInRowStream(stmtDb,sql,fMetaValid,fTableProxy,dbNo);
@@ -303,30 +302,30 @@ CP::TDbiInRowStream*  CP::TDbiDBProxy::QueryAllValidities(UInt_t dbNo,UInt_t seq
 //.....................................................................
 
 CP::TDbiInRowStream*  CP::TDbiDBProxy::QuerySeqNo(UInt_t seqNo, UInt_t dbNo) const {
-//
-//
-//  Purpose:  Apply sequence query to database..
-//
-//  Arguments:
-//    seqNo        in    The sequence number for the query.
-//    dbNo         in    Database number in cascade (starting at 0).
-//
-//  Return:    New CP::TDbiResultSet object.
-//             NB  Caller is responsible for deleting..
-//
-//  Contact:   N. West
-//
-//  Specification:-
-//  =============
-//
-//  o Apply sequence query to table and return query results
+    //
+    //
+    //  Purpose:  Apply sequence query to database..
+    //
+    //  Arguments:
+    //    seqNo        in    The sequence number for the query.
+    //    dbNo         in    Database number in cascade (starting at 0).
+    //
+    //  Return:    New CP::TDbiResultSet object.
+    //             NB  Caller is responsible for deleting..
+    //
+    //  Contact:   N. West
+    //
+    //  Specification:-
+    //  =============
+    //
+    //  o Apply sequence query to table and return query results
 
-//  Program Notes:-
-//  =============
+    //  Program Notes:-
+    //  =============
 
-//  None..
+    //  None..
 
-// Generate SQL.
+    // Generate SQL.
 
     CP::TDbiTimerManager::gTimerManager.RecMainQuery();
     CP::TDbiString sql;
@@ -337,10 +336,10 @@ CP::TDbiInRowStream*  CP::TDbiDBProxy::QuerySeqNo(UInt_t seqNo, UInt_t dbNo) con
         sql << " order by ROW_COUNTER";
     }
 
-    DbiVerbose("Database: " << dbNo
+    DbiTrace("Database: " << dbNo
                << " SeqNo query: " << sql.c_str() << "  ");
 
-//  Apply query and return result..
+    //  Apply query and return result..
 
     CP::TDbiStatement* stmtDb = fCascader.CreateStatement(dbNo);
     return new CP::TDbiInRowStream(stmtDb,sql,fMetaData,fTableProxy,dbNo);
@@ -353,35 +352,35 @@ CP::TDbiInRowStream*  CP::TDbiDBProxy::QuerySeqNos(SeqList_t& seqNos,
                                                    UInt_t dbNo,
                                                    const std::string& sqlData,
                                                    const std::string& fillOpts) const {
-//
-//
-//  Purpose:  Apply query for a list of sequence numbers to database..
-//
-//  Arguments:
-//    seqNos       in    The vector of sequence numbers for the query.
-//                       Should be in acsending order, see Program Notes
-//    dbNo         in    Database number in cascade (starting at 0).
-//    sqlData      in    Optional SQL extension to secondary query.
-//    fillOpts     in    Optional fill options (available to CP::TDbiTableRow
-//                       objects when filling.
-//
-//  Return:    New CP::TDbiResultSet object.
-//             NB  Caller is responsible for deleting..
-//
-//  Contact:   N. West
-//
-//  Specification:-
-//  =============
-//
-//  o Apply sequence query to table and return query results
+    //
+    //
+    //  Purpose:  Apply query for a list of sequence numbers to database..
+    //
+    //  Arguments:
+    //    seqNos       in    The vector of sequence numbers for the query.
+    //                       Should be in acsending order, see Program Notes
+    //    dbNo         in    Database number in cascade (starting at 0).
+    //    sqlData      in    Optional SQL extension to secondary query.
+    //    fillOpts     in    Optional fill options (available to CP::TDbiTableRow
+    //                       objects when filling.
+    //
+    //  Return:    New CP::TDbiResultSet object.
+    //             NB  Caller is responsible for deleting..
+    //
+    //  Contact:   N. West
+    //
+    //  Specification:-
+    //  =============
+    //
+    //  o Apply sequence query to table and return query results
 
-//  Program Notes:-
-//  =============
+    //  Program Notes:-
+    //  =============
 
-//  Where possible the SQL query is kept to a minimm by using
-//  `BETWEEN' comparison to bracket ranges of numbers.
+    //  Where possible the SQL query is kept to a minimm by using
+    //  `BETWEEN' comparison to bracket ranges of numbers.
 
-// Generate SQL.
+    // Generate SQL.
 
     if (seqNos.size() == 0) {
         return 0;
@@ -431,10 +430,10 @@ CP::TDbiInRowStream*  CP::TDbiDBProxy::QuerySeqNos(SeqList_t& seqNos,
         sql << ",ROW_COUNTER";
     }
 
-    DbiVerbose("Database: " << dbNo
+    DbiTrace("Database: " << dbNo
                << " SeqNos query: " << sql.c_str() << "  ");
 
-//  Apply query and return result..
+    //  Apply query and return result..
 
     CP::TDbiStatement* stmtDb = fCascader.CreateStatement(dbNo);
     return new CP::TDbiInRowStream(stmtDb,sql,fMetaData,fTableProxy,dbNo,fillOpts);
@@ -446,35 +445,35 @@ CP::TDbiInRowStream*  CP::TDbiDBProxy::QuerySeqNos(SeqList_t& seqNos,
 CP::TDbiInRowStream*  CP::TDbiDBProxy::QueryValidity(const CP::TVldContext& vc,
                                                      const TDbi::Task& task,
                                                      UInt_t dbNo) const {
-//
-//
-//  Purpose:  Apply validity query to database..
-//
-//  Arguments:
-//    vc           in    The Validity Context for the query.
-//    task         in    The task of the query.
-//    dbNo         in    Database number in cascade (starting at 0).
-//
-//  Return:    New CP::TDbiResultSet object.
-//             NB  Caller is responsible for deleting..
-//
-//  Contact:   N. West
-//
-//  Specification:-
-//  =============
-//
-//  o Apply query to associated validity range table and return query
-//    results qualifying selection by fSqlCondition if defined.
+    //
+    //
+    //  Purpose:  Apply validity query to database..
+    //
+    //  Arguments:
+    //    vc           in    The Validity Context for the query.
+    //    task         in    The task of the query.
+    //    dbNo         in    Database number in cascade (starting at 0).
+    //
+    //  Return:    New CP::TDbiResultSet object.
+    //             NB  Caller is responsible for deleting..
+    //
+    //  Contact:   N. West
+    //
+    //  Specification:-
+    //  =============
+    //
+    //  o Apply query to associated validity range table and return query
+    //    results qualifying selection by fSqlCondition if defined.
 
-//  Program Notes:-
-//  =============
+    //  Program Notes:-
+    //  =============
 
-//  Rather than search over the full table this function places
-//  a time gate round the context time and then trims any validity
-//  range returned to this gate.  See FindTimeBoundaries to get a
-//  more accurate validity range.
+    //  Rather than search over the full table this function places
+    //  a time gate round the context time and then trims any validity
+    //  range returned to this gate.  See FindTimeBoundaries to get a
+    //  more accurate validity range.
 
-//  Construct a search window on the current date.
+    //  Construct a search window on the current date.
 
     const CP::TVldTimeStamp curVTS = vc.GetTimeStamp();
     Int_t timeGate = TDbi::GetTimeGate(this->GetTableName());
@@ -483,14 +482,14 @@ CP::TDbiInRowStream*  CP::TDbiDBProxy::QueryValidity(const CP::TVldContext& vc,
     vcSec += 2*timeGate;
     CP::TVldTimeStamp endGate(vcSec,0);
 
-// Extract information for CP::TVldContext.
+    // Extract information for CP::TVldContext.
 
     std::string startGateString(TDbi::MakeDateTimeString(startGate));
     std::string endGateString(TDbi::MakeDateTimeString(endGate));
     CP::DbiDetector::Detector_t    detType(vc.GetDetector());
     CP::DbiSimFlag::SimFlag_t       simFlg(vc.GetSimFlag());
 
-// Generate SQL for context.
+    // Generate SQL for context.
 
     CP::TDbiString context;
     context << "    TimeStart <= '" << endGateString << "' "
@@ -498,7 +497,7 @@ CP::TDbiInRowStream*  CP::TDbiDBProxy::QueryValidity(const CP::TVldContext& vc,
             << "and DetectorMask & " << static_cast<unsigned int>(detType)
             << " and SimMask & " << static_cast<unsigned int>(simFlg);
 
-//  Apply query and return result..
+    //  Apply query and return result..
 
     return this->QueryValidity(context.GetString(),task,dbNo);
 
@@ -508,33 +507,33 @@ CP::TDbiInRowStream*  CP::TDbiDBProxy::QueryValidity(const CP::TVldContext& vc,
 CP::TDbiInRowStream*  CP::TDbiDBProxy::QueryValidity(const std::string& context,
                                                      const TDbi::Task& task,
                                                      UInt_t dbNo) const {
-//
-//
-//  Purpose:  Apply validity query to database..
-//
-//  Arguments:
-//    context      in    The Validity Context (see CP::TDbiSqlContext)
-//    task         in    The task of the query.
-//    dbNo         in    Database number in cascade (starting at 0).
-//
-//  Return:    New CP::TDbiResultSet object.
-//             NB  Caller is responsible for deleting..
-//
-//  Contact:   N. West
-//
-//  Specification:-
-//  =============
-//
-//  o Apply query to associated validity range table and return query
-//    results qualifying selection by fSqlCondition if defined.
+    //
+    //
+    //  Purpose:  Apply validity query to database..
+    //
+    //  Arguments:
+    //    context      in    The Validity Context (see CP::TDbiSqlContext)
+    //    task         in    The task of the query.
+    //    dbNo         in    Database number in cascade (starting at 0).
+    //
+    //  Return:    New CP::TDbiResultSet object.
+    //             NB  Caller is responsible for deleting..
+    //
+    //  Contact:   N. West
+    //
+    //  Specification:-
+    //  =============
+    //
+    //  o Apply query to associated validity range table and return query
+    //    results qualifying selection by fSqlCondition if defined.
 
 
-// Generate SQL for validity table.
+    // Generate SQL for validity table.
 
     CP::TDbiString sql;
 
-// In the MINOS  scheme queries are  ordered by creation date (the later the better)
-// but if the table has an EPOCH column then the T2K scheme is used (EPOCH,TIMESTART,INSERTDATE)
+    // In the MINOS  scheme queries are  ordered by creation date (the later the better)
+    // but if the table has an EPOCH column then the T2K scheme is used (EPOCH,TIMESTART,INSERTDATE)
 
     std::string orderByName("CREATIONDATE desc");
     if (this->HasEpoch()) {
@@ -543,18 +542,18 @@ CP::TDbiInRowStream*  CP::TDbiDBProxy::QueryValidity(const std::string& context,
     sql << "select * from " << fTableName << "VLD"
         << " where " ;
     if (fSqlCondition != ""
-       ) {
+        ) {
         sql << fSqlCondition << " and ";
     }
     sql << context;
     if (task != TDbi::kAnyTask
-       ) sql << " and  Task = " << task
-                 << " order by " << orderByName << ";" << '\0';
+        ) sql << " and  Task = " << task
+              << " order by " << orderByName << ";" << '\0';
 
-    DbiVerbose("Database: " << dbNo
+    DbiTrace("Database: " << dbNo
                << " query: " << sql.c_str() << "  ");
 
-//  Apply query and return result..
+    //  Apply query and return result..
 
     CP::TDbiStatement* stmtDb = fCascader.CreateStatement(dbNo);
     return new CP::TDbiInRowStream(stmtDb,sql,fMetaValid,fTableProxy,dbNo);
@@ -564,26 +563,26 @@ CP::TDbiInRowStream*  CP::TDbiDBProxy::QueryValidity(const std::string& context,
 
 CP::TDbiInRowStream*  CP::TDbiDBProxy::QueryValidity(UInt_t seqNo,
                                                      UInt_t dbNo) const {
-//
-//
-//  Purpose:  Apply validity query to database..
-//
-//  Arguments:
-//    seqNo        in    The SEQNO of the validity rec.
-//
-//  Return:    New CP::TDbiResultSet object.
-//             NB  Caller is responsible for deleting..
-//
-//  Contact:   N. West
-//
-//  Specification:-
-//  =============
-//
-//  o Apply query to associated validity range table and return query
-//    results qualifying selection by fSqlCondition if defined.
+    //
+    //
+    //  Purpose:  Apply validity query to database..
+    //
+    //  Arguments:
+    //    seqNo        in    The SEQNO of the validity rec.
+    //
+    //  Return:    New CP::TDbiResultSet object.
+    //             NB  Caller is responsible for deleting..
+    //
+    //  Contact:   N. West
+    //
+    //  Specification:-
+    //  =============
+    //
+    //  o Apply query to associated validity range table and return query
+    //    results qualifying selection by fSqlCondition if defined.
 
 
-// Generate SQL for validity table.
+    // Generate SQL for validity table.
 
     CP::TDbiString sql;
     sql << "select * from " << fTableName << "VLD where ";
@@ -592,10 +591,10 @@ CP::TDbiInRowStream*  CP::TDbiDBProxy::QueryValidity(UInt_t seqNo,
     }
     sql << "SEQNO = " << seqNo << ";";
 
-    DbiVerbose("Database: " << dbNo
+    DbiTrace("Database: " << dbNo
                << " SEQNO query: " << sql.c_str() << "  ");
 
-//  Apply query and return result..
+    //  Apply query and return result..
 
     CP::TDbiStatement* stmtDb = fCascader.CreateStatement(dbNo);
     return new CP::TDbiInRowStream(stmtDb,sql,fMetaValid,fTableProxy,dbNo);
@@ -606,39 +605,39 @@ CP::TDbiInRowStream*  CP::TDbiDBProxy::QueryValidity(UInt_t seqNo,
 
 Bool_t CP::TDbiDBProxy::RemoveSeqNo(UInt_t seqNo,
                                     UInt_t dbNo) const {
-//
-//
-//  Purpose:  Remove sequence number in main and auxiliary tables.
-//
-//  Arguments:
-//    seqNo        in    The sequence number to be removed.
-//    dbNo         in    Database number in cascade (starting at 0).
-//
-//  Return:    kTRUE if output successful,otherwise kFALSE.
-//
-//  Contact:   N. West
-//
-//  Specification:-
-//  =============
-//
-//  o Remove sequence number in main and auxiliary tables.
+    //
+    //
+    //  Purpose:  Remove sequence number in main and auxiliary tables.
+    //
+    //  Arguments:
+    //    seqNo        in    The sequence number to be removed.
+    //    dbNo         in    Database number in cascade (starting at 0).
+    //
+    //  Return:    kTRUE if output successful,otherwise kFALSE.
+    //
+    //  Contact:   N. West
+    //
+    //  Specification:-
+    //  =============
+    //
+    //  o Remove sequence number in main and auxiliary tables.
 
-//  Program Notes:-
-//  =============
+    //  Program Notes:-
+    //  =============
 
-//  None.
+    //  None.
 
 
-// Generate SQL to remove SeqNo in main table.
+    // Generate SQL to remove SeqNo in main table.
     CP::TDbiString sql;
     sql  << "delete from  " << fTableName
          << " where SEQNO = " << seqNo << ";"
          << '\0';
 
-    DbiVerbose("Database: " << dbNo
+    DbiTrace("Database: " << dbNo
                << " RemoveSeqNo SQL: " << sql.c_str() << "  ");
 
-//  Apply query.
+    //  Apply query.
     std::unique_ptr<CP::TDbiStatement> stmtDb(fCascader.CreateStatement(dbNo));
     if (! stmtDb.get()) {
         return false;
@@ -649,16 +648,16 @@ Bool_t CP::TDbiDBProxy::RemoveSeqNo(UInt_t seqNo,
         return false;
     }
 
-// Generate SQL to remove SeqNo in validity table.
+    // Generate SQL to remove SeqNo in validity table.
     sql.GetString().erase();
     sql << "delete from  " << fTableName
         << "VLD where SEQNO = " << seqNo << ";"
         << '\0';
 
-    DbiVerbose("Database: " << dbNo
+    DbiTrace("Database: " << dbNo
                << " RemoveSeqNo SQL: " << sql.c_str() << "  ");
 
-//  Apply query.
+    //  Apply query.
     if (! stmtDb->ExecuteUpdate(sql.c_str()) ||  stmtDb->PrintExceptions()) {
         DbiSevere("SQL: " << sql.c_str()
                   << " Failed. " << "  ");
@@ -674,32 +673,32 @@ Bool_t CP::TDbiDBProxy::RemoveSeqNo(UInt_t seqNo,
 Bool_t CP::TDbiDBProxy::ReplaceInsertDate(const CP::TVldTimeStamp& ts,
                                           UInt_t SeqNo,
                                           UInt_t dbNo) const {
-//
-//
-//  Purpose:  Replace insertion date for row in auxiliary table.
-//
-//  Arguments:
-//    ts           in    Time stamp for new insertion date.
-//    SeqNo        in    The sequence number of the row to be replaced.
-//    dbNo         in    Database number in cascade (starting at 0).
-//
-//  Return:    kTRUE if output successful,otherwise kFALSE.
-//
-//  Contact:   N. West
+    //
+    //
+    //  Purpose:  Replace insertion date for row in auxiliary table.
+    //
+    //  Arguments:
+    //    ts           in    Time stamp for new insertion date.
+    //    SeqNo        in    The sequence number of the row to be replaced.
+    //    dbNo         in    Database number in cascade (starting at 0).
+    //
+    //  Return:    kTRUE if output successful,otherwise kFALSE.
+    //
+    //  Contact:   N. West
 
 
-// Generate SQL.
+    // Generate SQL.
     CP::TDbiString sql;
     sql << "update  " << fTableName
         << "VLD set INSERTDATE = \'" << ts.AsString("s")
         << "\' where SEQNO = " << SeqNo << ";"
         << '\0';
 
-    DbiVerbose("Database: " << dbNo
+    DbiTrace("Database: " << dbNo
                << " ReplaceInsertDate SQL: "
                << sql.c_str() << "  ");
 
-//  Apply query.
+    //  Apply query.
     std::unique_ptr<CP::TDbiStatement> stmtDb(fCascader.CreateStatement(dbNo));
     if (! stmtDb.get()) {
         return false;
@@ -718,28 +717,28 @@ Bool_t CP::TDbiDBProxy::ReplaceInsertDate(const CP::TVldTimeStamp& ts,
 Bool_t CP::TDbiDBProxy::ReplaceSeqNo(UInt_t oldSeqNo,
                                      UInt_t newSeqNo,
                                      UInt_t dbNo) const {
-//
-//
-//  Purpose:  Replace sequence number in main and auxiliary tables.
-//
-//  Arguments:
-//    oldSeqNo     in    The old sequence number.
-//    nwSeqNo      in    The new sequence number.
-//    dbNo         in    Database number in cascade (starting at 0).
-//
-//  Return:    kTRUE if output successful,otherwise kFALSE.
-//
-//  Contact:   N. West
-//
-//  Specification:-
-//  =============
-//
-//  o Replace sequence number in main and auxiliary tables.
+    //
+    //
+    //  Purpose:  Replace sequence number in main and auxiliary tables.
+    //
+    //  Arguments:
+    //    oldSeqNo     in    The old sequence number.
+    //    nwSeqNo      in    The new sequence number.
+    //    dbNo         in    Database number in cascade (starting at 0).
+    //
+    //  Return:    kTRUE if output successful,otherwise kFALSE.
+    //
+    //  Contact:   N. West
+    //
+    //  Specification:-
+    //  =============
+    //
+    //  o Replace sequence number in main and auxiliary tables.
 
-//  Program Notes:-
-//  =============
+    //  Program Notes:-
+    //  =============
 
-//  None.
+    //  None.
 
     if (! fCascader.GetConnection(dbNo)) {
         DbiWarn("Cannot renumber " << oldSeqNo
@@ -747,17 +746,17 @@ Bool_t CP::TDbiDBProxy::ReplaceSeqNo(UInt_t oldSeqNo,
         return false;
     }
 
-// Generate SQL to replace SeqNo in validity table.
+    // Generate SQL to replace SeqNo in validity table.
     CP::TDbiString sql;
     sql << "update  " << fTableName
         << "VLD set SEQNO = " << newSeqNo
         << " where SEQNO = " << oldSeqNo << ";"
         << '\0';
 
-    DbiVerbose("Database: " << dbNo
+    DbiTrace("Database: " << dbNo
                << " ReplaceSeqNo SQL: " << sql.c_str() << "  ");
 
-//  Apply query.
+    //  Apply query.
     std::unique_ptr<CP::TDbiStatement> stmtDb(fCascader.CreateStatement(dbNo));
     if (! stmtDb.get()) {
         return false;
@@ -768,17 +767,17 @@ Bool_t CP::TDbiDBProxy::ReplaceSeqNo(UInt_t oldSeqNo,
         return false;
     }
 
-// Generate SQL to replace SeqNo in main table.
+    // Generate SQL to replace SeqNo in main table.
     sql.GetString().erase();
     sql  << "update  " << fTableName
          << " set SEQNO = " << newSeqNo
          << " where SEQNO = " << oldSeqNo << ";"
          << '\0';
 
-    DbiVerbose("Database: " << dbNo
+    DbiTrace("Database: " << dbNo
                << " ReplaceSeqNo SQL: " << sql.c_str() << "  ");
 
-//  Apply query.
+    //  Apply query.
     if (! stmtDb->ExecuteUpdate(sql.c_str()) || stmtDb->PrintExceptions()) {
         DbiSevere("SQL: " << sql.c_str()
                   << " Failed. " << "  ");
@@ -792,19 +791,15 @@ Bool_t CP::TDbiDBProxy::ReplaceSeqNo(UInt_t oldSeqNo,
 //.....................................................................
 
 void  CP::TDbiDBProxy::StoreMetaData(CP::TDbiTableMetaData& metaData) const {
-//
-//
-//  Purpose:  Store table meta data.
-//
-//  Arguments:
-//    metaData   in    Empty CP::TDbiTableMetaData object apart from table name.
+    //  Purpose:  Store table meta data.
+    //
+    //  Arguments:
+    //    metaData   in    Empty CP::TDbiTableMetaData object apart
+    //                     from table name. 
 
+    DbiTrace("Get meta-data for table: " << metaData.TableName());
 
-
-    const char* tableName = metaData.TableName().c_str();
-    DbiVerbose("Get meta-data for table: " << tableName << "  ");
-
-//  Check each Db in turn until table found and store table meta data.
+    //  Check each Db in turn until table found and store table meta data.
 
     for (UInt_t dbNo = 0; dbNo < fCascader.GetNumDb(); dbNo++) {
         CP::TDbiConnection* connection = fCascader.GetConnection(dbNo);
@@ -813,12 +808,13 @@ void  CP::TDbiDBProxy::StoreMetaData(CP::TDbiTableMetaData& metaData) const {
             continue;
         }
         connection->Connect();
-        TSQLTableInfo* meta = server->GetTableInfo(tableName);
+        TSQLTableInfo* meta = server->GetTableInfo(
+            metaData.TableName().c_str());
         if (! meta) {
             connection->DisConnect();
             continue;
         }
-        DbiVerbose("Meta-data query succeeded on cascade entry " << dbNo << "  ");
+        DbiTrace("Meta-data query succeeded on cascade entry " << dbNo << "  ");
 
         // Clear out any existing data, although there should not be any.
         metaData.Clear();
@@ -826,8 +822,19 @@ void  CP::TDbiDBProxy::StoreMetaData(CP::TDbiTableMetaData& metaData) const {
         const TList* cols =  meta->GetColumns();
         TIter colItr(cols);
         int col = 0;
-        while (TSQLColumnInfo* colInfo = dynamic_cast<TSQLColumnInfo*>(colItr.Next())) {
 
+        DbiTrace("Columns in TList " << cols->GetSize());
+        
+        while (TObject* obj = colItr.Next()) {
+            DbiTrace("Column info " << obj->ClassName());
+            
+            TSQLColumnInfo* colInfo = dynamic_cast<TSQLColumnInfo*>(obj);
+            if (!colInfo) {
+                DbiWarn("Object not derived from TSQLColumnInfo "
+                           << obj->ClassName());
+                break;
+            }
+            
             ++col;
             std::string name(colInfo->GetName());
             name = CP::UtilString::ToUpper(name);
@@ -837,7 +844,8 @@ void  CP::TDbiDBProxy::StoreMetaData(CP::TDbiTableMetaData& metaData) const {
                                       colInfo->GetLength(),
                                       colInfo->GetTypeName());
 
-            // For now continue to check for unsigned (even though not supported)
+            // For now continue to check for unsigned (even though not
+            // supported)
             if (!colInfo->IsSigned()) {
                 fldType.SetUnsigned();
             }
@@ -845,12 +853,12 @@ void  CP::TDbiDBProxy::StoreMetaData(CP::TDbiTableMetaData& metaData) const {
 
             metaData.SetColIsNullable(col,colInfo->IsNullable());
 
-            DbiVerbose("Column "         << col << " " << name
-                       << " SQL type "      << colInfo->GetSQLType()
-                       << " SQL type name " << colInfo->GetTypeName()
-                       << " DBI type "      << fldType.AsString()
-                       << " data size: "    << fldType.GetSize()
-                       << " col size: "     << colInfo->GetLength() << "  ");
+            DbiTrace("Column "         << col << " " << name
+                     << " SQL type "      << colInfo->GetSQLType()
+                     << " SQL type name " << colInfo->GetTypeName()
+                     << " DBI type "      << fldType.AsString()
+                     << " data size: "    << fldType.GetSize()
+                     << " col size: "     << colInfo->GetLength() << "  ");
 
         }
         delete meta;
@@ -862,10 +870,8 @@ void  CP::TDbiDBProxy::StoreMetaData(CP::TDbiTableMetaData& metaData) const {
 //.....................................................................
 
 Bool_t CP::TDbiDBProxy::TableExists(Int_t selectDbNo) const {
-//
-//
-//  Purpose:  Return true if table exists on selected cascade entry
-//            or any entry if selectDbNo=-1 (default)
+    //  Purpose:  Return true if table exists on selected cascade entry
+    //            or any entry if selectDbNo=-1 (default)
 
 
     return fCascader.TableExists(fTableName,selectDbNo);
