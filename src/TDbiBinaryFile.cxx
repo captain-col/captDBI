@@ -4,7 +4,7 @@
 
 #include "TClass.h"
 #include "TObject.h"
-#include "Api.h"
+// #include "Api.h"
 #include "TSystem.h"
 
 #include "TDbiBinaryFile.hxx"
@@ -93,7 +93,7 @@ CP::TDbiBinaryFile::TDbiBinaryFile(const char* fileName, Bool_t input) :
         fHasErrors = kTRUE;
     }
     else {
-        fFile = new fstream(fFileName.c_str(),mode);
+        fFile = new std::fstream(fFileName.c_str(),mode);
         if (! fFile->is_open() || ! fFile->good()) {
             DbiDebug("Cannot open " << fFileName
                      << "; all I/O will fail." << "  ");

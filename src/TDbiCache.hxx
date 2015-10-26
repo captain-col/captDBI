@@ -75,7 +75,7 @@ namespace CP {
 /// Secondary search.
         const TDbiResultSet* Search(const TDbiValidityRec& vr,
                                     const std::string& sqlQualifiers = "") const;
-        ostream& ShowStatistics(ostream& msg) const;
+        std::ostream& ShowStatistics(std::ostream& msg) const;
 
 // State changing member functions
         void Adopt(TDbiResultSet* res,bool generateKey = true);

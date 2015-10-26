@@ -18,14 +18,14 @@
 #ifndef TDBIREGISTRY_H
 #define TDBIREGISTRY_H
 
+#include <TNamed.h>
+
 #include <iostream>
 #include <map>
 #include <string>
-
-#include <TNamed.h>
+#include <typeinfo>
 
 class TDbiRegistryItem;
-class type_info;
 
 #include "TDbiRegistryItemXxx.hxx"    //Needed for LinkDef
 
@@ -139,7 +139,7 @@ namespace CP {
 
         /// Return the type_info of the value corresponding to the given
         /// key.  If key doesn't exist, type_info for type void is returned.
-        const type_info& GetType(const char* key) const;
+        const std::type_info& GetType(const char* key) const;
         /// Return "int", "double", "char", "string", "TDbiRegistry" or "void"
         std::string GetTypeAsString(const char* key) const;
         /// see format.txt

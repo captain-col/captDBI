@@ -22,6 +22,7 @@
 
 #include <typeinfo>
 #include <iostream>
+
 namespace CP {
 /// Encapsulates a value of type T
     class TDbiRegistry;
@@ -50,7 +51,7 @@ namespace CP {
             return is >> *fData;
         }
 
-        virtual const type_info& GetType() const {
+        virtual const std::type_info& GetType() const {
             return typeid(T);
         }
         virtual const char* GetTypeAsString() const {

@@ -102,7 +102,7 @@ CP::TDbiLogEntry::~TDbiLogEntry() {
 }
 //.....................................................................
 
-std::ostream& operator<<(ostream& s, const CP::TDbiLogEntry& logEntry) {
+std::ostream& operator<<(std::ostream& s, const CP::TDbiLogEntry& logEntry) {
 //
 //
 //  Purpose:  Output Log Entry to message stream.
@@ -239,7 +239,7 @@ void CP::TDbiLogEntry::SetReason(const std::string& reason) {
     if (fReason.size() && fReason[0] == '@') {
         std::string fileName(fReason,1);
         fReason.clear();
-        ifstream reasonFile(fileName.c_str());
+        std::ifstream reasonFile(fileName.c_str());
         if (! reasonFile.is_open()) {
             DbiSevere("Cannot read \"Reason File\" " << fileName << "  ");
         }

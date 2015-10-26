@@ -224,7 +224,7 @@ Int_t CP::TDbiAsciiTablePreparer::Init() {
         return fStatus;
     }
 
-    ifstream in_file(fLocalFile.Data());
+    std::ifstream in_file(fLocalFile.Data());
 
     if (!in_file) {
         in_file.close();
