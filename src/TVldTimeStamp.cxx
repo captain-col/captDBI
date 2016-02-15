@@ -580,14 +580,8 @@ void CP::TVldTimeStamp::DumpTMStruct(const tm_t& tmstruct) {
            tmstruct.tm_yday,
            tmstruct.tm_isdst);
 #ifdef linux
-//#ifdef __GNUC__
-// special GCC extras
-    printf(",\n      tm_gmtoff %7ld,  tm_zone \"%s\"",
-#ifdef __USE_BSD
-           tmstruct.tm_gmtoff,tmstruct.tm_zone);
-#else
-           tmstruct.__tm_gmtoff,tmstruct.__tm_zone);
-#endif
+//    printf(",\n      tm_gmtoff %7ld,  tm_zone \"%s\"",
+//           tmstruct.tm_gmtoff,tmstruct.tm_zone);
 #endif
     printf("}\n");
 }
