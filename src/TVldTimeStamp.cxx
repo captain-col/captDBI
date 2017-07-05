@@ -261,9 +261,20 @@ Int_t CP::TVldTimeStamp::GetZoneOffset() {
 #if !defined(R__MACOSX) && !defined(R__FBSD)
     return  timezone;   /* unix has extern long int */
 #else
-    time_t* tp = 0;
-    time(tp);
-    return localtime(tp)->tm_gmtoff;
+    time_t tp = time(NULL);
+    struct tm local = *localtime(&tp);
+    struct tm utc = *gmtime(&tp);
+    long diff =
+        ((local.tm_hour - utc.tm_hour) * 60L
+         + (local.tm_min - utc.tm_min)) * 60L
+        + (local.tm_sec - utc.tm_sec);
+    int delta_day = local.tm_mday - utc.tm_mday;
+    if ((delta_day == 1) || (delta_day < -1)) {
+        diff += 24L * 60 * 60;
+    } else if ((delta_day == -1) || (delta_day > 1)) {
+        diff -= 24L * 60 * 60;
+    }
+    return diff;
 #endif
 #else
     _tzset();
