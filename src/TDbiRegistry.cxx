@@ -388,7 +388,7 @@ CP::TDbiRegistry CP::TDbiRegistry::GetTDbiRegistry(const char* key) const {
     }
 }
 
-const type_info& CP::TDbiRegistry::GetType(const char* key) const {
+const std::type_info& CP::TDbiRegistry::GetType(const char* key) const {
     tRegMap::const_iterator mit = fMap.find(key);
     if (mit == fMap.end()) {
         return typeid(void);

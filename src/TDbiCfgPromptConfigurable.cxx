@@ -345,7 +345,7 @@ Bool_t CP::TDbiCfgPromptConfigurable::SafeMerge(TDbiRegistry& modify,
         const char* vcharstar;
         TDbiRegistry vregistry;
 
-        const type_info& theType(modify.GetType(key));
+        const std::type_info& theType(modify.GetType(key));
 
         if ((theType==typeid(char))&&(stuff.Get(key,vchar))) {
             modify.Set(key,vchar);
